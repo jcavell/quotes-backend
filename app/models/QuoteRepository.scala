@@ -11,6 +11,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 case class Quote(id: Option[Long] = None,
+                 status: String,
                  requestTimestamp: Date,
                  requestDateRequired: Date,
                  requestProductId: Long,
@@ -41,9 +42,10 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
     */
    private val simple = {
       get[Option[Long]]("quote.id") ~
+      get[String]("quote.status") ~
       get[Date]("quote.request_timestamp") ~
       get[Date]("quote.request_date_required") ~
-     get[Long]("quote.request_product_id") ~
+      get[Long]("quote.request_product_id") ~
       get[String]("quote.request_customer_name") ~
       get[String]("quote.request_customer_email") ~
       get[String]("quote.request_customer_tel") ~
@@ -51,8 +53,8 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
       get[Int]("quote.request_quantity") ~
       get[Option[String]]("quote.request_other_requirements") ~
       get[Option[Long]]("quote.person_id") map {
-      case id ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId  =>
-        Quote(id, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId)
+      case id ~ status ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId  =>
+        Quote(id, status, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId)
     }
   }
 
@@ -79,8 +81,8 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
     *
     * @param page     Page to display
     * @param pageSize Number of Quotes per page
-    * @param orderBy  Computer property used for sorting
-    * @param filter   Filter applied on the name column
+    * @param orderBy  Field for sorting
+    * @param filter   Filter applied on various columns
     */
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Future[QuotePage] = Future {
 
@@ -126,6 +128,4 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
     }
 
   }(ec)
-
-
 }

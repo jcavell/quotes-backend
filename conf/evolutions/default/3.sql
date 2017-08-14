@@ -2,9 +2,11 @@
 
 # --- !Ups
 
+create type quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN', 'WITH_ACCOUNTS');
 
 create table quote (
   id                        bigint not null,
+  status quote_status not null,
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
   request_date_required TIMESTAMP not null,
@@ -28,6 +30,7 @@ create table product (
   name VARCHAR(255) not null,
   cost DECIMAL(20, 3) not null,
   currency_code varchar(10) not null,
+  data json,
   constraint pk_product primary key (id))
 ;
 
@@ -57,6 +60,8 @@ SET REFERENTIAL_INTEGRITY FALSE;
 drop table if exists quote_product;
 drop table if exists quote;
 drop table if exists product;
+
+drop type if exists quote_status;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 

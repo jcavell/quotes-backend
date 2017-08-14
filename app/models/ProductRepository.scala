@@ -14,31 +14,29 @@ case class Product(id: Option[Long] = None, productId: Long, name: String, cost:
 @javax.inject.Singleton
 class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 
-
-  // Custom conversion from JDBC column to String
-  implicit def pGobjectColumnToString: Column[JsValue] =
+  implicit def pgObjectColumnToJSValue: Column[JsValue] =
     Column.nonNull { (value, meta) =>
       val MetaDataItem(qualified, nullable, clazz) = meta
 
       value match {
         case pgO: PGobject => Right(Json.parse(pgO.toString()));
-        case _             => Left(TypeDoesNotMatch("Can't convert column"))
+        case _ => Left(TypeDoesNotMatch("Can't convert column"))
       }
     }
 
   private val db = dbapi.database("default")
 
   /**
-   * Parse a Product from a ResultSet
-   */
+    * Parse a Product from a ResultSet
+    */
   private[models] val simple = {
     get[Option[Long]]("product.id") ~
-    get[Long]("product.product_id") ~
+      get[Long]("product.product_id") ~
       get[String]("product.name") ~
       get[BigDecimal]("product.cost") ~
       get[String]("product.currency_code") ~
       get[JsValue]("product.data") map {
-      case id~productId~name~cost~currencyCode~data => Product(id, productId, name, cost, currencyCode, data)
+      case id ~ productId ~ name ~ cost ~ currencyCode ~ data => Product(id, productId, name, cost, currencyCode, data)
     }
   }
 }

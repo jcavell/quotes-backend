@@ -18,8 +18,11 @@ insert into quote_product(id, quote_id, product_id) values (2, 1, 3);
 insert into quote_product(id, quote_id, product_id) values (3, 2, 2);
 insert into quote_product(id, quote_id, product_id) values (4, 3, 1);
 
+insert into xsell(id, product_id) values (1, 550517110);
+insert into xsell(id, product_id) values (2, 550544575);
 
 # --- !Downs
 
 delete from quote;
 delete from product;
+delete from xsell;

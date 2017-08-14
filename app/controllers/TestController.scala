@@ -12,7 +12,7 @@ import play.api.libs.json.Writes.dateWrites
 import scala.concurrent.ExecutionContext
 
 
-class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
+class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellRepo: XsellRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -24,6 +24,8 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
   implicit val quoteFormat = Json.format[Quote]
   implicit val productFormat = Json.format[Product]
   implicit val productPersonPageFormat = Json.format[QuoteWithProducts]
+
+  implicit val xsellFormat = Json.format[XSell]
 
   implicit val quotePageFormat = Json.format[QuotePage]
 
@@ -38,6 +40,13 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
 
   def getQuotes(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
     quoteRepo.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")).map { page =>
+      val json = Json.toJson(page)
+      Ok(json)
+    }
+  }
+
+  def getXsells() = Action.async { implicit request =>
+    xsellRepo.list().map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }

@@ -47,11 +47,20 @@ alter table quote_product add constraint fk_quote_product_product foreign key (p
 create index ix_quote_product_product_1 on quote_product (product_id);
 
 
+create table xsell (
+  id                        bigint not null,
+  product_id                        bigint not null,
+  constraint pk_xsell primary key (id))
+;
+
+
 create sequence quote_seq start with 1000;
 
 create sequence product_seq start with 1000;
 
 create sequence quote_product_seq start with 1000;
+
+create sequence xsell_seq start with 1000;
 
 # --- !Downs
 
@@ -68,3 +77,4 @@ SET REFERENTIAL_INTEGRITY TRUE;
 drop sequence if exists quote_seq;
 drop sequence if exists product_seq;
 drop sequence if exists quote_product_seq;
+drop sequence if exists xsell_seq;

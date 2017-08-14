@@ -14,9 +14,6 @@ case class Person(id: Option[Long] = None,
                   tel: String,
                   companyId: Option[Long])
 
-/**
-  * Helper for pagination.
-  */
 
 case class PersonCompany(person: Person, company: Company)
 
@@ -34,7 +31,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
   // -- Parsers
 
   /**
-    * Parse a Computer from a ResultSet
+    * Parse a Person from a ResultSet
     */
    val simple = {
     get[Option[Long]]("person.id") ~
@@ -48,7 +45,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
   }
 
   /**
-    * Parse a (Computer,Company) from a ResultSet
+    * Parse a (Person,Company) from a ResultSet
     */
   private val withCompany = simple ~ (companyRepository.simple ?) map {
     case person ~ company => (person, company)
@@ -57,7 +54,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
   // -- Queries
 
   /**
-    * Retrieve a person from the id.
+    * Retrieve a Person from the id.
     */
   def findById(id: Long): Future[Option[Person]] = Future {
     db.withConnection { implicit connection =>
@@ -66,7 +63,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
   }(ec)
 
   /**
-    * Return a page of (Computer,Company).
+    * Return a page of PersonCompanh
     *
     * @param page     Page to display
     * @param pageSize Number of persons per page

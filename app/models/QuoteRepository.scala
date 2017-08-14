@@ -36,10 +36,8 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
 
   private val db = dbapi.database("default")
 
-  // -- Parsers
-
   /**
-    * Parse a Computer from a ResultSet
+    * Parse a Quote from a ResultSet
     */
    private val simple = {
       get[Option[Long]]("quote.id") ~
@@ -59,7 +57,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
   }
 
   /**
-    * Parse a (Computer,Company) from a ResultSet
+    * Parse a (Quote, Company, Person, Product) from a ResultSet
     */
   private def withProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (productRepository.simple) map {
     case quote ~ company ~ person ~ product => (quote, company, person, product)
@@ -68,7 +66,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
   // -- Queries
 
   /**
-    * Retrieve a person from the id.
+    * Retrieve a Quote from the id.
     */
   def findById(id: Long): Future[Option[Quote]] = Future {
     db.withConnection { implicit connection =>
@@ -77,10 +75,10 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
   }(ec)
 
   /**
-    * Return a page of (Computer,Company).
+    * Return a QuotePage of QuoteWithProducts
     *
     * @param page     Page to display
-    * @param pageSize Number of persons per page
+    * @param pageSize Number of Quotes per page
     * @param orderBy  Computer property used for sorting
     * @param filter   Filter applied on the name column
     */
@@ -112,14 +110,14 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
       }
 
       val totalRows = SQL(
-        """
-          select count(distinct quote.id) from quote
-                 left join quote_product on quote_product.quote_id = quote.id
-           left join product on product.id = quote_product.product_id
-           left join person on quote.person_id = person.id
+        s"""
+            select count(distinct quote.id) from quote
+            left join quote_product on quote_product.quote_id = quote.id
+            left join product on product.id = quote_product.product_id
+            left join person on quote.person_id = person.id
             left join company on person.company_id = company.id
-          where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
-        """
+            where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+        """.stripMargin
       ).on(
         'filter -> filter
       ).as(scalar[Long].single)

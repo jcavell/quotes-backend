@@ -1,13 +1,10 @@
 package models
 
-import java.util.Date
 import javax.inject.Inject
 
 import anorm.SqlParser._
 import anorm._
 import play.api.db.DBApi
-
-import scala.concurrent.Future
 
 case class Product(id: Option[Long] = None, productId: Long, name: String, cost: BigDecimal, currencyCode: String)
 

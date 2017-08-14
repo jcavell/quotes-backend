@@ -5,12 +5,17 @@
 
 create table quote (
   id                        bigint not null,
-  quote_timestamp TIMESTAMP not null,
-  quantity int not null,
-  date_required TIMESTAMP not null,
-  other_requirements VARCHAR (255),
+  request_timestamp TIMESTAMP not null,
+  request_product_id bigint not null,
+  request_date_required TIMESTAMP not null,
+  request_customer_name VARCHAR (255) not null,
+  request_customer_email VARCHAR (255) not null,
+  request_customer_tel VARCHAR (255) not null,
+  request_company VARCHAR (255) not null,
+  request_quantity int not null,
+  request_other_requirements VARCHAR (255),
   person_id bigint not null,
-  quote_product_id int not null,
+  quote_product_id bigint not null,
   constraint pk_quote primary key (id))
 ;
 

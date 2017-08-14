@@ -10,22 +10,24 @@ import play.api.db.DBApi
 import scala.concurrent.Future
 
 case class Quote(id: Option[Long] = None,
-                        quoteTimestamp: Date,
-                        dateRequired: Date,
-                        quantity:Int,
-                        otherRequirements: Option[String],
-                        personId: Option[Long],
-                        quoteProductId: Option[Long])
+                 requestTimestamp: Date,
+                 requestDateRequired: Date,
+                 requestProductId: Long,
+                 requestCustomerName: String,
+                 requestCustomerEmail: String,
+                 requestCustomerTel: String,
+                 requestCompany: String,
+                 requestQuantity:Int,
+                 requestOtherRequirements: Option[String],
+                 personId: Option[Long],
+                 quoteProductId: Option[Long])
 
-/**
-  * Helper for pagination.
-  */
 
 case class QuoteAndPersonAndProduct(quote: Quote, company: Company, person: Person, quoteProduct: QuoteProduct)
 
-case class QuotePage(items: Seq[QuoteAndPersonAndProduct], page: Int, offset: Long, total: Long) {
+case class QuotePage(quotes: Seq[QuoteAndPersonAndProduct], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
-  lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
+  lazy val next = Option(page + 1).filter(_ => (offset + quotes.size) < total)
 }
 
 
@@ -40,15 +42,20 @@ class QuoteRepository @Inject()(dbapi: DBApi, quoteProductRepository: QuoteProdu
     * Parse a Computer from a ResultSet
     */
    private val simple = {
-    get[Option[Long]]("quote.id") ~
-      get[Date]("quote.quote_timestamp") ~
-      get[Date]("quote.date_required") ~
-      get[Int]("quote.quantity") ~
-     get[Option[String]]("quote.other_requirements") ~
+      get[Option[Long]]("quote.id") ~
+      get[Date]("quote.request_timestamp") ~
+      get[Date]("quote.request_date_required") ~
+     get[Long]("quote.request_product_id") ~
+      get[String]("quote.request_customer_name") ~
+      get[String]("quote.request_customer_email") ~
+      get[String]("quote.request_customer_tel") ~
+      get[String]("quote.request_company") ~
+      get[Int]("quote.request_quantity") ~
+      get[Option[String]]("quote.request_other_requirements") ~
       get[Option[Long]]("quote.person_id") ~
       get[Option[Long]]("quote.quote_product_id") map {
-      case id ~ quoteTimestamp ~ dateRequested ~ quantity ~ otherRequirements ~ personId ~ quoteProductId =>
-        Quote(id, quoteTimestamp, dateRequested, quantity, otherRequirements, personId, quoteProductId)
+      case id ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId ~ quoteProductId =>
+        Quote(id, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId, quoteProductId)
     }
   }
 

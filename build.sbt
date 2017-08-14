@@ -22,5 +22,6 @@ libraryDependencies ++= Seq(
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 
-
+// https://mvnrepository.com/artifact/org.specs2/specs2-core_2.12
+libraryDependencies += "org.specs2" % "specs2-core_2.12" % "3.9.4" % "test"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % Test

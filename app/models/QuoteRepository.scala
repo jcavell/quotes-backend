@@ -19,11 +19,10 @@ case class Quote(id: Option[Long] = None,
                  requestCompany: String,
                  requestQuantity:Int,
                  requestOtherRequirements: Option[String],
-                 personId: Option[Long],
-                 quoteProductId: Option[Long])
+                 personId: Option[Long])
 
 
-case class QuoteAndPersonAndProduct(quote: Quote, company: Company, person: Person, quoteProduct: QuoteProduct)
+case class QuoteAndPersonAndProduct(quote: Quote, company: Company, person: Person, product: Product)
 
 case class QuotePage(quotes: Seq[QuoteAndPersonAndProduct], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
@@ -32,7 +31,7 @@ case class QuotePage(quotes: Seq[QuoteAndPersonAndProduct], page: Int, offset: L
 
 
 @javax.inject.Singleton
-class QuoteRepository @Inject()(dbapi: DBApi, quoteProductRepository: QuoteProductRepository, companyRepository: CompanyRepository, personRepository: PersonRepository)(implicit ec: DatabaseExecutionContext) {
+class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductRepository, companyRepository: CompanyRepository, personRepository: PersonRepository)(implicit ec: DatabaseExecutionContext) {
 
   private val db = dbapi.database("default")
 
@@ -52,18 +51,17 @@ class QuoteRepository @Inject()(dbapi: DBApi, quoteProductRepository: QuoteProdu
       get[String]("quote.request_company") ~
       get[Int]("quote.request_quantity") ~
       get[Option[String]]("quote.request_other_requirements") ~
-      get[Option[Long]]("quote.person_id") ~
-      get[Option[Long]]("quote.quote_product_id") map {
-      case id ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId ~ quoteProductId =>
-        Quote(id, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId, quoteProductId)
+      get[Option[Long]]("quote.person_id") map {
+      case id ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId  =>
+        Quote(id, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId)
     }
   }
 
   /**
     * Parse a (Computer,Company) from a ResultSet
     */
-  private val withQuoteProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (quoteProductRepository.simple ?) map {
-    case quote ~ company ~ person ~ quoteProduct => QuoteAndPersonAndProduct(quote, company, person, quoteProduct.get)
+  private val withProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (productRepository.simple ?) map {
+    case quote ~ company ~ person ~ product => QuoteAndPersonAndProduct(quote, company, person, product.get)
   }
 
   // -- Queries
@@ -94,22 +92,25 @@ class QuoteRepository @Inject()(dbapi: DBApi, quoteProductRepository: QuoteProdu
       val quotes = SQL(
         s"""
           select * from quote
-          left join quote_product on quote.quote_product_id = quote_product.id
+          left join quote_product on quote_product.quote_id = quote.id
+          left join product on product.id = quote_product.product_id
           left join person on quote.person_id = person.id
           left join company on person.company_id = company.id
-          where quote_product.product_id::text like {filter} or quote_product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+          where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+         group by quote.id, product.id, person.id, company.id, quote_product.id
           order by $orderBy nulls last
           limit $pageSize offset $offset
         """
-      ).on('filter -> filter).as(withQuoteProduct *)
+      ).on('filter -> filter).as(withProduct *)
 
       val totalRows = SQL(
         """
           select count(*) from quote
-          left join quote_product on quote.quote_product_id = quote_product.id
+                 left join quote_product on quote_product.quote_id = quote.id
+           left join product on product.id = quote_product.product_id
            left join person on quote.person_id = person.id
             left join company on person.company_id = company.id
-          where quote_product.product_id::text like {filter} or quote_product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+          where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
         """
       ).on(
         'filter -> filter

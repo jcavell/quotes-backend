@@ -23,7 +23,7 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
   implicit val pageFormat = Json.format[Page]
   implicit val quoteFormat = Json.format[Quote]
   implicit val productFormat = Json.format[Product]
-  implicit val productPersonPageFormat = Json.format[QuoteAndPersonAndProduct]
+  implicit val productPersonPageFormat = Json.format[QuoteWithProducts]
 
   implicit val quotePageFormat = Json.format[QuotePage]
 

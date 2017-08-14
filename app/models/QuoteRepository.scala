@@ -7,6 +7,7 @@ import anorm.SqlParser._
 import anorm._
 import play.api.db.DBApi
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 case class Quote(id: Option[Long] = None,
@@ -22,9 +23,9 @@ case class Quote(id: Option[Long] = None,
                  personId: Option[Long])
 
 
-case class QuoteAndPersonAndProduct(quote: Quote, company: Company, person: Person, product: Product)
+case class QuoteWithProducts(quote: Quote, company: Company, person: Person, products: ListBuffer[Product])
 
-case class QuotePage(quotes: Seq[QuoteAndPersonAndProduct], page: Int, offset: Long, total: Long) {
+case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
   lazy val next = Option(page + 1).filter(_ => (offset + quotes.size) < total)
 }
@@ -60,8 +61,8 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
   /**
     * Parse a (Computer,Company) from a ResultSet
     */
-  private val withProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (productRepository.simple ?) map {
-    case quote ~ company ~ person ~ product => QuoteAndPersonAndProduct(quote, company, person, product.get)
+  private def withProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (productRepository.simple) map {
+    case quote ~ company ~ person ~ product => (quote, company, person, product)
   }
 
   // -- Queries
@@ -101,11 +102,18 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
           order by $orderBy nulls last
           limit $pageSize offset $offset
         """
-      ).on('filter -> filter).as(withProduct *)
+      ).on('filter -> filter).as(withProduct *).foldLeft(List.empty[QuoteWithProducts]) { (z, f) =>
+        val (quote, person, company, product) = f
+
+        z.find(_.quote.id == quote.id) match{
+          case None => z :+ QuoteWithProducts(quote, person, company, ListBuffer(product))
+          case Some(quoteWithProducts) => quoteWithProducts.products.append(product); z
+        }
+      }
 
       val totalRows = SQL(
         """
-          select count(*) from quote
+          select count(distinct quote.id) from quote
                  left join quote_product on quote_product.quote_id = quote.id
            left join product on product.id = quote_product.product_id
            left join person on quote.person_id = person.id

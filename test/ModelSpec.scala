@@ -42,7 +42,7 @@ class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
     "be updated if needed" in {
 
       val result = computerService.findById(21).flatMap { computer =>
-        computerService.update(21, QuoteRequest(name="The Macintosh",
+        computerService.update(21, Quote(name="The Macintosh",
           introduced=None,
           discontinued=None,
           companyId=Some(1))).flatMap { _ =>

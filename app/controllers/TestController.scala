@@ -12,7 +12,7 @@ import play.api.libs.json.Writes.dateWrites
 import scala.concurrent.ExecutionContext
 
 
-class TestController @Inject()(personRepo: PersonRepository, quoteRequestRepo: QuoteRequestRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
+class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -21,11 +21,11 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRequestRepo: Q
   implicit val personCompanyFormat = Json.format[PersonCompany]
 
   implicit val pageFormat = Json.format[Page]
-  implicit val quoteRequestFormat = Json.format[QuoteRequest]
-  implicit val quoteRequestProductFormat = Json.format[QuoteRequestProduct]
-  implicit val quoteRequestProductPersonPageFormat = Json.format[QuoteRequestAndPersonAndProduct]
+  implicit val quoteFormat = Json.format[Quote]
+  implicit val quoteProductFormat = Json.format[QuoteProduct]
+  implicit val quoteProductPersonPageFormat = Json.format[QuoteAndPersonAndProduct]
 
-  implicit val quoteRequestPageFormat = Json.format[QuoteRequestPage]
+  implicit val quotePageFormat = Json.format[QuotePage]
 
 
 
@@ -36,8 +36,8 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRequestRepo: Q
     }
   }
 
-  def getQuoteRequests(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
-    quoteRequestRepo.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")).map { page =>
+  def getQuotes(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
+    quoteRepo.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")).map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }

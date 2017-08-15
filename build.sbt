@@ -28,6 +28,18 @@ libraryDependencies ++= Seq(
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 
+libraryDependencies ++= Seq(
+  "com.typesafe.play" %% "play-ws-standalone" % "1.0.4",
+  "com.typesafe.play" %% "play-ws-standalone-xml" % "1.0.4",
+  "com.typesafe.play" %% "play-ws-standalone-json" % "1.0.4",
+  "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.0.4",
+  "com.typesafe.play" % "shaded-asynchttpclient" % "1.0.4",
+  "com.typesafe.play" % "shaded-oauth" % "1.0.4"
+)
+
+libraryDependencies += ws
+libraryDependencies += ehcache
+
 // https://mvnrepository.com/artifact/org.specs2/specs2-core_2.12
 libraryDependencies += "org.specs2" % "specs2-core_2.12" % "3.9.4" % "test"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % Test

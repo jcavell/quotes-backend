@@ -13,6 +13,7 @@ GET     /xsells                     controllers.TestController.getXsells()
 POST    /xsells                     controllers.TestController.insertXsell()
 PUT     /xsells/:id                 controllers.TestController.updateXsell(id:Long)
 DELETE  /xsells/:id                 controllers.TestController.deleteXsell(id:Long)
+GET     /product                     controllers.TestController.getASIProduct()
 
 # Add computer
 GET     /computers/new              controllers.HomeController.create

@@ -29,6 +29,8 @@
   <logger name="slick" level="INFO" />
   <logger name="slick.jdbc" level="DEBUG" />
 
+  <logger name="play.api.libs.ws.ahc.cache" level="TRACE" />
+
   <root level="INFO">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />

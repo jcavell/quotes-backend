@@ -3,19 +3,22 @@ package controllers
 import javax.inject._
 
 import models._
+import play.api.http.HttpEntity
 import play.api.mvc._
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import java.util.Date
-
+import play.api.libs.ws._
 import play.api.libs.json.Writes.dateWrites
 
 import scala.concurrent.{ExecutionContext, Future}
 
+case class TestProduct(id: Int, name: String, description: String)
 
-class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellsDao: XsellsDAO, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
+
+class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellsDao: XsellsDAO, ws: WSClient, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+  implicit val testProductFormat = Json.format[TestProduct]
 
   implicit val personFormat = Json.format[Person]
   implicit val CompanyFormat = Json.format[Company]
@@ -29,7 +32,6 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
   implicit val xsellFormat = Json.format[Xsell]
 
   implicit val quotePageFormat = Json.format[QuotePage]
-
 
 
   def get(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
@@ -64,7 +66,7 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
     )
   }
 
-  def updateXsell(id:Long) = Action(parse.json) { implicit request =>
+  def updateXsell(id: Long) = Action(parse.json) { implicit request =>
     request.body.validate[Xsell].fold(
       errors => BadRequest(errors.mkString),
       xsell => {
@@ -74,9 +76,23 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
     )
   }
 
-  def deleteXsell(id:Long) = Action.async { implicit request =>
-    xsellsDao.delete(id).map{ a =>
+  def deleteXsell(id: Long) = Action.async { implicit request =>
+    xsellsDao.delete(id).map { a =>
       Ok("Deleted Xsell")
+    }
+  }
+
+  def getASIProduct() = Action.async { implicit request =>
+    ws.url("https://api.asicentral.com/v1/products/5399926.json").
+      addHttpHeaders("Authorization" -> "AsiMemberAuth client_id=500057384&client_secret=fde3381a96af18c43d4ce2d73667585c").
+      get() map { response =>
+      val productJsValue = Json.parse(response.body)
+      val id = (productJsValue \ "Id").get.as[Int]
+      val name = (productJsValue \ "Name").get.as[String]
+      val description = (productJsValue \ "Description").get.as[String]
+
+      val testProduct = TestProduct(id, name, description)
+      Ok(Json.toJson(testProduct))
     }
   }
 }

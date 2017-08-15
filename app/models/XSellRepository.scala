@@ -39,11 +39,7 @@ class XsellsDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   }
 
   def insert(xsell: Xsell): Future[Xsell] = {
-
-  println(s"Inserting xsell $xsell")
-    val action = xsells returning xsells.map {
-      _.id
-    } += xsell
+    val action = xsells returning xsells.map {_.id} += xsell
 
     db.run(action.asTry).map { result =>
       result match {

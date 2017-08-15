@@ -19,6 +19,12 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1"
 )
+
+libraryDependencies ++= Seq(
+  "com.typesafe.play" %% "play-slick" % "3.0.1"
+//  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.1"
+)
+
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 

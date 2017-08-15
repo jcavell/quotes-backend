@@ -1,91 +1,67 @@
 package models
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import anorm.SqlParser._
-import anorm._
-import play.api.db.DBApi
+import scala.concurrent.{ExecutionContext, Future}
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import slick.jdbc.JdbcProfile
 
-import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
-case class XSell(id: Option[Long] = None, productId: Long)
+case class Xsell(id: Long, productId: Long)
 
+trait XsellsComponent {
+  self: HasDatabaseConfigProvider[JdbcProfile] =>
 
-@javax.inject.Singleton
-class XsellRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
+  import profile.api._
 
-  private val db = dbapi.database("default")
+  class Xsells(tag: Tag) extends Table[Xsell](tag, "xsell") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
-  // -- Parsers
+    def productId = column[Long]("product_id")
 
-  /**
-    * Parse an XSell from a ResultSet
-    */
-   val simple = {
-    get[Option[Long]]("xsell.id") ~
-      get[Long]("xsell.product_id")  map {
-      case id ~ productId  => XSell(id, productId)
+    def * = (id, productId) <> (Xsell.tupled, Xsell.unapply _)
+  }
+
+}
+
+@Singleton()
+class XsellsDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+  extends XsellsComponent
+    with HasDatabaseConfigProvider[JdbcProfile] {
+
+  import profile.api._
+
+  val xsells = TableQuery[Xsells]
+
+  def all: Future[List[Xsell]] = {
+    db.run(xsells.to[List].result)
+  }
+
+  def insert(xsell: Xsell): Future[Xsell] = {
+
+  println(s"Inserting xsell $xsell")
+    val action = xsells returning xsells.map {
+      _.id
+    } += xsell
+
+    db.run(action.asTry).map { result =>
+      result match {
+        case Success(r) => xsell.copy(id = r)
+        case Failure(e) => {
+          println(s"SQL Error inserting ${xsell}, ${e.getMessage}")
+          throw e
+        }
+      }
     }
   }
 
 
-  /**
-    * Return a List of xSells
-    *
-    */
-  def list(): Future[List[XSell]] = Future {
-    db.withConnection { implicit connection =>
-      SQL("select * from xsell").as(simple *)
-    }
-  }(ec)
+  def update(id: Long, xsell: Xsell): Future[Unit] = {
+    val xsellToUpdate: Xsell = xsell.copy(id)
+    db.run(xsells.filter(_.id === id).update(xsellToUpdate)).map(_ => ())
+  }
 
-
-
-  /**
-    * Update an xSell
-    *
-    * @param id     The xSell id
-    * @param xSell The xSell values.
-    */
-  def update(id: Long, xSell: XSell) = Future {
-    db.withConnection { implicit connection =>
-      SQL(
-        s"""
-          update xsell
-          set product_id = {$xSell.productId}
-          where id = {$id}
-        """
-      ).executeUpdate()
-    }
-  }(ec)
-
-  /**
-    * Insert a new xSell
-    *
-    * @param xSell The xSell values
-    */
-  def insert(xSell: XSell) = Future {
-    db.withConnection { implicit connection =>
-      SQL(
-        s"""
-          insert into xsell values (
-            (select next value for xsell_seq),
-            ${xSell.productId}
-          )
-        """
-      ).executeUpdate()
-    }
-  }(ec)
-
-  /**
-    * Delete an xSell
-    *
-    * @param id Id of the xSell to delete.
-    */
-  def delete(id: Long) = Future {
-    db.withConnection { implicit connection =>
-      SQL("delete from xsell where id = {$id}").executeUpdate()
-    }
-  }(ec)
+  def delete(id: Long): Future[Unit] = db.run(xsells.filter(_.id === id).delete).map(_ => ())
 
 }

@@ -47,8 +47,9 @@ alter table quote_product add constraint fk_quote_product_product foreign key (p
 create index ix_quote_product_product_1 on quote_product (product_id);
 
 
+create sequence xsell_seq start with 1000;
 create table xsell (
-  id                        bigint not null,
+  id                        bigint NOT NULL default nextval('xsell_seq'),
   product_id                        bigint not null,
   constraint pk_xsell primary key (id))
 ;
@@ -60,7 +61,7 @@ create sequence product_seq start with 1000;
 
 create sequence quote_product_seq start with 1000;
 
-create sequence xsell_seq start with 1000;
+
 
 # --- !Downs
 

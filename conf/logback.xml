@@ -26,6 +26,9 @@
   <logger name="com.gargoylesoftware.htmlunit" level="ERROR" />
   <logger name="org.apache.http.client.protocol" level="ERROR" />
 
+  <logger name="slick" level="INFO" />
+  <logger name="slick.jdbc" level="DEBUG" />
+
   <root level="INFO">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />

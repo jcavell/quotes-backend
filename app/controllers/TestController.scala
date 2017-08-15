@@ -7,12 +7,13 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import java.util.Date
+
 import play.api.libs.json.Writes.dateWrites
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellRepo: XsellRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
+class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellsDao: XsellsDAO, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc)  {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -25,7 +26,7 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
   implicit val productFormat = Json.format[Product]
   implicit val productPersonPageFormat = Json.format[QuoteWithProducts]
 
-  implicit val xsellFormat = Json.format[XSell]
+  implicit val xsellFormat = Json.format[Xsell]
 
   implicit val quotePageFormat = Json.format[QuotePage]
 
@@ -46,9 +47,36 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
   }
 
   def getXsells() = Action.async { implicit request =>
-    xsellRepo.list().map { page =>
+    xsellsDao.all.map { page =>
       val json = Json.toJson(page)
       Ok(json)
+    }
+  }
+
+  def insertXsell() = Action.async(parse.json) { implicit request =>
+    request.body.validate[Xsell].fold(
+      errors => Future(BadRequest(errors.mkString)),
+      xsell => {
+        xsellsDao.insert(xsell).map { xsellWithId =>
+          Ok(Json.toJson(xsellWithId))
+        }
+      }
+    )
+  }
+
+  def updateXsell(id:Long) = Action(parse.json) { implicit request =>
+    request.body.validate[Xsell].fold(
+      errors => BadRequest(errors.mkString),
+      xsell => {
+        xsellsDao.update(id, xsell)
+        Ok("Updated XSell")
+      }
+    )
+  }
+
+  def deleteXsell(id:Long) = Action.async { implicit request =>
+    xsellsDao.delete(id).map{ a =>
+      Ok("Deleted Xsell")
     }
   }
 }

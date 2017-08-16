@@ -11,7 +11,7 @@ import play.api.libs.json.Writes.dateWrites
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class TestProduct(id: Int, name: String, description: String)
+case class TestProduct(Id: Long, Name: String, Description: String)
 
 
 class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRepository, xsellsDao: XsellsDAO, ws: WSClient, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
@@ -87,7 +87,7 @@ class TestController @Inject()(personRepo: PersonRepository, quoteRepo: QuoteRep
       addHttpHeaders("Authorization" -> "AsiMemberAuth client_id=500057384&client_secret=fde3381a96af18c43d4ce2d73667585c").
       get() map { response =>
       val productJsValue = Json.parse(response.body)
-      val id = (productJsValue \ "Id").get.as[Int]
+      val id = (productJsValue \ "Id").get.as[Long]
       val name = (productJsValue \ "Name").get.as[String]
       val description = (productJsValue \ "Description").get.as[String]
 

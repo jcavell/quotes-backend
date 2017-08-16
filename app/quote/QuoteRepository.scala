@@ -1,27 +1,19 @@
-package models
+package quote
 
 import java.util.Date
 import javax.inject.Inject
 
 import anorm.SqlParser._
 import anorm._
+import company.{Company, CompanyRepository}
+import db.DatabaseExecutionContext
+import models._
+import person.{Person, PersonRepository}
 import play.api.db.DBApi
+import product.{Product, ProductRepository}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
-
-case class Quote(id: Option[Long] = None,
-                 status: String,
-                 requestTimestamp: Date,
-                 requestDateRequired: Date,
-                 requestProductId: Long,
-                 requestCustomerName: String,
-                 requestCustomerEmail: String,
-                 requestCustomerTel: String,
-                 requestCompany: String,
-                 requestQuantity:Int,
-                 requestOtherRequirements: Option[String],
-                 personId: Option[Long])
 
 
 case class QuoteWithProducts(quote: Quote, company: Company, person: Person, products: ListBuffer[Product])

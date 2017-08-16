@@ -1,16 +1,17 @@
-package models
+package product
 
 import javax.inject.Inject
 
-import anorm.SqlParser._
-import anorm._
+import anorm.SqlParser.get
+import anorm.{Column, MetaDataItem, TypeDoesNotMatch, ~}
+import db.DatabaseExecutionContext
 import org.postgresql.util.PGobject
 import play.api.db.DBApi
-import anorm.Column
-import play.api.libs.json._
+import play.api.libs.json.{JsValue, Json}
 
-case class Product(id: Option[Long] = None, productId: Long, name: String, cost: BigDecimal, currencyCode: String, data: JsValue)
-
+/**
+  * Created by jcavell on 16/08/2017.
+  */
 @javax.inject.Singleton
 class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 
@@ -29,7 +30,7 @@ class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionCo
   /**
     * Parse a Product from a ResultSet
     */
-  private[models] val simple = {
+  val simple = {
     get[Option[Long]]("product.id") ~
       get[Long]("product.product_id") ~
       get[String]("product.name") ~
@@ -40,5 +41,3 @@ class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionCo
     }
   }
 }
-
-

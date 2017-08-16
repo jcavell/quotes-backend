@@ -1,15 +1,17 @@
-package models
+package company
 
 import javax.inject.Inject
 
-import anorm.SqlParser._
-import anorm._
+import anorm.SqlParser.get
+import anorm.{SQL, ~}
+import db.DatabaseExecutionContext
 import play.api.db.DBApi
 
 import scala.concurrent.Future
 
-case class Company(id: Option[Long] = None, name: String)
-
+/**
+  * Created by jcavell on 16/08/2017.
+  */
 @javax.inject.Singleton
 class CompanyRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 
@@ -18,7 +20,7 @@ class CompanyRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionCo
   /**
    * Parse a Company from a ResultSet
    */
-  private[models] val simple = {
+  val simple = {
     get[Option[Long]]("company.id") ~
       get[String]("company.name") map {
       case id~name => Company(id, name)
@@ -36,5 +38,3 @@ class CompanyRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionCo
   })(ec)
 
 }
-
-

@@ -1,6 +1,6 @@
-name := "play-scala-anorm-example"
+name := "quotes-backend"
 
-version := "2.6.0-SNAPSHOT"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.12.2"
 
@@ -28,6 +28,10 @@ libraryDependencies ++= Seq(
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 
+// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
+//libraryDependencies += "com.rabbitmq" % "amqp-client" % "4.2.0"
+//libraryDependencies += "com.typesafe.scala-logging" % "scala-logging_2.12" % "3.7.2"
+
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ws-standalone" % "1.0.4",
   "com.typesafe.play" %% "play-ws-standalone-xml" % "1.0.4",
@@ -36,6 +40,23 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" % "shaded-asynchttpclient" % "1.0.4",
   "com.typesafe.play" % "shaded-oauth" % "1.0.4"
 )
+
+//libraryDependencies ++= {
+//  val `json4s-version` = "3.5.3"
+//
+//  Seq(
+//    "commons-codec" % "commons-codec" % "1.10",
+//    "com.typesafe" % "config" % "1.3.1" withSources(),
+//    "org.json4s" %% "json4s-native" % `json4s-version` withSources(),
+//    "org.json4s" %% "json4s-jackson" % `json4s-version` withSources(),
+//    "org.json4s" %% "json4s-ext" % `json4s-version` withSources(),
+//    "org.json4s" % "json4s-mongo_2.12" % "3.5.3" withSources(),
+//    "com.github.fge" % "json-schema-validator" % "2.2.6" withSources(),
+//    "com.lihaoyi" %% "pprint" % "0.4.4",
+//    "com.github.nscala-time" %% "nscala-time" % "2.16.0" withSources(),
+//    "org.scalactic" % "scalactic_2.12" % "3.0.3" withSources()
+//  )
+//}
 
 libraryDependencies += ws
 libraryDependencies += ehcache

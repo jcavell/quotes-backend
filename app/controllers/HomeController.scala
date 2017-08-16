@@ -1,14 +1,11 @@
 package controllers
 
-import java.util.Date
 import javax.inject.Inject
 
-import models.{CompanyRepository, Person, PersonRepository}
+import company.CompanyRepository
+import person.{Person, PersonRepository}
 import play.api.data.Forms._
 import play.api.data._
-import play.api.i18n._
-import play.api.libs.functional.syntax.unlift
-import play.api.libs.json.{JsPath, Json, Writes}
 import play.api.mvc._
 import views._
 

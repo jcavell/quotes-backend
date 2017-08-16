@@ -2,6 +2,7 @@
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import person.PersonRepository
 
 class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   import models._

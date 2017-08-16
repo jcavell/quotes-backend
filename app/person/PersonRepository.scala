@@ -1,27 +1,14 @@
-package models
+package person
 
 import javax.inject.Inject
 
-import anorm.SqlParser._
-import anorm._
+import anorm.SqlParser.{get, scalar}
+import anorm.{SQL, ~}
+import company.CompanyRepository
+import db.DatabaseExecutionContext
 import play.api.db.DBApi
 
 import scala.concurrent.Future
-
-case class Person(id: Option[Long] = None,
-                  name: String,
-                  email: String,
-                  tel: String,
-                  companyId: Option[Long])
-
-
-case class PersonCompany(person: Person, company: Company)
-
-case class Page(items: Seq[PersonCompany], page: Int, offset: Long, total: Long) {
-  lazy val prev = Option(page - 1).filter(_ >= 0)
-  lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
-}
-
 
 @javax.inject.Singleton
 class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyRepository)(implicit ec: DatabaseExecutionContext) {

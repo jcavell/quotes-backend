@@ -70,6 +70,7 @@ SET REFERENTIAL_INTEGRITY FALSE;
 drop table if exists quote_product;
 drop table if exists quote;
 drop table if exists product;
+drop table if exists xsell;
 
 drop type if exists quote_status;
 

@@ -1,6 +1,8 @@
 package company
 
-/**
-  * Created by jcavell on 16/08/2017.
-  */
-case class Company(id: Option[Long] = None, name: String)
+import com.byteslounge.slickrepo.meta.Entity
+
+
+case class Company(id: Option[Int] = None, name: String) extends Entity[Company, Int] {
+  def withId(id: Int): Company = this.copy(id = Some(id))
+}

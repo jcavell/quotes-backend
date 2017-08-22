@@ -4,8 +4,9 @@
 
 create type quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN', 'WITH_ACCOUNTS');
 
+create sequence quote_seq start with 1000;
 create table quote (
-  id                        bigint not null,
+  id bigint not null default nextval('quote_seq'),
   status quote_status not null,
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
@@ -19,13 +20,14 @@ create table quote (
   person_id bigint not null,
   constraint pk_quote primary key (id))
 ;
-
-
 alter table quote add constraint fk_quote_person_1 foreign key (person_id) references person (id) on delete restrict on update restrict;
 create index ix_quote_person_1 on quote (person_id);
 
+
+
+create sequence product_seq start with 1000;
 create table product (
-  id                        bigint not null,
+  id bigint not null default nextval('product_seq'),
   product_id                        bigint not null,
   name VARCHAR(255) not null,
   cost DECIMAL(20, 3) not null,
@@ -35,8 +37,10 @@ create table product (
 ;
 
 
+
+create sequence quote_product_seq start with 1000;
 create table quote_product (
-  id                        bigint not null,
+  id bigint not null default nextval('quote_product_seq'),
   quote_id                        bigint not null,
   product_id                        bigint not null,
   constraint pk_quote_product primary key (id))
@@ -47,19 +51,14 @@ alter table quote_product add constraint fk_quote_product_product foreign key (p
 create index ix_quote_product_product_1 on quote_product (product_id);
 
 
+
+
 create sequence xsell_seq start with 1000;
 create table xsell (
-  id                        bigint NOT NULL default nextval('xsell_seq'),
+  id bigint NOT NULL default nextval('xsell_seq'),
   product_id                        bigint not null,
   constraint pk_xsell primary key (id))
 ;
-
-
-create sequence quote_seq start with 1000;
-
-create sequence product_seq start with 1000;
-
-create sequence quote_product_seq start with 1000;
 
 
 

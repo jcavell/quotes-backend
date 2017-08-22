@@ -2,9 +2,17 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /people                     person.PersonAPIController.get(p:Int ?= 0, s:Int ?= 2, f ?= "")
-
 GET     /quotes                     quote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+GET     /companies                     company.CompanyAPIController.getCompanies()
+POST    /companies                     company.CompanyAPIController.insertCompany()
+PUT     /companies/:id                 company.CompanyAPIController.updateCompany(id:Int)
+DELETE  /companies/:id                 company.CompanyAPIController.deleteCompany(id:Int)
+
+GET     /people                     person.PersonAPIController.getPeople()
+POST    /people                     person.PersonAPIController.insertPerson()
+PUT     /people/:id                 person.PersonAPIController.updatePerson(id:Int)
+DELETE  /people/:id                 person.PersonAPIController.deletePerson(id:Int)
 
 GET     /xsells                     xsell.XsellAPIController.getXsells()
 POST    /xsells                     xsell.XsellAPIController.insertXsell()
@@ -19,20 +27,5 @@ DELETE  /mock-quote-requests/:id                 quote.MockQuoteRequestAPIContro
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-
-
-
-
-
-GET     /                           controllers.HomeController.index
-GET     /computers                  controllers.HomeController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
-# Add computer
-GET     /computers/new              controllers.HomeController.create
-POST    /computers                  controllers.HomeController.save
-# Edit existing computer
-GET     /computers/:id              controllers.HomeController.edit(id:Long)
-POST    /computers/:id              controllers.HomeController.update(id:Long)
-# Delete a computer
-POST    /computers/:id/delete       controllers.HomeController.delete(id:Long)
 
 

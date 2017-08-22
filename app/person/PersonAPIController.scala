@@ -2,28 +2,53 @@ package person
 
 import javax.inject._
 
-import company.Company
+import person.Person
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class PersonAPIController @Inject()(personRepo: PersonRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class PersonAPIController @Inject()(personDao: PersonDaoWrapper, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   implicit val personFormat = Json.format[Person]
-  implicit val CompanyFormat = Json.format[Company]
-  implicit val personCompanyFormat = Json.format[PersonCompany]
-  implicit val pageFormat = Json.format[Page]
 
 
-  def get(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
-    personRepo.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")).map { page =>
+  def getPeople() = Action.async { implicit request =>
+    personDao.findAll().map { page =>
       val json = Json.toJson(page)
       Ok(json)
+    }
+  }
+
+  def insertPerson() = Action.async(parse.json) { implicit request =>
+    println("Validating person: " + request.body)
+    request.body.validate[Person].fold(
+      errors => Future(BadRequest(errors.mkString)),
+      person => {
+        personDao.insert(person).map { personWithId =>
+          Ok(Json.toJson(personWithId))
+        }
+      }
+    )
+  }
+
+  def updatePerson(id: Int) = Action(parse.json) { implicit request =>
+    request.body.validate[Person].fold(
+      errors => BadRequest(errors.mkString),
+      person => {
+        personDao.update(person)
+        Ok("Updated Person")
+      }
+    )
+  }
+
+  def deletePerson(id: Int) = Action.async { implicit request =>
+    personDao.delete(id).map { a =>
+      Ok("Deleted Person")
     }
   }
 }

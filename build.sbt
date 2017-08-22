@@ -25,6 +25,8 @@ libraryDependencies ++= Seq(
 //  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.1"
 )
 
+libraryDependencies += "com.byteslounge" %% "slick-repo" % "1.4.3"
+
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 

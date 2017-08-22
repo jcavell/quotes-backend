@@ -21,11 +21,11 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
     * Parse a Person from a ResultSet
     */
    val simple = {
-    get[Option[Long]]("person.id") ~
+    get[Option[Int]]("person.id") ~
       get[String]("person.name") ~
       get[String]("person.email") ~
       get[String]("person.tel") ~
-      get[Option[Long]]("person.company_id") map {
+      get[Option[Int]]("person.company_id") map {
       case id ~ name ~ email ~ tel ~ companyId =>
         Person(id, name, email, tel, companyId)
     }
@@ -43,14 +43,14 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
   /**
     * Retrieve a Person from the id.
     */
-  def findById(id: Long): Future[Option[Person]] = Future {
+  def findById(id: Int): Future[Option[Person]] = Future {
     db.withConnection { implicit connection =>
       SQL("select * from person where id = $id").as(simple.singleOpt)
     }
   }(ec)
 
   /**
-    * Return a page of PersonCompanh
+    * Return a page of PersonCompany
     *
     * @param page     Page to display
     * @param pageSize Number of persons per page
@@ -96,7 +96,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
     * @param id     The person id
     * @param person The person values.
     */
-  def update(id: Long, person: Person) = Future {
+  def update(id: Int, person: Person) = Future {
     db.withConnection { implicit connection =>
       SQL(
         s"""
@@ -131,7 +131,7 @@ class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyReposit
     *
     * @param id Id of the person to delete.
     */
-  def delete(id: Long) = Future {
+  def delete(id: Int) = Future {
     db.withConnection { implicit connection =>
       SQL("delete from person where id = {$id}").executeUpdate()
     }

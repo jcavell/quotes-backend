@@ -9,9 +9,6 @@ import org.postgresql.util.PGobject
 import play.api.db.DBApi
 import play.api.libs.json.{JsValue, Json}
 
-/**
-  * Created by jcavell on 16/08/2017.
-  */
 @javax.inject.Singleton
 class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 

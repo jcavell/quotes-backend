@@ -5,10 +5,9 @@ import javax.inject.Inject
 
 import anorm.SqlParser._
 import anorm._
-import company.{Company, CompanyRepository}
+import company.{Company}
 import db.DatabaseExecutionContext
-import models._
-import person.{Person, PersonRepository}
+import person.{Person}
 import play.api.db.DBApi
 import product.{Product, ProductRepository}
 
@@ -25,7 +24,7 @@ case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, to
 
 
 @javax.inject.Singleton
-class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductRepository, companyRepository: CompanyRepository, personRepository: PersonRepository)(implicit ec: DatabaseExecutionContext) {
+class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductRepository)(implicit ec: DatabaseExecutionContext) {
 
   private val db = dbapi.database("default")
 
@@ -50,10 +49,38 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
     }
   }
 
+  val companySimple = {
+    get[Option[Int]]("company.id") ~
+      get[String]("company.name") map {
+      case id~name => Company(id, name)
+    }
+  }
+
+  /**
+    * Parse a Person from a ResultSet
+    */
+  val personSimple = {
+    get[Option[Int]]("person.id") ~
+      get[String]("person.name") ~
+      get[String]("person.email") ~
+      get[String]("person.tel") ~
+      get[Int]("person.company_id") map {
+      case id ~ name ~ email ~ tel ~ companyId =>
+        Person(id, name, email, tel, companyId)
+    }
+  }
+
+  /**
+    * Parse a (Person,Company) from a ResultSet
+    */
+  private val personWithCompany = simple ~ (companySimple ?) map {
+    case person ~ company => (person, company)
+  }
+
   /**
     * Parse a (Quote, Company, Person, Product) from a ResultSet
     */
-  private def withProduct = simple ~ (companyRepository.simple) ~ (personRepository.simple) ~ (productRepository.simple) map {
+  private def withProduct = simple ~ (companySimple) ~ (personSimple) ~ (productRepository.simple) map {
     case quote ~ company ~ person ~ product => (quote, company, person, product)
   }
 

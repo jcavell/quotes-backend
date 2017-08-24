@@ -33,7 +33,7 @@ class XsellAPIController @Inject()(xsellsDao: XsellsDAO, cc: ControllerComponent
     )
   }
 
-  def updateXsell(id: Long) = Action(parse.json) { implicit request =>
+  def updateXsell(id: Int) = Action(parse.json) { implicit request =>
     request.body.validate[Xsell].fold(
       errors => BadRequest(errors.mkString),
       xsell => {
@@ -43,7 +43,7 @@ class XsellAPIController @Inject()(xsellsDao: XsellsDAO, cc: ControllerComponent
     )
   }
 
-  def deleteXsell(id: Long) = Action.async { implicit request =>
+  def deleteXsell(id: Int) = Action.async { implicit request =>
     xsellsDao.delete(id).map { a =>
       Ok("Deleted Xsell")
     }

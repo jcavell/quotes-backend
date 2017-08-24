@@ -1,140 +1,66 @@
 package person
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import anorm.SqlParser.{get, scalar}
-import anorm.{SQL, ~}
 import company.CompanyRepository
-import db.DatabaseExecutionContext
-import play.api.db.DBApi
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import slick.jdbc.JdbcProfile
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
-@javax.inject.Singleton
-class PersonRepository @Inject()(dbapi: DBApi, companyRepository: CompanyRepository)(implicit ec: DatabaseExecutionContext) {
+trait PeopleComponent {
+  self: HasDatabaseConfigProvider[JdbcProfile] =>
 
-  private val db = dbapi.database("default")
+  import profile.api._
 
-  // -- Parsers
+  class People(tag: Tag) extends Table[Person](tag, "person") {
+    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("name")
+    def email = column[String]("email")
+    def tel = column[String]("tel")
+    def companyId = column[Int]("company_id")
+    def * = (id.?, name, email, tel, companyId) <> (Person.tupled, Person.unapply _)
+  }
+}
 
-  /**
-    * Parse a Person from a ResultSet
-    */
-   val simple = {
-    get[Option[Int]]("person.id") ~
-      get[String]("person.name") ~
-      get[String]("person.email") ~
-      get[String]("person.tel") ~
-      get[Option[Int]]("person.company_id") map {
-      case id ~ name ~ email ~ tel ~ companyId =>
-        Person(id, name, email, tel, companyId)
+@Singleton()
+class PersonRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, companyRepository: CompanyRepository)(implicit executionContext: ExecutionContext)
+  extends PeopleComponent
+    with HasDatabaseConfigProvider[JdbcProfile] {
+
+  import profile.api._
+
+  val people = TableQuery[People]
+
+  def all: Future[List[Person]] = db.run(people.to[List].result)
+
+  def allWithCompany = {
+    val query = for {
+      (person, company) <- people join companyRepository.companies on(_.companyId === _.id)
+    } yield (person, company)
+
+    val x = db.run(query.to[List].result)
+    x
+  }
+
+  def insert(person: Person): Future[Person] = {
+    val action = people returning people.map {_.id} += person
+
+    db.run(action.asTry).map { result =>
+      result match {
+        case Success(r) => person.copy(id = Some(r))
+        case Failure(e) => throw e
+      }
     }
   }
 
-  /**
-    * Parse a (Person,Company) from a ResultSet
-    */
-  private val withCompany = simple ~ (companyRepository.simple ?) map {
-    case person ~ company => (person, company)
+
+  def update(person: Person): Future[Person] = {
+    val personToUpdate: Person = person.copy(person.id)
+    db.run(people.filter(_.id === person.id).update(personToUpdate)).map(_ => (person))
   }
 
-  // -- Queries
-
-  /**
-    * Retrieve a Person from the id.
-    */
-  def findById(id: Int): Future[Option[Person]] = Future {
-    db.withConnection { implicit connection =>
-      SQL("select * from person where id = $id").as(simple.singleOpt)
-    }
-  }(ec)
-
-  /**
-    * Return a page of PersonCompany
-    *
-    * @param page     Page to display
-    * @param pageSize Number of persons per page
-    * @param orderBy  Computer property used for sorting
-    * @param filter   Filter applied on the name column
-    */
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Future[Page] = Future {
-
-    val offset = pageSize * page
-
-    db.withConnection { implicit connection =>
-
-      val persons = SQL(
-        s"""
-          select * from person
-          left join company on person.company_id = company.id
-          where person.name like {filter} or person.email like {filter} or company.name like {filter}
-          order by $orderBy nulls last
-          limit $pageSize offset $offset
-        """
-      ).on('filter -> filter).as(withCompany *)
-
-      val totalRows = SQL(
-        """
-          select count(*) from person
-          left join company on person.company_id = company.id
-          where person.name like {filter}
-        """
-      ).on(
-        'filter -> filter
-      ).as(scalar[Long].single)
-
-      Page(persons.map(t => PersonCompany(t._1, t._2.get)), page, offset, totalRows)
-    }
-
-  }(ec)
-
-
-
-  /**
-    * Update a person.
-    *
-    * @param id     The person id
-    * @param person The person values.
-    */
-  def update(id: Int, person: Person) = Future {
-    db.withConnection { implicit connection =>
-      SQL(
-        s"""
-          update person
-          set name = {$person.name}, email = {$person.email}, tel = {$person.tel}, company_id = {$person.companyId}
-          where id = {$id}
-        """
-      ).executeUpdate()
-    }
-  }(ec)
-
-  /**
-    * Insert a new person.
-    *
-    * @param person The person values.
-    */
-  def insert(person: Person) = Future {
-    db.withConnection { implicit connection =>
-      SQL(
-        s"""
-          insert into person values (
-            (select next value for person_seq),
-            ${person.name}, ${person.email}, ${person.tel}, ${person.companyId}
-          )
-        """
-      ).executeUpdate()
-    }
-  }(ec)
-
-  /**
-    * Delete a person.
-    *
-    * @param id Id of the person to delete.
-    */
-  def delete(id: Int) = Future {
-    db.withConnection { implicit connection =>
-      SQL("delete from person where id = {$id}").executeUpdate()
-    }
-  }(ec)
+  def delete(id: Int): Future[Unit] = db.run(people.filter(_.id === id).delete).map(_ => ())
 
 }

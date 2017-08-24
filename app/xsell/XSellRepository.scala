@@ -8,7 +8,7 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-case class Xsell(id: Long, productId: Long)
+case class Xsell(id: Int, productId: Long)
 
 trait XsellsComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
@@ -16,7 +16,7 @@ trait XsellsComponent {
   import profile.api._
 
   class Xsells(tag: Tag) extends Table[Xsell](tag, "xsell") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 
     def productId = column[Long]("product_id")
 
@@ -53,11 +53,11 @@ class XsellsDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   }
 
 
-  def update(id: Long, xsell: Xsell): Future[Unit] = {
+  def update(id: Int, xsell: Xsell): Future[Unit] = {
     val xsellToUpdate: Xsell = xsell.copy(id)
     db.run(xsells.filter(_.id === id).update(xsellToUpdate)).map(_ => ())
   }
 
-  def delete(id: Long): Future[Unit] = db.run(xsells.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Int): Future[Unit] = db.run(xsells.filter(_.id === id).delete).map(_ => ())
 
 }

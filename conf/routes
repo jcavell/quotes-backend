@@ -16,8 +16,8 @@ DELETE  /people/:id                 person.PersonAPIController.deletePerson(id:I
 
 GET     /xsells                     xsell.XsellAPIController.getXsells()
 POST    /xsells                     xsell.XsellAPIController.insertXsell()
-PUT     /xsells/:id                 xsell.XsellAPIController.updateXsell(id:Long)
-DELETE  /xsells/:id                 xsell.XsellAPIController.deleteXsell(id:Long)
+PUT     /xsells/:id                 xsell.XsellAPIController.updateXsell(id:Int)
+DELETE  /xsells/:id                 xsell.XsellAPIController.deleteXsell(id:Int)
 
 GET     /product                    product.ProductAPIController.getASIProduct()
 

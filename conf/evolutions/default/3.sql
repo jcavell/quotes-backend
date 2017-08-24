@@ -27,13 +27,12 @@ create index ix_quote_person_1 on quote (person_id);
 
 create sequence product_seq start with 1000;
 create table product (
-  id bigint not null default nextval('product_seq'),
-  product_id                        bigint not null,
-  name VARCHAR(255) not null,
-  cost DECIMAL(20, 3) not null,
-  currency_code varchar(10) not null,
-  data json,
-  constraint pk_product primary key (id))
+  internal_id bigint not null default nextval('product_seq'),
+  raw_data json,
+  Id bigint not null,
+  Name VARCHAR(255),
+  Description VARCHAR(255),
+  constraint pk_product primary key (internal_id))
 ;
 
 
@@ -41,14 +40,14 @@ create table product (
 create sequence quote_product_seq start with 1000;
 create table quote_product (
   id bigint not null default nextval('quote_product_seq'),
-  quote_id                        bigint not null,
-  product_id                        bigint not null,
+  quote_id bigint not null,
+  product_internal_id bigint not null,
   constraint pk_quote_product primary key (id))
 ;
 alter table quote_product add constraint fk_quote_product_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
 create index ix_quote_product_quote_1 on quote_product (quote_id);
-alter table quote_product add constraint fk_quote_product_product foreign key (product_id) references product (id) on delete restrict on update restrict;
-create index ix_quote_product_product_1 on quote_product (product_id);
+alter table quote_product add constraint fk_quote_product_product foreign key (product_internal_id) references product (internal_id) on delete restrict on update restrict;
+create index ix_quote_product_product_1 on quote_product (product_internal_id);
 
 
 

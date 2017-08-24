@@ -5,17 +5,17 @@ import javax.inject.Inject
 
 import anorm.SqlParser._
 import anorm._
-import company.{Company}
+import company.Company
 import db.DatabaseExecutionContext
-import person.{Person}
+import person.Person
 import play.api.db.DBApi
-import product.{Product, ProductRepository}
+import product.{ASIProduct, ASIProductRepository}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 
-case class QuoteWithProducts(quote: Quote, company: Company, person: Person, products: ListBuffer[Product])
+case class QuoteWithProducts(quote: Quote, company: Company, person: Person, products: ListBuffer[ASIProduct])
 
 case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
@@ -24,7 +24,7 @@ case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, to
 
 
 @javax.inject.Singleton
-class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductRepository)(implicit ec: DatabaseExecutionContext) {
+class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepository)(implicit ec: DatabaseExecutionContext) {
 
   private val db = dbapi.database("default")
 
@@ -113,11 +113,11 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
         s"""
           select * from quote
           left join quote_product on quote_product.quote_id = quote.id
-          left join product on product.id = quote_product.product_id
+          left join product on product.internal_id = quote_product.product_internal_id
           left join person on quote.person_id = person.id
           left join company on person.company_id = company.id
-          where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
-         group by quote.id, product.id, person.id, company.id, quote_product.id
+          where product.Id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+         group by quote.id, product.internal_id, person.id, company.id, quote_product.Id
           order by $orderBy nulls last
           limit $pageSize offset $offset
         """
@@ -134,10 +134,10 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
         s"""
             select count(distinct quote.id) from quote
             left join quote_product on quote_product.quote_id = quote.id
-            left join product on product.id = quote_product.product_id
+            left join product on product.internal_id = quote_product.product_internal_id
             left join person on quote.person_id = person.id
             left join company on person.company_id = company.id
-            where product.product_id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+            where product.Id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
         """.stripMargin
       ).on(
         'filter -> filter

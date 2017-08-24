@@ -10,7 +10,7 @@ import play.api.db.DBApi
 import play.api.libs.json.{JsValue, Json}
 
 @javax.inject.Singleton
-class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
+class ASIProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 
   implicit def pgObjectColumnToJSValue: Column[JsValue] =
     Column.nonNull { (value, meta) =>
@@ -25,16 +25,16 @@ class ProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionCo
   private val db = dbapi.database("default")
 
   /**
-    * Parse a Product from a ResultSet
+    * Parse an ASIProduct from a ResultSet
     */
   val simple = {
-    get[Option[Long]]("product.id") ~
-      get[Long]("product.product_id") ~
-      get[String]("product.name") ~
-      get[BigDecimal]("product.cost") ~
-      get[String]("product.currency_code") ~
-      get[JsValue]("product.data") map {
-      case id ~ productId ~ name ~ cost ~ currencyCode ~ data => Product(id, productId, name, cost, currencyCode, data)
+    get[Option[Int]]("product.internal_id") ~
+      get[JsValue]("product.raw_data") ~
+      get[Long]("product.Id") ~
+      get[String]("product.Name") ~
+      get[String]("product.Description") map {
+      case internalId ~ rawData ~ id ~ name ~ description =>
+        ASIProduct(internalId, rawData, id, name, description)
     }
   }
 }

@@ -19,7 +19,7 @@ POST    /xsells                     xsell.XsellAPIController.insertXsell()
 PUT     /xsells/:id                 xsell.XsellAPIController.updateXsell(id:Int)
 DELETE  /xsells/:id                 xsell.XsellAPIController.deleteXsell(id:Int)
 
-GET     /product                    product.ProductAPIController.getASIProduct()
+GET     /product                    product.ASIProductAPIController.getASIProduct()
 
 GET     /mock-quote-requests                     quote.MockQuoteRequestAPIController.getMockQuoteRequests()
 POST    /mock-quote-requests                    quote.MockQuoteRequestAPIController.insertMockQuoteRequest()

@@ -9,7 +9,7 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class ProductAPIController @Inject()(ws: WSClient, productGetter: ASIProductGetter, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class ASIProductAPIController @Inject()(ws: WSClient, productGetter: ASIProductGetter, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val testProductFormat = Json.format[ASIProduct]
 

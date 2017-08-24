@@ -21,7 +21,7 @@ class ASIProductGetter @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
       val name = (productJsValue \ "Name").get.as[String]
       val description = (productJsValue \ "Description").get.as[String]
 
-      val testProduct = ASIProduct(id, name, description)
+      val testProduct = ASIProduct(rawData = productJsValue, Id = id, Name = name, Description = description)
       testProduct
     }
   }

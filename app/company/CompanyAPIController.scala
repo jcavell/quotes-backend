@@ -7,6 +7,7 @@ import play.api.libs.json._
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 
 class CompanyAPIController @Inject()(companyRepository: CompanyRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {

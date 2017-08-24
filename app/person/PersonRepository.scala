@@ -55,6 +55,7 @@ class PersonRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
     }
   }
 
+  def findByEmail(email: String):Future[Option[Person]] = db.run(people.filter(_.email === email).result.headOption)
 
   def update(person: Person): Future[Person] = {
     val personToUpdate: Person = person.copy(person.id)

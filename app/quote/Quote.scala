@@ -2,7 +2,7 @@ package quote
 
 import java.util.Date
 
-case class Quote(id: Option[Long] = None,
+case class Quote(id: Option[Int] = None,
                  status: String,
                  requestTimestamp: Date,
                  requestDateRequired: Date,
@@ -13,4 +13,4 @@ case class Quote(id: Option[Long] = None,
                  requestCompany: String,
                  requestQuantity:Int,
                  requestOtherRequirements: Option[String],
-                 personId: Option[Long])
+                 personId: Int)

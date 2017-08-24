@@ -32,7 +32,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
     * Parse a Quote from a ResultSet
     */
    private val simple = {
-      get[Option[Long]]("quote.id") ~
+      get[Option[Int]]("quote.id") ~
       get[String]("quote.status") ~
       get[Date]("quote.request_timestamp") ~
       get[Date]("quote.request_date_required") ~
@@ -43,7 +43,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
       get[String]("quote.request_company") ~
       get[Int]("quote.request_quantity") ~
       get[Option[String]]("quote.request_other_requirements") ~
-      get[Option[Long]]("quote.person_id") map {
+      get[Int]("quote.person_id") map {
       case id ~ status ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId  =>
         Quote(id, status, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId)
     }
@@ -89,7 +89,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ProductReposito
   /**
     * Retrieve a Quote from the id.
     */
-  def findById(id: Long): Future[Option[Quote]] = Future {
+  def findById(id: Int): Future[Option[Quote]] = Future {
     db.withConnection { implicit connection =>
       SQL("select * from quote where id = $id").as(simple.singleOpt)
     }

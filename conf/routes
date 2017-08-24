@@ -23,7 +23,7 @@ GET     /product                    product.ProductAPIController.getASIProduct()
 
 GET     /mock-quote-requests                     quote.MockQuoteRequestAPIController.getMockQuoteRequests()
 POST    /mock-quote-requests                    quote.MockQuoteRequestAPIController.insertMockQuoteRequest()
-DELETE  /mock-quote-requests/:id                 quote.MockQuoteRequestAPIController.deleteMockQuoteRequest(id:Long)
+DELETE  /mock-quote-requests/:id                 quote.MockQuoteRequestAPIController.deleteMockQuoteRequest(id:Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

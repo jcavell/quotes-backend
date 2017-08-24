@@ -7,7 +7,7 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteRequestsDAO, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteRequestRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def timestampWrites(pattern: String): Writes[java.sql.Date] = new Writes[java.sql.Date] {
     def writes(d: java.sql.Date): JsValue = JsString(new java.text.SimpleDateFormat(pattern).format(d))
@@ -35,7 +35,7 @@ class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteReq
     )
   }
 
-  def deleteMockQuoteRequest(id: Long) = Action.async { implicit request =>
+  def deleteMockQuoteRequest(id: Int) = Action.async { implicit request =>
     mockQuoteRequestsDao.delete(id).map { a =>
       Ok("Deleted MockQuoteRequest")
     }

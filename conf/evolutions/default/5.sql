@@ -15,6 +15,7 @@ create table mock_quote_request (
   company VARCHAR (255) not null,
   quantity int not null,
   other_requirements VARCHAR (255),
+  imported BOOLEAN,
   constraint pk_mock_quote_request primary key (id))
 ;
 

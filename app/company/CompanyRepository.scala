@@ -43,6 +43,8 @@ class CompanyRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     }
   }
 
+  def findByName(name: String):Future[Option[Company]] = db.run(companies.filter(_.name === name).result.headOption)
+
   def update(id: Int, company: Company): Future[Company] = {
     val companyToUpdate: Company = company.copy(Some(id))
     db.run(companies.filter(_.id === id).update(companyToUpdate)).map(_ => (company))

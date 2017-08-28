@@ -1,12 +1,12 @@
 package quote
 
-import java.util.Date
 import javax.inject.Inject
 
 import anorm.SqlParser._
 import anorm._
 import company.Company
 import db.DatabaseExecutionContext
+import org.joda.time.{DateTime}
 import person.Person
 import play.api.db.DBApi
 import product.{ASIProduct, ASIProductRepository}
@@ -31,11 +31,11 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepos
   /**
     * Parse a Quote from a ResultSet
     */
-   private val simple = {
-      get[Option[Int]]("quote.id") ~
+  private val simple = {
+    get[Option[Int]]("quote.id") ~
       get[String]("quote.status") ~
-      get[Date]("quote.request_timestamp") ~
-      get[Date]("quote.request_date_required") ~
+      get[DateTime]("quote.request_timestamp") ~
+      get[DateTime]("quote.request_date_required") ~
       get[Long]("quote.request_product_id") ~
       get[String]("quote.request_customer_name") ~
       get[String]("quote.request_customer_email") ~
@@ -44,7 +44,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepos
       get[Int]("quote.request_quantity") ~
       get[Option[String]]("quote.request_other_requirements") ~
       get[Int]("quote.person_id") map {
-      case id ~ status ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId  =>
+      case id ~ status ~ quoteTimestamp ~ dateRequired ~ productId ~ customerName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ personId =>
         Quote(id, status, quoteTimestamp, dateRequired, productId, customerName, customerEmail, customerTel, company, quantity, otherRequirements, personId)
     }
   }
@@ -52,7 +52,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepos
   val companySimple = {
     get[Option[Int]]("company.id") ~
       get[String]("company.name") map {
-      case id~name => Company(id, name)
+      case id ~ name => Company(id, name)
     }
   }
 
@@ -124,7 +124,7 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepos
       ).on('filter -> filter).as(withProduct *).foldLeft(List.empty[QuoteWithProducts]) { (z, f) =>
         val (quote, person, company, product) = f
 
-        z.find(_.quote.id == quote.id) match{
+        z.find(_.quote.id == quote.id) match {
           case None => z :+ QuoteWithProducts(quote, person, company, ListBuffer(product))
           case Some(quoteWithProducts) => quoteWithProducts.products.append(product); z
         }

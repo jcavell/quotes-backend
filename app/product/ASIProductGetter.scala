@@ -13,6 +13,7 @@ class ASIProductGetter @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
   val headers = ("Authorization" -> "AsiMemberAuth client_id=500057384&client_secret=fde3381a96af18c43d4ce2d73667585c")
 
   def get(productId: Long): Future[ASIProduct] = {
+    println("Getting productId from ASI CENTRAL: " + productId);
     ws.url(s"https://api.asicentral.com/v1/products/$productId.json").
       addHttpHeaders(headers).
       get() map { response =>

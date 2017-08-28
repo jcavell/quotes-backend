@@ -1,13 +1,16 @@
 package product
 
+import java.sql.PreparedStatement
 import javax.inject.Inject
 
 import anorm.SqlParser.get
-import anorm.{Column, MetaDataItem, TypeDoesNotMatch, ~}
+import anorm.{Column, MetaDataItem, SQL, ToStatement, TypeDoesNotMatch, ~}
 import db.DatabaseExecutionContext
 import org.postgresql.util.PGobject
 import play.api.db.DBApi
 import play.api.libs.json.{JsValue, Json}
+
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class ASIProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
@@ -21,6 +24,15 @@ class ASIProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutio
         case _ => Left(TypeDoesNotMatch("Can't convert column"))
       }
     }
+
+  implicit object jsonToStatement extends ToStatement[JsValue] {
+    def set(s: PreparedStatement, i: Int, json: JsValue): Unit = {
+      val jsonObject = new org.postgresql.util.PGobject()
+      jsonObject.setType("json")
+      jsonObject.setValue(Json.stringify(json))
+      s.setObject(i, jsonObject)
+    }
+  }
 
   private val db = dbapi.database("default")
 
@@ -36,5 +48,25 @@ class ASIProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutio
       case internalId ~ rawData ~ id ~ name ~ description =>
         ASIProduct(internalId, rawData, id, name, description)
     }
+  }
+
+  def findById(id: Int): Future[Option[ASIProduct]] = Future {
+    db.withConnection { implicit connection =>
+      SQL("select * from product where internal_id = $id").as(simple.singleOpt)
+    }
+  }(ec)
+
+
+  def insert(product: ASIProduct): Option[Long] = {
+    println("Inserting product: " + product)
+      db.withConnection { implicit connection =>
+        SQL("insert into product (raw_data, Id, Name, Description) values ({rawData}, {Id}, {Name}, {Description})")
+          .on(
+            'Id -> product.Id,
+            'Name -> product.Name,
+            'Description -> product.Description,
+            'rawData -> product.rawData
+          ).executeInsert()
+      }
   }
 }

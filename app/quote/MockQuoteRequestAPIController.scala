@@ -2,6 +2,7 @@ package quote
 
 import javax.inject._
 
+import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -13,6 +14,9 @@ class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteReq
     def writes(d: java.sql.Date): JsValue = JsString(new java.text.SimpleDateFormat(pattern).format(d))
   }
 
+  implicit val jodaWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
   implicit val customTimestampWrites: Writes[java.sql.Date] = timestampWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
   implicit val mockQuoteRequestFormat = Json.format[MockQuoteRequest]
 

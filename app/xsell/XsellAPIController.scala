@@ -9,7 +9,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class XsellAPIController @Inject()(xsellsDao: XsellsDAO, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class XsellAPIController @Inject()(xsellsDao: XsellSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
   implicit val xsellFormat = Json.format[Xsell]

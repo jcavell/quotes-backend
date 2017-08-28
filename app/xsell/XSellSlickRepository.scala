@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 
 case class Xsell(id: Int, productId: Long)
 
-trait XsellsComponent {
+trait XsellComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import profile.api._
@@ -26,8 +26,8 @@ trait XsellsComponent {
 }
 
 @Singleton()
-class XsellsDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
-  extends XsellsComponent
+class XsellSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+  extends XsellComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._

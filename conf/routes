@@ -22,6 +22,7 @@ DELETE  /xsells/:id                 xsell.XsellAPIController.deleteXsell(id:Int)
 GET     /product                    product.ASIProductAPIController.getASIProduct()
 
 GET     /mock-quote-requests                     quote.MockQuoteRequestAPIController.getMockQuoteRequests()
+GET     /unimported-mock-quote-requests                     quote.MockQuoteRequestAPIController.getUnimportedMockQuoteRequests()
 POST    /mock-quote-requests                    quote.MockQuoteRequestAPIController.insertMockQuoteRequest()
 DELETE  /mock-quote-requests/:id                 quote.MockQuoteRequestAPIController.deleteMockQuoteRequest(id:Int)
 

@@ -7,22 +7,22 @@ create type quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN', '
 create sequence quote_seq start with 1000;
 create table quote (
   id bigint not null default nextval('quote_seq'),
-  status quote_status not null,
+  status VARCHAR (25)  not null,
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
   request_date_required TIMESTAMP not null,
-  request_customer_name VARCHAR (255) not null,
-  request_customer_email VARCHAR (255) not null,
+  request_customer_name VARCHAR (500) not null,
+  request_customer_email VARCHAR (500) not null,
   request_customer_tel VARCHAR (255) not null,
   request_company VARCHAR (255) not null,
   request_quantity int not null,
-  request_other_requirements VARCHAR (255),
+  request_other_requirements VARCHAR (3000),
   person_id bigint not null,
   constraint pk_quote primary key (id))
 ;
 alter table quote add constraint fk_quote_person_1 foreign key (person_id) references person (id) on delete restrict on update restrict;
 create index ix_quote_person_1 on quote (person_id);
-
+create index ix_quote_status on quote(status);
 
 
 create sequence product_seq start with 1000;
@@ -30,8 +30,8 @@ create table product (
   internal_id bigint not null default nextval('product_seq'),
   raw_data json,
   Id bigint not null,
-  Name VARCHAR(255),
-  Description VARCHAR(255),
+  Name VARCHAR(20000),
+  Description VARCHAR(10000),
   constraint pk_product primary key (internal_id))
 ;
 

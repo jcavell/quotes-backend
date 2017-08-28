@@ -11,7 +11,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PersonAPIController @Inject()(personRepository: PersonRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class PersonAPIController @Inject()(personRepository: PersonSlickRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 

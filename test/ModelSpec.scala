@@ -2,7 +2,7 @@
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import person.PersonRepository
+import person.PersonSlickRepository
 
 class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   import models._
@@ -17,7 +17,7 @@ class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   
   // --
 
-  def personRepo: PersonRepository = app.injector.instanceOf(classOf[PersonRepository])
+  def personRepo: PersonSlickRepository = app.injector.instanceOf(classOf[PersonSlickRepository])
 
   "Computer model" should {
 

@@ -33,6 +33,9 @@ libraryDependencies += "com.byteslounge" %% "slick-repo" % "1.4.3"
 
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
+libraryDependencies += "com.github.tminglei" %% "slick-pg" % "0.15.3"
+libraryDependencies += "com.github.tminglei" %% "slick-pg_play-json" % "0.15.3"
+libraryDependencies += "com.github.tminglei" %% "slick-pg_joda-time" % "0.15.3"
 
 libraryDependencies += "com.typesafe.play" % "play-json-joda_2.12" % "2.6.3"
 

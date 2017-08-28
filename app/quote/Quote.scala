@@ -1,6 +1,6 @@
 package quote
 
-import org.joda.time.{DateTime}
+import org.joda.time.DateTime
 
 case class Quote(id: Option[Int] = None,
                  status: String,

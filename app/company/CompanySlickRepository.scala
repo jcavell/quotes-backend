@@ -22,7 +22,7 @@ trait CompaniesComponent {
 }
 
 @Singleton()
-class CompanyRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
   extends CompaniesComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 

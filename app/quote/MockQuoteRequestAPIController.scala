@@ -2,27 +2,25 @@ package quote
 
 import javax.inject._
 
-import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.mvc._
+import formats.CustomFormats._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteRequestRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class MockQuoteRequestAPIController @Inject()(mockQuoteRequestRepository: MockQuoteRequestRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  def timestampWrites(pattern: String): Writes[java.sql.Date] = new Writes[java.sql.Date] {
-    def writes(d: java.sql.Date): JsValue = JsString(new java.text.SimpleDateFormat(pattern).format(d))
-  }
-
-  implicit val jodaWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
-  implicit val customTimestampWrites: Writes[java.sql.Date] = timestampWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
   implicit val mockQuoteRequestFormat = Json.format[MockQuoteRequest]
 
-
   def getMockQuoteRequests() = Action.async { implicit request =>
-    mockQuoteRequestsDao.all.map { page =>
+    mockQuoteRequestRepository.all.map { page =>
+      val json = Json.toJson(page)
+      Ok(json)
+    }
+  }
+
+  def getUnimportedMockQuoteRequests() = Action.async { implicit request =>
+    mockQuoteRequestRepository.allUnimported.map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }
@@ -32,7 +30,7 @@ class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteReq
     request.body.validate[MockQuoteRequest].fold(
       errors => Future(BadRequest(errors.mkString)),
       mockQuoteRequest => {
-        mockQuoteRequestsDao.insert(mockQuoteRequest).map { mockQuoteRequestWithId =>
+        mockQuoteRequestRepository.insert(mockQuoteRequest).map { mockQuoteRequestWithId =>
           Ok(Json.toJson(mockQuoteRequestWithId))
         }
       }
@@ -40,7 +38,7 @@ class MockQuoteRequestAPIController @Inject()(mockQuoteRequestsDao: MockQuoteReq
   }
 
   def deleteMockQuoteRequest(id: Int) = Action.async { implicit request =>
-    mockQuoteRequestsDao.delete(id).map { a =>
+    mockQuoteRequestRepository.delete(id).map { a =>
       Ok("Deleted MockQuoteRequest")
     }
   }

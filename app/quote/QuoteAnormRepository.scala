@@ -6,13 +6,15 @@ import anorm.SqlParser._
 import anorm._
 import company.Company
 import db.DatabaseExecutionContext
-import org.joda.time.{DateTime}
+import org.joda.time.DateTime
 import person.Person
 import play.api.db.DBApi
-import product.{ASIProduct, ASIProductRepository}
+import product.{ASIProduct, ASIProductAnormRepository}
+import quote.Status.Status
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
+import scala.util.{Failure, Try}
 
 
 case class QuoteWithProducts(quote: Quote, company: Company, person: Person, products: ListBuffer[ASIProduct])
@@ -24,9 +26,10 @@ case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, to
 
 
 @javax.inject.Singleton
-class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductRepository)(implicit ec: DatabaseExecutionContext) {
+class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnormRepository)(implicit ec: DatabaseExecutionContext) {
 
   private val db = dbapi.database("default")
+
 
   /**
     * Parse a Quote from a ResultSet

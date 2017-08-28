@@ -3,24 +3,21 @@ package quote
 import javax.inject.Inject
 
 import akka.actor.ActorSystem
-import company.{Company, CompanyRepository}
+import company.{Company, CompanySlickRepository}
 import org.joda.time.{DateTime, LocalDate}
-import person.{Person, PersonRepository}
+import person.{Person, PersonSlickRepository}
 import play.api.libs.json.{Format, JodaReads, JodaWrites, Json}
 import play.api.libs.ws.WSClient
-import product.{ASIProduct, ASIProductGetter, ASIProductRepository}
+import product._
+import formats.CustomFormats._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanyRepository, personRepository: PersonRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockQuoteRequestRepository, asiProductRepository: ASIProductRepository)(implicit executionContext: ExecutionContext) {
+class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, personRepository: PersonSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockQuoteRequestRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
 
-  implicit val jodaWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
   implicit val mockQuoteRequestFormat = Json.format[MockQuoteRequest]
-  implicit val mockQuoteRequestsReads = Json.reads[MockQuoteRequest]
 
   actorSystem.scheduler.schedule(initialDelay = 0.seconds, interval = 1.minutes) {
     println("Looking for mock quote requests")
@@ -28,7 +25,7 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
   }
 
   def getMockQuoteRequests() = {
-    ws.url("http://localhost:9000/mock-quote-requests").
+    ws.url("http://localhost:9000/unimported-mock-quote-requests").
       get() map { response =>
       val mockQuoteRequests = Json.parse(response.body).as[Seq[MockQuoteRequest]];
       mockQuoteRequests.foreach(importQuoteRequest(_));
@@ -43,9 +40,8 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
     }
   }
 
-  def flagMockQuoteRequestImported(qr: MockQuoteRequest): Future[Option[Long]] = {
-    // TODO WS call to flag as imported
-   Future(Some(1))
+  def flagMockQuoteRequestImported(qr: MockQuoteRequest): Future[MockQuoteRequest] = {
+    mockQuoteRequestRepository.update(qr.copy(imported = true))
   }
 
   def findOrAddCompany(name: String): Future[Company] = companyRepository.findByName(name).flatMap { companyOption =>
@@ -63,24 +59,17 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
     result
   }
 
-  def insertProduct(asiProduct: ASIProduct): Future[Option[Long]] = {
-    val internalId = asiProductRepository.insert(asiProduct)
-
-    // TODO insert quote_product
-    //   internalId.map(id => )
-    Future(internalId)
-  }
-
   def importQuoteRequest(qr: MockQuoteRequest) = {
 
     val quote = for {
-      c <- findOrAddCompany(qr.company)
-      p <- findOrAddPerson(qr, c)
-      q <- insertQuote(qr, p.id.get)
+      company <- findOrAddCompany(qr.company)
+      person <- findOrAddPerson(qr, company)
+      quote <- insertQuote(qr, person.id.get)
       asi <- asiProductGetter.get(qr.productId)
-      pr <- insertProduct(asi)
+      product <- asiProductRepository.insert(asi)
+      quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)
       f <- flagMockQuoteRequestImported(qr)
-    } yield q
+    } yield quote
 
     println("Done")
   }

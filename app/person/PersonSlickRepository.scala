@@ -2,7 +2,7 @@ package person
 
 import javax.inject.{Inject, Singleton}
 
-import company.CompanyRepository
+import company.CompanySlickRepository
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
@@ -25,7 +25,7 @@ trait PeopleComponent {
 }
 
 @Singleton()
-class PersonRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, companyRepository: CompanyRepository)(implicit executionContext: ExecutionContext)
+class PersonSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, companyRepository: CompanySlickRepository)(implicit executionContext: ExecutionContext)
   extends PeopleComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 

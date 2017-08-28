@@ -2,20 +2,22 @@ package formats
 
 import company.Company
 import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import person.{Person, PersonCompany}
 import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import product.ASIProduct
-import quote.{Quote, QuotePage, QuoteWithProducts}
+import quote.{Quote, QuotePage, QuoteWithProducts, Status}
 
 /**
   * Created by jcavell on 28/08/2017.
   */
 object CustomFormats {
-  implicit val jodaWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-  implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+
+  implicit val jodaWrites = JodaWrites.jodaDateWrites("yyyy-MM-dd'T'HH:mm:ssZ")
+  implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ssZ")
   implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
-  implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
+  implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ssZ")
 
   implicit val personFormat = Json.format[Person]
   implicit val companyFormat = Json.format[Company]

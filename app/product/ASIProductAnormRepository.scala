@@ -13,7 +13,7 @@ import play.api.libs.json.{JsValue, Json}
 import scala.concurrent.Future
 
 @javax.inject.Singleton
-class ASIProductRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
+class ASIProductAnormRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext) {
 
   implicit def pgObjectColumnToJSValue: Column[JsValue] =
     Column.nonNull { (value, meta) =>

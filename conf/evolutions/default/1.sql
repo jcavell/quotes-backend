@@ -8,6 +8,7 @@ create table company (
   name                      varchar(255) not null,
   constraint pk_company primary key (id))
 ;
+create index ix_company_name on company(name);
 
 create sequence person_seq start with 1000;
 create table person (
@@ -18,6 +19,9 @@ create table person (
   company_id                bigint,
   constraint pk_person primary key (id))
 ;
+
+create index ix_person_name on person(name);
+create index ix_person_email on person(email);
 
 
 alter table person add constraint fk_person_company_1 foreign key (company_id) references company (id) on delete restrict on update restrict;

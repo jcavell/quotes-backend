@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 
-class CompanyAPIController @Inject()(companyRepository: CompanyRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
   implicit val companyFormat = Json.format[Company]

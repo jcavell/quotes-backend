@@ -10,6 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 import db.PgProfileWithAddons.api._
 
+import play.api.Logger
+
 trait ASIProductComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
@@ -58,7 +60,7 @@ class ASIProductSlickRepository @Inject()(protected val dbConfigProvider: Databa
       result match {
         case Success(r) => asiQuoteProduct.copy(id = r)
         case Failure(e) => {
-          println(s"SQL Error inserting ${asiQuoteProduct}, ${e.getMessage}")
+          Logger.error(s"SQL Error inserting ${asiQuoteProduct}, ${e.getMessage}")
           throw e
         }
       }
@@ -72,7 +74,7 @@ class ASIProductSlickRepository @Inject()(protected val dbConfigProvider: Databa
       result match {
         case Success(r) => asiProduct.copy(internalId = r)
         case Failure(e) => {
-          println(s"SQL Error inserting ${asiProduct}, ${e.getMessage}")
+          Logger.error(s"SQL Error inserting ${asiProduct}, ${e.getMessage}")
           throw e
         }
       }

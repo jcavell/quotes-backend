@@ -10,6 +10,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import play.api.Logger
+
 trait QuotesComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
@@ -50,14 +52,20 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
     db.run(action.asTry).map { result =>
       result match {
         case Success(r) => quote.copy(id = Some(r))
-        case Failure(e) => throw e
+        case Failure(e) => Logger.error(s"Error inserting quote: $e"); throw e
       }
     }
   }
 
-  def update(id: Int, quote: Quote): Future[Quote] = {
-    val quoteToUpdate: Quote = quote.copy(Some(id))
-    db.run(quotes.filter(_.id === id).update(quoteToUpdate)).map(_ => (quote))
+  def update(quote: Quote): Future[Quote] = {
+    val action = quotes.filter(_.id === quote.id).update(quote)
+
+    db.run(action.asTry).map { result =>
+      result match {
+        case Success(r) => quote
+        case Failure(e) => Logger.error(s"Error updating quote: $e"); throw e
+      }
+    }
   }
 
   def delete(id: Int): Future[Unit] = db.run(quotes.filter(_.id === id).delete).map(_ => ())

@@ -9,6 +9,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import play.api.Logger
+
 trait PeopleComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
@@ -40,8 +42,7 @@ class PersonSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       (person, company) <- people join companyRepository.companies on(_.companyId === _.id)
     } yield (person, company)
 
-    val x = db.run(query.to[List].result)
-    x
+    db.run(query.to[List].result)
   }
 
   def insert(person: Person): Future[Person] = {
@@ -50,7 +51,7 @@ class PersonSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     db.run(action.asTry).map { result =>
       result match {
         case Success(r) => person.copy(id = Some(r))
-        case Failure(e) => throw e
+        case Failure(e) => Logger.error(s"Error inserting person: $e"); throw e
       }
     }
   }
@@ -58,8 +59,14 @@ class PersonSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCo
   def findByEmail(email: String):Future[Option[Person]] = db.run(people.filter(_.email === email).result.headOption)
 
   def update(person: Person): Future[Person] = {
-    val personToUpdate: Person = person.copy(person.id)
-    db.run(people.filter(_.id === person.id).update(personToUpdate)).map(_ => (person))
+    val action = people.filter(_.id === person.id).update(person)
+
+    db.run(action.asTry).map { result =>
+      result match {
+        case Success(r) => person
+        case Failure(e) => Logger.error(s"Error updating person: $e"); throw e
+      }
+    }
   }
 
   def delete(id: Int): Future[Unit] = db.run(people.filter(_.id === id).delete).map(_ => ())

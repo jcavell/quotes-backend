@@ -4,15 +4,15 @@ import javax.inject.Inject
 
 import akka.actor.ActorSystem
 import company.{Company, CompanySlickRepository}
-import org.joda.time.{DateTime, LocalDate}
 import person.{Person, PersonSlickRepository}
-import play.api.libs.json.{Format, JodaReads, JodaWrites, Json}
+import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import product._
 import formats.CustomFormats._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Logger
 
 
 class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, personRepository: PersonSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockQuoteRequestRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
@@ -20,7 +20,7 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
   implicit val mockQuoteRequestFormat = Json.format[MockQuoteRequest]
 
   actorSystem.scheduler.schedule(initialDelay = 0.seconds, interval = 1.minutes) {
-    println("Looking for mock quote requests")
+    Logger.info("Looking for mock quote requests")
     getMockQuoteRequests()
   }
 
@@ -55,7 +55,7 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
     val quote = Quote(status = "REQUESTED", requestTimestamp = qr.requestTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerName = qr.customerName, requestCustomerTel = qr.customerTel, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, personId = personId)
 
     val result = quoteSlickRepository.insert(quote)
-    println("Result from inserting into quote repo: " + result)
+    Logger.debug("Result from inserting into quote repo: " + result)
     result
   }
 
@@ -71,7 +71,7 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
       f <- flagMockQuoteRequestImported(qr)
     } yield quote
 
-    println("Done")
+    Logger.debug(s"Inserted ${quote}")
   }
 }
 

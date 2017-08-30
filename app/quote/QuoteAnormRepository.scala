@@ -73,6 +73,15 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnorm
     }
   }
 
+
+  val joinQuery = """left join quote_product on quote_product.quote_id = quote.id
+                      |          left join product on product.internal_id = quote_product.product_internal_id
+                      |          left join person on quote.person_id = person.id
+                      |          left join company on person.company_id = company.id""".stripMargin
+
+
+  val groupBy = "group by quote.id, product.internal_id, person.id, company.id, quote_product.Id"
+
   /**
     * Parse a (Person,Company) from a ResultSet
     */
@@ -106,7 +115,25 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnorm
     * @param orderBy  Field for sorting
     * @param filter   Filter applied on various columns
     */
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Future[QuotePage] = Future {
+  def listWithGenericFilter(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%") = {
+    val whereFilter = "where product.Id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}"
+    val wherePlaceholders = 'filter -> filter
+    list(page, pageSize, orderBy, whereFilter, wherePlaceholders)
+  }
+
+  def listForCompany(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, companyName: String) = {
+    val whereFilter = "where company.name = {companyName}"
+    val wherePlaceholders = 'companyName -> companyName
+    list(page, pageSize, orderBy, whereFilter, wherePlaceholders)
+  }
+
+  def listForEmail(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, email: String) = {
+    val whereFilter = "where email = {email}"
+    val wherePlaceholders = 'email -> email
+    list(page, pageSize, orderBy, whereFilter, wherePlaceholders)
+  }
+
+  private def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, where: String, wherePlaceholders: (Symbol, String)): Future[QuotePage] = Future {
 
     val offset = pageSize * page
 
@@ -115,16 +142,13 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnorm
       val quotes = SQL(
         s"""
           select * from quote
-          left join quote_product on quote_product.quote_id = quote.id
-          left join product on product.internal_id = quote_product.product_internal_id
-          left join person on quote.person_id = person.id
-          left join company on person.company_id = company.id
-          where product.Id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
-         group by quote.id, product.internal_id, person.id, company.id, quote_product.Id
+          $joinQuery
+          $where
+          $groupBy
           order by $orderBy nulls last
           limit $pageSize offset $offset
         """
-      ).on('filter -> filter).as(withProduct *).foldLeft(List.empty[QuoteWithProducts]) { (z, f) =>
+      ).on(wherePlaceholders).as(withProduct *).foldLeft(List.empty[QuoteWithProducts]) { (z, f) =>
         val (quote, person, company, product) = f
 
         z.find(_.quote.id == quote.id) match {
@@ -136,15 +160,10 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnorm
       val totalRows = SQL(
         s"""
             select count(distinct quote.id) from quote
-            left join quote_product on quote_product.quote_id = quote.id
-            left join product on product.internal_id = quote_product.product_internal_id
-            left join person on quote.person_id = person.id
-            left join company on person.company_id = company.id
-            where product.Id::text like {filter} or product.name like {filter} or person.name like {filter} or person.email like {filter} or company.name like {filter}
+            $joinQuery
+            $where
         """.stripMargin
-      ).on(
-        'filter -> filter
-      ).as(scalar[Long].single)
+      ).on(wherePlaceholders).as(scalar[Long].single)
 
       QuotePage(quotes, page, offset, totalRows)
     }

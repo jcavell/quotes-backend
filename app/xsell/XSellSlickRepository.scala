@@ -8,6 +8,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import play.api.Logger
+
 case class Xsell(id: Int, productId: Long)
 
 trait XsellComponent {
@@ -45,7 +47,7 @@ class XsellSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
       result match {
         case Success(r) => xsell.copy(id = r)
         case Failure(e) => {
-          println(s"SQL Error inserting ${xsell}, ${e.getMessage}")
+          Logger.error(s"SQL Error inserting ${xsell}, ${e.getMessage}")
           throw e
         }
       }

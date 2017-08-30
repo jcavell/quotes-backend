@@ -3,7 +3,6 @@ package person
 import javax.inject._
 
 import company.Company
-import person.Person
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._

@@ -2,7 +2,7 @@
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import person.PersonSlickRepository
+import customer.CustomerSlickRepository
 
 class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   import models._
@@ -17,12 +17,12 @@ class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   
   // --
 
-  def personRepo: PersonSlickRepository = app.injector.instanceOf(classOf[PersonSlickRepository])
+  def customerRepo: CustomerSlickRepository = app.injector.instanceOf(classOf[CustomerSlickRepository])
 
   "Computer model" should {
 
     "be retrieved by id" in {
-      whenReady(personRepo.findById(1)) { maybeComputer =>
+      whenReady(customerRepo.findById(1)) { maybeComputer =>
         val macintosh = maybeComputer.get
 
         macintosh.name must equal("Jonny Cavell")
@@ -30,21 +30,21 @@ class ModelSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
     }
 
     "be listed along its companies" in {
-        whenReady(personRepo.list()) { people =>
+        whenReady(customerRepo.list()) { customers =>
 
-          people.total must equal(574)
-          people.items must have length(10)
+          customers.total must equal(574)
+          customers.items must have length(10)
         }
     }
 
 //    "be updated if needed" in {
 //
-//      val result = personRepo.findById(1).flatMap { computer =>
-//        personRepo.update(21, Quote(name="The Macintosh",
+//      val result = customerRepo.findById(1).flatMap { computer =>
+//        customerRepo.update(21, Quote(name="The Macintosh",
 //          introduced=None,
 //          discontinued=None,
 //          companyId=Some(1))).flatMap { _ =>
-//          personRepo.findById(21)
+//          customerRepo.findById(21)
 //        }
 //      }
 //

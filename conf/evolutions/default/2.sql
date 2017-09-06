@@ -22,7 +22,7 @@ insert into company (id,name) values ( 17,'Sony');
 insert into company (id,name) values ( 18,'OQO');
 insert into company (id,name) values ( 19,'NeXT');    
 insert into company (id,name) values ( 20,'Atari');
-insert into company (id,name) values ( 22,'Acorn person');
+insert into company (id,name) values ( 22,'Acorn customer');
 insert into company (id,name) values ( 23,'Timex Sinclair');
 insert into company (id,name) values ( 24,'Nintendo');
 insert into company (id,name) values ( 25,'Sinclair Research Ltd');
@@ -45,12 +45,16 @@ insert into company (id,name) values ( 41,'HTC Corporation');
 insert into company (id,name) values ( 42,'Research In Motion');
 insert into company (id,name) values ( 43,'Samsung Electronics');
 
-insert into person (id,name,email,tel,company_id) values (  1,'Jonny Cavell','jonny.cavell@gmail.com','123123123123',1);
-insert into person (id,name,email,tel,company_id) values (  2,'Bobby Davro','bobby.davro@gmail.com','9999999999',5);
-insert into person (id,name,email,tel,company_id) values (  3,'Charlie Weasley','charlie.weasley@gmail.com','88888888888888',10);
+
+insert into handler(id, name, email) values(1, 'Jonny Cavell', 'jonny.cavell@gmail.com');
+insert into handler(id, name, email) values(2, 'Melvin Snedley', 'melvin@gmail.com');
+
+insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, handler_id, company_id) values (1,'Tommy', 'Tom Tom','Lord Tomathan Cavell', 'tommy@gmail.com','0123123123123', 'CEO', true, '@jonnycavell', 1, 1);
+insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, handler_id, company_id) values (2,'Billy', 'Bill Bill','Bill', 'bill@gmail.com','999999999', 'President', true, null, 2, 5);
+insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, handler_id, company_id) values (3,'Bobby', 'Bob Bob','Mr Bob', 'cleaner@gmail.com','+44 888888 777', 'Cleaner', false, '@cleaner', 2, 10);
 
 
 # --- !Downs
 
-delete from person;
+delete from customer;
 delete from company;

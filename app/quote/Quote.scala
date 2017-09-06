@@ -7,10 +7,11 @@ case class Quote(id: Option[Int] = None,
                  requestTimestamp: DateTime,
                  requestDateRequired: DateTime,
                  requestProductId: Long,
-                 requestCustomerName: String,
+                 requestCustomerFirstName: String,
+                 requestCustomerLastName: String,
                  requestCustomerEmail: String,
                  requestCustomerTel: String,
                  requestCompany: String,
                  requestQuantity:Int,
                  requestOtherRequirements: Option[String],
-                 personId: Int)
+                 customerId: Int)

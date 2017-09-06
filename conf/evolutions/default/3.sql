@@ -11,17 +11,18 @@ create table quote (
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
   request_date_required TIMESTAMP not null,
-  request_customer_name VARCHAR (500) not null,
+  request_customer_first_name VARCHAR (500) not null,
+  request_customer_last_name VARCHAR (500) not null,
   request_customer_email VARCHAR (500) not null,
   request_customer_tel VARCHAR (255) not null,
   request_company VARCHAR (255) not null,
   request_quantity int not null,
   request_other_requirements VARCHAR (3000),
-  person_id bigint not null,
+  customer_id bigint not null,
   constraint pk_quote primary key (id))
 ;
-alter table quote add constraint fk_quote_person_1 foreign key (person_id) references person (id) on delete restrict on update restrict;
-create index ix_quote_person_1 on quote (person_id);
+alter table quote add constraint fk_quote_customer_1 foreign key (customer_id) references customer (id) on delete restrict on update restrict;
+create index ix_quote_customer_1 on quote (customer_id);
 create index ix_quote_status on quote(status);
 
 

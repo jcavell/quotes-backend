@@ -9,10 +9,10 @@ POST    /companies                     company.CompanyAPIController.insertCompan
 PUT     /companies/:id                 company.CompanyAPIController.updateCompany(id:Int)
 DELETE  /companies/:id                 company.CompanyAPIController.deleteCompany(id:Int)
 
-GET     /people                     person.PersonAPIController.getPeople()
-POST    /people                     person.PersonAPIController.insertPerson()
-PUT     /people/:id                 person.PersonAPIController.updatePerson(id:Int)
-DELETE  /people/:id                 person.PersonAPIController.deletePerson(id:Int)
+GET     /customers                     customer.CustomerAPIController.getCustomers()
+POST    /customers                     customer.CustomerAPIController.insertCustomer()
+PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Int)
+DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Int)
 
 GET     /xsells                     xsell.XsellAPIController.getXsells()
 POST    /xsells                     xsell.XsellAPIController.insertXsell()

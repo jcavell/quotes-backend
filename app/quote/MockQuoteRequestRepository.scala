@@ -10,7 +10,7 @@ import com.github.tototoshi.slick.PostgresJodaSupport._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-case class MockQuoteRequest(id: Option[Int], requestId: Int, requestTimestamp: DateTime, productId: Long, customerName: String, customerTel: String, customerEmail:String, company: String, dateRequired: DateTime, quantity: Int, otherRequirements: Option[String], imported: Boolean = false)
+case class MockQuoteRequest(id: Option[Int], requestId: Int, requestTimestamp: DateTime, productId: Long, customerFirstName: String, customerLastName: String, customerTel: String, customerEmail:String, company: String, dateRequired: DateTime, quantity: Int, otherRequirements: Option[String], imported: Boolean = false)
 
 trait MockQuoteRequestComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
@@ -22,7 +22,8 @@ trait MockQuoteRequestComponent {
     def requestId = column[Int]("request_id")
     def requestTimestamp = column[DateTime]("request_timestamp")
     def productId = column[Long]("product_id")
-    def customerName = column[String]("customer_name")
+    def customerFirstName = column[String]("customer_first_name")
+    def customerLastName = column[String]("customer_last_name")
     def customerTel = column[String]("customer_tel")
     def customerEmail= column[String]("customer_email")
     def company= column[String]("company")
@@ -31,7 +32,7 @@ trait MockQuoteRequestComponent {
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")
 
-    def * = (id, requestId, requestTimestamp, productId, customerName, customerTel, customerEmail, company, dateRequired, quantity, otherRequirements, imported) <> (MockQuoteRequest.tupled, MockQuoteRequest.unapply _)
+    def * = (id, requestId, requestTimestamp, productId, customerFirstName, customerLastName, customerTel, customerEmail, company, dateRequired, quantity, otherRequirements, imported) <> (MockQuoteRequest.tupled, MockQuoteRequest.unapply _)
   }
 
 }

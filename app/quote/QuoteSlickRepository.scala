@@ -23,14 +23,15 @@ trait QuotesComponent {
     def requestTimestamp = column[DateTime]("request_timestamp")
     def requestDateRequired = column[DateTime]("request_date_required")
     def requestProductId = column[Long]("request_product_id")
-    def requestCustomerName = column[String]("request_customer_name")
+    def requestCustomerFirstName = column[String]("request_customer_first_name")
+    def requestCustomerLastName = column[String]("request_customer_last_name")
     def requestCustomerEmail = column[String]("request_customer_email")
     def requestCustomerTel = column[String]("request_customer_tel")
     def requestCompany = column[String]("request_company")
     def requestQuantity = column[Int]("request_quantity")
     def requestOtherRequirements = column[Option[String]]("request_other_requirements")
-    def personId = column[Int]("person_id")
-    def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, personId) <> (Quote.tupled, Quote.unapply _)
+    def customerId = column[Int]("customer_id")
+    def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (Quote.tupled, Quote.unapply _)
   }
 
 }

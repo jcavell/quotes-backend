@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import akka.actor.ActorSystem
 import company.{Company, CompanySlickRepository}
-import person.{Person, PersonSlickRepository}
+import customer.{Customer, CustomerSlickRepository}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import product._
@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.api.Logger
 
 
-class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, personRepository: PersonSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockQuoteRequestRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
+class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockQuoteRequestRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
 
   implicit val mockQuoteRequestFormat = Json.format[MockQuoteRequest]
 
@@ -33,10 +33,10 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
   }
 
 
-  def findOrAddPerson(qr: MockQuoteRequest, company: Company):Future[Person] = personRepository.findByEmail(qr.customerEmail).flatMap { personOption =>
-    personOption match {
+  def findOrAddCustomer(qr: MockQuoteRequest, company: Company):Future[Customer] = customerRepository.findByEmail(qr.customerEmail).flatMap { customerOption =>
+    customerOption match {
       case Some(p) => Future(p)
-      case _ => personRepository.insert(Person(name = qr.customerName, email = qr.customerEmail, tel = qr.customerTel, companyId = company.id.get))
+      case _ => customerRepository.insert(Customer(firstName = qr.customerFirstName, lastName = qr.customerLastName, email = qr.customerEmail, mobilePhone = Some(qr.customerTel), companyId = company.id.get))
     }
   }
 
@@ -51,8 +51,8 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
     }
   }
 
-  def insertQuote(qr: MockQuoteRequest, personId: Int): Future[Quote] = {
-    val quote = Quote(status = "REQUESTED", requestTimestamp = qr.requestTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerName = qr.customerName, requestCustomerTel = qr.customerTel, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, personId = personId)
+  def insertQuote(qr: MockQuoteRequest, customerId: Int): Future[Quote] = {
+    val quote = Quote(status = "REQUESTED", requestTimestamp = qr.requestTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerFirstName, requestCustomerLastName = qr.customerLastName, requestCustomerTel = qr.customerTel, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
     val result = quoteSlickRepository.insert(quote)
     Logger.debug("Result from inserting into quote repo: " + result)
@@ -63,8 +63,8 @@ class QuoteRequestProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient
 
     val quote = for {
       company <- findOrAddCompany(qr.company)
-      person <- findOrAddPerson(qr, company)
-      quote <- insertQuote(qr, person.id.get)
+      customer <- findOrAddCustomer(qr, company)
+      quote <- insertQuote(qr, customer.id.get)
       asi <- asiProductGetter.get(qr.productId)
       product <- asiProductRepository.insert(asi)
       quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)

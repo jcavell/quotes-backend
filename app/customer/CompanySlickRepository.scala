@@ -24,10 +24,9 @@ trait CompaniesComponent {
     def facebook = column[Option[String]]("facebook")
     def linkedIn = column[Option[String]]("linked_in")
     def source = column[Option[String]]("source")
-    def clientOrSupplier = column[String]("client_or_supplier")
     def active = column[Boolean]("active")
 
-    def * = (id.?, name, phone1, phone2, phone3, website, twitter, facebook, linkedIn, source, clientOrSupplier, active) <> (Company.tupled, Company.unapply _)
+    def * = (id.?, name, phone1, phone2, phone3, website, twitter, facebook, linkedIn, source, active) <> (Company.tupled, Company.unapply _)
   }
 
 }

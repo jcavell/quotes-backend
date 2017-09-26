@@ -24,10 +24,10 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
   }
 
   def getMockEnquiries() = {
-    ws.url("http://localhost:9000/unimported-mock-quote-requests").
+    ws.url("http://localhost:9000/unimported-mock-enquiries").
       get() map { response =>
       val mockEnquiries = Json.parse(response.body).as[Seq[Enquiry]];
-      mockEnquiries.foreach(importQuoteRequest(_));
+      mockEnquiries.foreach(importEnquiry(_));
     }
   }
 
@@ -39,14 +39,14 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
     }
   }
 
-  def flagMockQuoteRequestImported(qr: Enquiry): Future[Enquiry] = {
+  def flagMockEnquiryImported(qr: Enquiry): Future[Enquiry] = {
     mockQuoteRequestRepository.update(qr.copy(imported = true))
   }
 
   def findOrAddCompany(name: String): Future[Company] = companyRepository.findByName(name).flatMap { companyOption =>
     companyOption match {
       case Some(c) => Future(c)
-      case None => companyRepository.insert(Company(name = name, clientOrSupplier = "client"))
+      case None => companyRepository.insert(Company(name = name))
     }
   }
 
@@ -58,7 +58,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
     result
   }
 
-  def importQuoteRequest(qr: Enquiry) = {
+  def importEnquiry(qr: Enquiry) = {
 
     val quote = for {
       company <- findOrAddCompany(qr.company)
@@ -67,7 +67,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
       asi <- asiProductGetter.get(qr.productId)
       product <- asiProductRepository.insert(asi)
       quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)
-      f <- flagMockQuoteRequestImported(qr)
+      f <- flagMockEnquiryImported(qr)
     } yield quote
 
     Logger.debug(s"Inserted ${quote}")

@@ -13,6 +13,5 @@ case class Company(id: Option[Int] = None,
                    facebook: Option[String] = None,
                    linkedIn: Option[String] = None,
                    source: Option[String] = None,
-                   clientOrSupplier: String,
                    active: Boolean = true) {
 }

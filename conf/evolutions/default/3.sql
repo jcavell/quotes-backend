@@ -6,7 +6,7 @@ create type asi_quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN
 
 create sequence asi_quote_seq start with 1000;
 create table asi_quote (
-  id bigint not null default nextval('quote_seq'),
+  id bigint not null default nextval('asi_quote_seq'),
   status VARCHAR (25)  not null,
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
@@ -28,7 +28,7 @@ create index ix_asi_quote_status on asi_quote(status);
 
 create sequence asi_product_seq start with 1000;
 create table asi_product (
-  internal_id bigint not null default nextval('product_seq'),
+  internal_id bigint not null default nextval('asi_product_seq'),
   raw_data json,
   Id bigint not null,
   Name VARCHAR(20000),
@@ -38,14 +38,14 @@ create table asi_product (
 
 
 
-create sequence quote_product_seq start with 1000;
-create table quote_product (
-  id bigint not null default nextval('quote_product_seq'),
+create sequence asi_quote_product_seq start with 1000;
+create table asi_quote_product (
+  id bigint not null default nextval('asi_quote_product_seq'),
   quote_id bigint not null,
   product_internal_id bigint not null,
   constraint pk_quote_product primary key (id))
 ;
-alter table asi_quote_product add constraint fk_asi_quote_product_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+alter table asi_quote_product add constraint fk_asi_quote_product_quote foreign key (quote_id) references asi_quote (id) on delete restrict on update restrict;
 create index ix_asi_quote_product_quote_1 on asi_quote_product (quote_id);
 alter table asi_quote_product add constraint fk_asi_quote_product_product foreign key (product_internal_id) references asi_product (internal_id) on delete restrict on update restrict;
 create index ix_asi_quote_product_product_1 on asi_quote_product (product_internal_id);

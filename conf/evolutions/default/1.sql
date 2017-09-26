@@ -14,7 +14,6 @@ create table company (
   facebook VARCHAR(255),
   linked_in VARCHAR(255),
   source VARCHAR(255),
-  client_or_supplier VARCHAR(7),
   active boolean,
   constraint pk_company primary key (id))
 ;

@@ -5,7 +5,7 @@ import scala.concurrent._
 import javax.inject.Singleton
 
 @Singleton
-class ErrorHandler extends HttpErrorHandler {
+class ErrorRep extends HttpErrorHandler {
 
   def onClientError(request: RequestHeader, statusCode: Int, message: String) = {
     Future.successful(

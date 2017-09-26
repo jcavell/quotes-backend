@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 
 import play.api.Logger
 
-case class Xsell(id: Int, productId: Long)
+case class Xsell(id: Option[Long] = None, productId: Long)
 
 trait XsellComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
@@ -18,7 +18,7 @@ trait XsellComponent {
   import profile.api._
 
   class Xsells(tag: Tag) extends Table[Xsell](tag, "xsell") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
 
     def productId = column[Long]("product_id")
 
@@ -55,11 +55,11 @@ class XsellSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
   }
 
 
-  def update(id: Int, xsell: Xsell): Future[Unit] = {
-    val xsellToUpdate: Xsell = xsell.copy(id)
+  def update(id: Long, xsell: Xsell): Future[Unit] = {
+    val xsellToUpdate: Xsell = xsell.copy(Some(id))
     db.run(xsells.filter(_.id === id).update(xsellToUpdate)).map(_ => ())
   }
 
-  def delete(id: Int): Future[Unit] = db.run(xsells.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(xsells.filter(_.id === id).delete).map(_ => ())
 
 }

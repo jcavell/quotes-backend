@@ -16,8 +16,8 @@ trait EnquiryComponent {
   import profile.api._
 
   class Enquiries(tag: Tag) extends Table[Enquiry](tag, "enquiry") {
-    def id = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
-    def requestId = column[Int]("request_id")
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
+    def requestId = column[Long]("request_id")
     def requestTimestamp = column[DateTime]("request_timestamp")
     def productId = column[String]("product_id")
     def customerFirstName = column[String]("customer_first_name")
@@ -68,6 +68,6 @@ class EnquiryRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     db.run(enquiries.filter(_.id === mockQuoteRequest.id).update(mockQuoteRequestToUpdate)).map(_ => (mockQuoteRequest))
   }
 
-  def delete(id: Int): Future[Unit] = db.run(enquiries.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(enquiries.filter(_.id === id).delete).map(_ => ())
 
 }

@@ -3,8 +3,8 @@ package quote
 import org.joda.time.DateTime
 
 case class Payment(
-                    id: Option[Int] = None,
-                    invoiceId: Int,
+                    id: Option[Long] = None,
+                    invoiceId: Long,
                     amount: BigDecimal,
                     ref: Option[String],
                     paymentType: String, // BACs

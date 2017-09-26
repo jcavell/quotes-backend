@@ -1,7 +1,7 @@
 package user
 
 case class User(
-                 id: Int,
+                 id: Option[Long] = None,
                  name: String,
                  email: String,
                  directPhone: Option[String],

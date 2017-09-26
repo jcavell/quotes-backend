@@ -8,6 +8,6 @@ case class POLineItem(id: Option[Long] = None,
                       priceIncludes: Option[String] = None,
                       cost: BigDecimal,
                       vat: BigDecimal = 0.2,
-                      POId: Int) {
+                      POId: Long) {
 
 }

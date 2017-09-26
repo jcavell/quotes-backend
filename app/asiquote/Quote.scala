@@ -2,7 +2,7 @@ package asiquote
 
 import org.joda.time.DateTime
 
-case class Quote(id: Option[Int] = None,
+case class Quote(id: Option[Long] = None,
                  status: String,
                  requestTimestamp: DateTime,
                  requestDateRequired: DateTime,
@@ -14,4 +14,4 @@ case class Quote(id: Option[Int] = None,
                  requestCompany: String,
                  requestQuantity:Int,
                  requestOtherRequirements: Option[String],
-                 customerId: Int)
+                 customerId: Long)

@@ -3,7 +3,7 @@ package customer
 /**
   * Created by jcavell on 24/09/2017.
   */
-case class Company(id: Option[Int] = None,
+case class Company(id: Option[Long] = None,
                    name: String,
                    phone1: Option[String] = None,
                    phone2: Option[String] = None,

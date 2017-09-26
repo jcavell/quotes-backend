@@ -3,7 +3,7 @@ package quote
 import org.joda.time.DateTime
 import play.api.libs.json.JsValue
 
-case class Invoice(id: Option[Int] = None,
+case class Invoice(id: Option[Long] = None,
                    invoiceTitle: String,
                    invoiceDate: Option[DateTime] = None,
                    dateRequired: DateTime,
@@ -15,7 +15,7 @@ case class Invoice(id: Option[Int] = None,
                    paymentDueDate: DateTime,
                    paymentStatus: String, // unpaid, paid
                    notes: Option[String] = None,
-                   customerId: Int, // Customer as is now
-                   userId: Int, // Rep as is now
-                   quoteId: Int, // Quote must be immutable after invoice
+                   customerId: Long, // Customer as is now
+                   userId: Long, // Rep as is now
+                   quoteId: Long, // Quote must be immutable after invoice
                    active: Boolean)

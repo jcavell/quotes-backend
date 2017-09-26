@@ -1,7 +1,11 @@
 package product
 
 
-case class Product(id: Int, sku: String, description: String) {
+case class Product(
+                    id: Option[Long] = None,
+                    sku: String,
+                    description: String
+                  ) {
 
 }
 

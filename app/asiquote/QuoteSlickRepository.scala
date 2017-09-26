@@ -18,7 +18,7 @@ trait QuotesComponent {
   import profile.api._
 
   class Quotes(tag: Tag) extends Table[Quote](tag, "asi_quote") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def status = column[String]("status")
     def requestTimestamp = column[DateTime]("request_timestamp")
     def requestDateRequired = column[DateTime]("request_date_required")
@@ -30,7 +30,7 @@ trait QuotesComponent {
     def requestCompany = column[String]("request_company")
     def requestQuantity = column[Int]("request_quantity")
     def requestOtherRequirements = column[Option[String]]("request_other_requirements")
-    def customerId = column[Int]("customer_id")
+    def customerId = column[Long]("customer_id")
     def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (Quote.tupled, Quote.unapply _)
   }
 
@@ -69,6 +69,6 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
     }
   }
 
-  def delete(id: Int): Future[Unit] = db.run(quotes.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(quotes.filter(_.id === id).delete).map(_ => ())
 
 }

@@ -78,10 +78,10 @@ class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnorm
 //      get[Option[String]]("customer.facebook") ~
 //      get[Option[String]]("customer.linked_in") ~
 //      get[Option[String]]("customer.skype") ~
-//      get[Option[Int]]("customer.handler_id") ~
+//      get[Option[Int]]("customer.rep_id") ~
 //      get[Int]("customer.company_id") map {
-//      case id ~ firstName ~ lastName ~ salutation ~ email ~ directPhone ~ mobilePhone ~ source ~ position ~ isMainContact ~ twitter ~ facebook ~ linkedIn ~ skype ~ handlerId ~ companyId =>
-//        Customer(id, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, handlerId, companyId)
+//      case id ~ firstName ~ lastName ~ salutation ~ email ~ directPhone ~ mobilePhone ~ source ~ position ~ isMainContact ~ twitter ~ facebook ~ linkedIn ~ skype ~ repId ~ companyId =>
+//        Customer(id, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, repId, companyId)
 //    }
 //  }
 //

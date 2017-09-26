@@ -2,9 +2,9 @@ package address
 
 
 case class Address(
-                    id: Option[Int] = None,
-                    addressName: String,
-                    companyName: String,
+                    id: Option[Long] = None,
+                    name: String,
+                    company: String,
                     fao: Option[String] = None,
                     line1: String,
                     line2: Option[String] = None,

@@ -3,7 +3,7 @@ package quote
 import org.joda.time.DateTime
 import play.api.libs.json.JsValue
 
-case class Quote(id: Option[Int] = None,
+case class Quote(id: Option[Long] = None,
                  quoteTitle: String,
                  quoteDate: DateTime,
                  customerOrderNumber: Option[String],
@@ -11,9 +11,9 @@ case class Quote(id: Option[Int] = None,
                  customer: JsValue, // Snapshot
                  quoteLossReason: Option[String], // converted
                  notes: Option[String] = None,
-                 enquiryId: Option[Int] = None,
-                 userId: Int, // Rep as now
-                 companyId: Int, // Company as now
-                 customerId: Int, // Customer as now
+                 enquiryId: Option[Long] = None,
+                 userId: Long, // Rep as now
+                 companyId: Long, // Company as now
+                 customerId: Long, // Customer as now
                  history: JsValue,
                  active: Boolean = true)

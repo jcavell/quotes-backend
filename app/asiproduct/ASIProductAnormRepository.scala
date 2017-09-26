@@ -40,7 +40,7 @@ class ASIProductAnormRepository @Inject()(dbapi: DBApi)(implicit ec: DatabaseExe
     * Parse an ASIProduct from a ResultSet
     */
   val simple = {
-    get[Option[Int]]("product.internal_id") ~
+    get[Option[Long]]("product.internal_id") ~
       get[JsValue]("product.raw_data") ~
       get[Long]("product.Id") ~
       get[String]("product.Name") ~

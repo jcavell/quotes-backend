@@ -3,8 +3,8 @@ package customer
 import org.joda.time.DateTime
 
 case class Enquiry(
-                    id: Option[Int],
-                    requestId: Int,
+                    id: Option[Long],
+                    requestId: Long,
                     requestTimestamp: DateTime,
                     productId: String,
                     customerFirstName: String,

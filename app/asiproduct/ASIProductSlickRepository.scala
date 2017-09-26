@@ -18,7 +18,7 @@ trait ASIProductComponent {
   import profile.api._
 
   class ASIProducts(tag: Tag) extends Table[ASIProduct](tag, "asi_product") {
-    def internalId = column[Option[Int]]("internal_id", O.PrimaryKey, O.AutoInc)
+    def internalId = column[Option[Long]]("internal_id", O.PrimaryKey, O.AutoInc)
     def rawData = column[JsValue]("raw_data")
     def id = column[Long]("id")
     def name = column[String]("name")
@@ -28,9 +28,9 @@ trait ASIProductComponent {
   }
 
   class ASIQuoteProducts(tag: Tag) extends Table[ASIQuoteProduct](tag, "quote_product") {
-    def id = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
-    def quoteId = column[Int]("quote_id")
-    def productInternalId = column[Int]("product_internal_id")
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
+    def quoteId = column[Long]("quote_id")
+    def productInternalId = column[Long]("product_internal_id")
 
     def * = (id, quoteId, productInternalId) <> (ASIQuoteProduct.tupled, ASIQuoteProduct.unapply _)
   }
@@ -52,7 +52,7 @@ class ASIProductSlickRepository @Inject()(protected val dbConfigProvider: Databa
   }
 
 
-  def insertQuoteProduct(quoteId: Int, productInternalId: Int): Future[ASIQuoteProduct] = {
+  def insertQuoteProduct(quoteId: Long, productInternalId: Long): Future[ASIQuoteProduct] = {
     val asiQuoteProduct = ASIQuoteProduct(None, quoteId, productInternalId)
     val action = asiQuoteProducts returning asiQuoteProducts.map {_.id} += asiQuoteProduct
 
@@ -82,11 +82,11 @@ class ASIProductSlickRepository @Inject()(protected val dbConfigProvider: Databa
   }
 
 
-  def update(internalId: Int, asiProduct: ASIProduct): Future[Unit] = {
+  def update(internalId: Long, asiProduct: ASIProduct): Future[Unit] = {
     val asiProductToUpdate: ASIProduct = asiProduct.copy(Some(internalId))
     db.run(asiProducts.filter(_.internalId === internalId).update(asiProductToUpdate)).map(_ => ())
   }
 
-  def delete(internalId: Int): Future[Unit] = db.run(asiProducts.filter(_.internalId === internalId).delete).map(_ => ())
+  def delete(internalId: Long): Future[Unit] = db.run(asiProducts.filter(_.internalId === internalId).delete).map(_ => ())
 
 }

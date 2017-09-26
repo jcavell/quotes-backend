@@ -50,7 +50,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
     }
   }
 
-  def insertQuote(qr: Enquiry, customerId: Int): Future[Quote] = {
+  def insertQuote(qr: Enquiry, customerId: Long): Future[Quote] = {
     val quote = Quote(status = "REQUESTED", requestTimestamp = qr.requestTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerFirstName, requestCustomerLastName = qr.customerLastName, requestCustomerTel = qr.customerTel, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
     val result = quoteSlickRepository.insert(quote)

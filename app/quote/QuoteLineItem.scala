@@ -10,7 +10,7 @@ case class QuoteLineItem(id: Option[Long] = None,
                          markup: BigDecimal,
                          sell: BigDecimal,
                          vat: BigDecimal = 0.2,
-                         quoteId: Int,
-                         supplierId: Int) {
+                         quoteId: Long,
+                         supplierId: Long) {
 
 }

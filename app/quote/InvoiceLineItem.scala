@@ -11,8 +11,8 @@ case class InvoiceLineItem(id: Option[Long] = None,
                            markup: BigDecimal,
                            sell: BigDecimal,
                            vat: BigDecimal = 0.2,
-                           invoiceId: Int,
-                           supplierId: Int
+                           invoiceId: Long,
+                           supplierId: Long
                            ) {
 
 }

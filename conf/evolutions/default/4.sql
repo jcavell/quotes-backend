@@ -22,6 +22,5 @@ insert into asi_quote_product(id, quote_id, product_internal_id) values (4, 3, 1
 
 # --- !Downs
 
-delete from quote;
-delete from product;
-
+delete from asi_quote;
+delete from asi_product;

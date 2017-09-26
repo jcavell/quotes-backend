@@ -16,7 +16,7 @@ trait CustomersComponent {
   import profile.api._
 
   class Customers(tag: Tag) extends Table[Customer](tag, "customer") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def firstName = column[String]("first_name")
     def lastName = column[String]("last_name")
     def salutation = column[Option[String]]("salutation")
@@ -31,9 +31,9 @@ trait CustomersComponent {
     def linkedIn = column[Option[String]]("linked_in")
     def skype = column[Option[String]]("skype")
     def active = column[Boolean]("active")
-    def handlerId = column[Option[Int]]("handler_id")
-    def companyId = column[Int]("company_id")
-    def * = (id.?, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, handlerId, companyId) <> (Customer.tupled, Customer.unapply _)
+    def repId = column[Option[Long]]("rep_id")
+    def companyId = column[Long]("company_id")
+    def * = (id.?, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, repId, companyId) <> (Customer.tupled, Customer.unapply _)
   }
 }
 
@@ -48,15 +48,15 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def allWithCompanyAndHandler = {
+  def allWithCompanyAndRep = {
     val query = for {
-      ((customer, company), handler) <-
+      ((customer, company), rep) <-
         customers join
         companyRepository.companies on(_.companyId === _.id) join
-        userRepository.users on(_._1.handlerId === _.id)
-    } yield (customer, company, handler)
+        userRepository.users on(_._1.repId === _.id)
+    } yield (customer, company, rep)
 
-    db.run(query.to[List].result.map(l => l.map (t => CustomerCompanyHandler(t._1, t._2, t._3))))
+    db.run(query.to[List].result.map(l => l.map (t => CustomerCompanyRep(t._1, t._2, t._3))))
   }
 
   def insert(customer: Customer): Future[Customer] = {
@@ -83,6 +83,6 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
     }
   }
 
-  def delete(id: Int): Future[Unit] = db.run(customers.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(customers.filter(_.id === id).delete).map(_ => ())
 
 }

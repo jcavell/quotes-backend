@@ -14,7 +14,7 @@ trait CompaniesComponent {
   import profile.api._
 
   class Companies(tag: Tag) extends Table[Company](tag, "company") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def phone1 = column[Option[String]]("phone1")
     def phone2 = column[Option[String]]("phone2")
@@ -54,11 +54,11 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   def findByName(name: String):Future[Option[Company]] = db.run(companies.filter(_.name === name).result.headOption)
 
-  def update(id: Int, company: Company): Future[Company] = {
+  def update(id: Long, company: Company): Future[Company] = {
     val companyToUpdate: Company = company.copy(Some(id))
     db.run(companies.filter(_.id === id).update(companyToUpdate)).map(_ => (company))
   }
 
-  def delete(id: Int): Future[Unit] = db.run(companies.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(companies.filter(_.id === id).delete).map(_ => ())
 
 }

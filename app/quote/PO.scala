@@ -3,7 +3,7 @@ package quote
 import org.joda.time.DateTime
 import play.api.libs.json.JsValue
 
-case class PO(id: Option[Int] = None,
+case class PO(id: Option[Long] = None,
               purchaseDate: Option[DateTime] = None,
               purchaseTitle: Option[String] = None,
               notes: Option[String] = None,
@@ -11,8 +11,8 @@ case class PO(id: Option[Int] = None,
               dateRequired: DateTime,
               supplierAddress: JsValue, // Snapshot
               deliveryAddress: JsValue, // Snapshot
-              invoiceId: Int,
-              supplier: Int,
-              supplierContact: Int,
-              userId: Int, // Rep as now
+              invoiceId: Long,
+              supplier: Long,
+              supplierContact: Long,
+              userId: Long, // Rep as now
               active: Boolean = true)

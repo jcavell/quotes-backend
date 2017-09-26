@@ -17,7 +17,7 @@ trait UserComponent {
   import profile.api._
 
   class Users(tag: Tag) extends Table[User](tag, "iuser") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def email = column[String]("email")
     def directPhone = column[Option[String]]("direct_phone")
@@ -56,11 +56,11 @@ class UserSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   }
 
 
-  def update(id: Int, user: User): Future[Unit] = {
-    val userToUpdate: User = user.copy(id)
+  def update(id: Long, user: User): Future[Unit] = {
+    val userToUpdate: User = user.copy(Some(id))
     db.run(users.filter(_.id === id).update(userToUpdate)).map(_ => ())
   }
 
-  def delete(id: Int): Future[Unit] = db.run(users.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(users.filter(_.id === id).delete).map(_ => ())
 
 }

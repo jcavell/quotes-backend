@@ -1,7 +1,7 @@
 package customer
 
 case class Customer(
-                    id: Option[Int] = None,
+                    id: Option[Long] = None,
                     firstName: String,
                     lastName: String,
                     salutation: Option[String] = None,
@@ -16,6 +16,6 @@ case class Customer(
                     linkedIn: Option[String] = None,
                     skype: Option[String] = None,
                     active: Boolean = true,
-                    handlerId: Option[Int] = None,
-                    companyId: Int
+                    repId: Option[Long] = None,
+                    companyId: Long
                   ) {}

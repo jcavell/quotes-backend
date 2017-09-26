@@ -17,5 +17,7 @@ case class Customer(
                     skype: Option[String] = None,
                     active: Boolean = true,
                     repId: Option[Long] = None,
-                    companyId: Long
+                    companyId: Long,
+                    invoiceAddressId: Option[Long] = None,
+                    deliveryAddressId: Option[Long] = None
                   ) {}

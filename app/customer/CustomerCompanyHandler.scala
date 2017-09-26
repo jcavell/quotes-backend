@@ -1,5 +1,10 @@
 package customer
 
+import address.Address
 import user.User
 
-case class CustomerCompanyRep(customer: Customer, company: Company, rep: User)
+case class CustomerRecord(
+                           customer: Customer,
+                           company: Company,
+                           rep: User,
+                           invoiceAddress: Option[Address])

@@ -1,4 +1,4 @@
-package company
+package customer
 
 import javax.inject._
 
@@ -7,7 +7,6 @@ import play.api.libs.json._
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 
 
 class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {

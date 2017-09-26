@@ -2,9 +2,9 @@
 
 # --- !Ups
 
-create sequence mock_quote_request_seq start with 1000;
-create table mock_quote_request (
-  id bigint NOT NULL default nextval('mock_quote_request_seq'),
+create sequence enquiry_seq start with 1000;
+create table enquiry (
+  id bigint NOT NULL default nextval('enquiry_seq'),
   request_id bigint not null,
   request_timestamp TIMESTAMP not null,
   product_id bigint not null,
@@ -17,12 +17,23 @@ create table mock_quote_request (
   quantity int not null,
   other_requirements VARCHAR (255),
   imported BOOLEAN,
-  constraint pk_mock_quote_request primary key (id))
+  constraint pk_enquiry primary key (id))
 ;
 
+create sequence xsell_seq start with 1000;
+create table xsell (
+  id bigint NOT NULL default nextval('xsell_seq'),
+  product_id                        bigint not null,
+  constraint pk_xsell primary key (id))
+;
 
 # --- !Downs
 
-drop table if exists mock_quote_request;
+SET REFERENTIAL_INTEGRITY FALSE;
 
-drop sequence if exists mock_quote_request_seq;
+drop table if exists enquiry;
+drop sequence if exists enquiry_seq;
+drop table if exists xsell;
+drop sequence if exists xsell_seq;
+
+SET REFERENTIAL_INTEGRITY TRUE;

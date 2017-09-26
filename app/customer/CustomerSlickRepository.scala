@@ -2,14 +2,13 @@ package customer
 
 import javax.inject.{Inject, Singleton}
 
-import company.CompanySlickRepository
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
-
 import play.api.Logger
+import user.UserSlickRepository
 
 trait CustomersComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
@@ -31,14 +30,15 @@ trait CustomersComponent {
     def facebook = column[Option[String]]("facebook")
     def linkedIn = column[Option[String]]("linked_in")
     def skype = column[Option[String]]("skype")
+    def active = column[Boolean]("active")
     def handlerId = column[Option[Int]]("handler_id")
     def companyId = column[Int]("company_id")
-    def * = (id.?, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, handlerId, companyId) <> (Customer.tupled, Customer.unapply _)
+    def * = (id.?, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, handlerId, companyId) <> (Customer.tupled, Customer.unapply _)
   }
 }
 
 @Singleton()
-class CustomerSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, companyRepository: CompanySlickRepository)(implicit executionContext: ExecutionContext)
+class CustomerSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, companyRepository: CompanySlickRepository, userRepository: UserSlickRepository)(implicit executionContext: ExecutionContext)
   extends CustomersComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
@@ -48,12 +48,15 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def allWithCompany = {
+  def allWithCompanyAndHandler = {
     val query = for {
-      (customer, company) <- customers join companyRepository.companies on(_.companyId === _.id)
-    } yield (customer, company)
+      ((customer, company), handler) <-
+        customers join
+        companyRepository.companies on(_.companyId === _.id) join
+        userRepository.users on(_._1.handlerId === _.id)
+    } yield (customer, company, handler)
 
-    db.run(query.to[List].result)
+    db.run(query.to[List].result.map(l => l.map (t => CustomerCompanyHandler(t._1, t._2, t._3))))
   }
 
   def insert(customer: Customer): Future[Customer] = {

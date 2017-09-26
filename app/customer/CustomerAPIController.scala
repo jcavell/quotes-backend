@@ -2,7 +2,7 @@ package customer
 
 import javax.inject._
 
-import company.Company
+import formats.CustomFormats._
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
@@ -14,13 +14,9 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-  implicit val customerFormat = Json.format[Customer]
-  implicit val companyFormat = Json.format[Company]
-  implicit val customerCompanyFormat = Json.format[(Customer, Company)]
-
   def getCustomers() = Action.async { implicit request =>
-    customerRepository.allWithCompany.map { page =>
-      val json = Json.toJson(page)
+    customerRepository.allWithCompanyAndHandler.map { customerCompanyHandlers =>
+      val json = Json.toJson(customerCompanyHandlers)
       Ok(json)
     }
   }

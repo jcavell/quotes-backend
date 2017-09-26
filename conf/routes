@@ -2,31 +2,36 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /quotes                     quote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
+#GET     /quotes                                asiquote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
 
-GET     /companies                     company.CompanyAPIController.getCompanies()
-POST    /companies                     company.CompanyAPIController.insertCompany()
-PUT     /companies/:id                 company.CompanyAPIController.updateCompany(id:Int)
-DELETE  /companies/:id                 company.CompanyAPIController.deleteCompany(id:Int)
+GET     /companies                             customer.CompanyAPIController.getCompanies()
+POST    /companies                             customer.CompanyAPIController.insertCompany()
+PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Int)
+DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Int)
 
-GET     /customers                     customer.CustomerAPIController.getCustomers()
+GET     /customers                             customer.CustomerAPIController.getCustomers()
 POST    /customers                     customer.CustomerAPIController.insertCustomer()
 PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Int)
 DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Int)
 
-GET     /xsells                     xsell.XsellAPIController.getXsells()
-POST    /xsells                     xsell.XsellAPIController.insertXsell()
-PUT     /xsells/:id                 xsell.XsellAPIController.updateXsell(id:Int)
-DELETE  /xsells/:id                 xsell.XsellAPIController.deleteXsell(id:Int)
+GET     /users                     user.UserAPIController.getUsers()
+POST    /users                     user.UserAPIController.insertUser()
+PUT     /users/:id                             user.UserAPIController.updateUser(id:Int)
+DELETE  /users/:id                             user.UserAPIController.deleteUser(id:Int)
 
-GET     /product                    product.ASIProductAPIController.getASIProduct()
+GET     /xsells                                xsell.XsellAPIController.getXsells()
+POST    /xsells                                xsell.XsellAPIController.insertXsell()
+PUT     /xsells/:id                            xsell.XsellAPIController.updateXsell(id:Int)
+DELETE  /xsells/:id                            xsell.XsellAPIController.deleteXsell(id:Int)
 
-GET     /mock-quote-requests                     quote.MockQuoteRequestAPIController.getMockQuoteRequests()
-GET     /unimported-mock-quote-requests                     quote.MockQuoteRequestAPIController.getUnimportedMockQuoteRequests()
-POST    /mock-quote-requests                    quote.MockQuoteRequestAPIController.insertMockQuoteRequest()
-DELETE  /mock-quote-requests/:id                 quote.MockQuoteRequestAPIController.deleteMockQuoteRequest(id:Int)
+GET     /product                               asiproduct.ASIProductAPIController.getASIProduct()
+
+GET     /mock-enquiries                   customer.MockEnquiryAPIController.getMockEnquiries()
+GET     /unimported-mock-enquiries        customer.MockEnquiryAPIController.getUnimportedMockEnquiries()
+POST    /mock-enquiries                   customer.MockEnquiryAPIController.insertMockEnquiry()
+DELETE  /mock-enquiries/:id               customer.MockEnquiryAPIController.deleteMockEnquiry(id:Int)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file                          controllers.Assets.at(path="/public", file)
 
 

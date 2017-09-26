@@ -1,4 +1,4 @@
-package quote
+package asiquote
 
 /*
 Not currently used

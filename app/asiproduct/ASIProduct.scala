@@ -1,4 +1,4 @@
-package product
+package asiproduct
 
 import play.api.libs.json.JsValue
 

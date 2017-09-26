@@ -1,4 +1,4 @@
-package product
+package asiproduct
 
 import javax.inject._
 
@@ -16,7 +16,7 @@ class ASIProductAPIController @Inject()(ws: WSClient, productGetter: ASIProductG
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   def getASIProduct() = Action.async { implicit request =>
-   productGetter.get(550517407).map { product =>
+   productGetter.get("550517407").map { product =>
      Ok(Json.toJson(product))
    }
   }

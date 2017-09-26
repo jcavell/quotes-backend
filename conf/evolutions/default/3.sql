@@ -2,10 +2,10 @@
 
 # --- !Ups
 
-create type quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN', 'WITH_ACCOUNTS');
+create type asi_quote_status as ENUM ('REQUESTED', 'WITH_CUSTOMER', 'WITH_DESIGN', 'WITH_ACCOUNTS');
 
-create sequence quote_seq start with 1000;
-create table quote (
+create sequence asi_quote_seq start with 1000;
+create table asi_quote (
   id bigint not null default nextval('quote_seq'),
   status VARCHAR (25)  not null,
   request_timestamp TIMESTAMP not null,
@@ -19,21 +19,21 @@ create table quote (
   request_quantity int not null,
   request_other_requirements VARCHAR (3000),
   customer_id bigint not null,
-  constraint pk_quote primary key (id))
+  constraint pk_asi_quote primary key (id))
 ;
-alter table quote add constraint fk_quote_customer_1 foreign key (customer_id) references customer (id) on delete restrict on update restrict;
-create index ix_quote_customer_1 on quote (customer_id);
-create index ix_quote_status on quote(status);
+alter table asi_quote add constraint fk_asi_quote_customer_1 foreign key (customer_id) references customer (id) on delete restrict on update restrict;
+create index ix_asi_quote_customer_1 on asi_quote (customer_id);
+create index ix_asi_quote_status on asi_quote(status);
 
 
-create sequence product_seq start with 1000;
-create table product (
+create sequence asi_product_seq start with 1000;
+create table asi_product (
   internal_id bigint not null default nextval('product_seq'),
   raw_data json,
   Id bigint not null,
   Name VARCHAR(20000),
   Description VARCHAR(10000),
-  constraint pk_product primary key (internal_id))
+  constraint pk_asi_product primary key (internal_id))
 ;
 
 
@@ -45,20 +45,10 @@ create table quote_product (
   product_internal_id bigint not null,
   constraint pk_quote_product primary key (id))
 ;
-alter table quote_product add constraint fk_quote_product_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
-create index ix_quote_product_quote_1 on quote_product (quote_id);
-alter table quote_product add constraint fk_quote_product_product foreign key (product_internal_id) references product (internal_id) on delete restrict on update restrict;
-create index ix_quote_product_product_1 on quote_product (product_internal_id);
-
-
-
-
-create sequence xsell_seq start with 1000;
-create table xsell (
-  id bigint NOT NULL default nextval('xsell_seq'),
-  product_id                        bigint not null,
-  constraint pk_xsell primary key (id))
-;
+alter table asi_quote_product add constraint fk_asi_quote_product_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+create index ix_asi_quote_product_quote_1 on asi_quote_product (quote_id);
+alter table asi_quote_product add constraint fk_asi_quote_product_product foreign key (product_internal_id) references asi_product (internal_id) on delete restrict on update restrict;
+create index ix_asi_quote_product_product_1 on asi_quote_product (product_internal_id);
 
 
 
@@ -66,16 +56,15 @@ create table xsell (
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists quote_product;
-drop table if exists quote;
-drop table if exists product;
-drop table if exists xsell;
+drop table if exists asi_quote_product;
+drop table if exists asi_quote;
+drop table if exists asi_product;
+
 
 drop type if exists quote_status;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
-drop sequence if exists quote_seq;
-drop sequence if exists product_seq;
-drop sequence if exists quote_product_seq;
-drop sequence if exists xsell_seq;
+drop sequence if exists asi_quote_seq;
+drop sequence if exists asi_product_seq;
+drop sequence if exists asi_quote_product_seq;

@@ -1,4 +1,4 @@
-package product
+package asiproduct
 
 import javax.inject.{Inject, Singleton}
 
@@ -17,7 +17,7 @@ trait ASIProductComponent {
 
   import profile.api._
 
-  class ASIProducts(tag: Tag) extends Table[ASIProduct](tag, "product") {
+  class ASIProducts(tag: Tag) extends Table[ASIProduct](tag, "asi_product") {
     def internalId = column[Option[Int]]("internal_id", O.PrimaryKey, O.AutoInc)
     def rawData = column[JsValue]("raw_data")
     def id = column[Long]("id")

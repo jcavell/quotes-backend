@@ -2,7 +2,7 @@ package db
 
 import com.github.tminglei.slickpg._
 import play.api.libs.json.{JsValue, Json}
-import quote.Status
+import asiquote.Status
 import slick.basic.Capability
 import slick.driver.JdbcProfile
 

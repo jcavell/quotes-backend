@@ -1,4 +1,4 @@
-package product
+package asiproduct
 
 import java.sql.PreparedStatement
 import javax.inject.Inject

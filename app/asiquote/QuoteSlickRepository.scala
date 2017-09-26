@@ -1,4 +1,4 @@
-package quote
+package asiquote
 
 import javax.inject.{Inject, Singleton}
 
@@ -17,12 +17,12 @@ trait QuotesComponent {
 
   import profile.api._
 
-  class Quotes(tag: Tag) extends Table[Quote](tag, "quote") {
+  class Quotes(tag: Tag) extends Table[Quote](tag, "asi_quote") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def status = column[String]("status")
     def requestTimestamp = column[DateTime]("request_timestamp")
     def requestDateRequired = column[DateTime]("request_date_required")
-    def requestProductId = column[Long]("request_product_id")
+    def requestProductId = column[String]("request_product_id")
     def requestCustomerFirstName = column[String]("request_customer_first_name")
     def requestCustomerLastName = column[String]("request_customer_last_name")
     def requestCustomerEmail = column[String]("request_customer_email")

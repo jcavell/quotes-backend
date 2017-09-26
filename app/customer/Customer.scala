@@ -15,6 +15,7 @@ case class Customer(
                     facebook: Option[String] = None,
                     linkedIn: Option[String] = None,
                     skype: Option[String] = None,
+                    active: Boolean = true,
                     handlerId: Option[Int] = None,
                     companyId: Int
                   ) {}

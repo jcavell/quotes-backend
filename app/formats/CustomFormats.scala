@@ -1,13 +1,13 @@
 package formats
 
-import company.Company
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import customer.{Customer, CustomerCompany}
+import customer.{Company, Customer, CustomerCompanyHandler, Enquiry}
 import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
-import product.ASIProduct
-import quote.{Quote, QuotePage, QuoteWithProducts, Status}
+import asiproduct.ASIProduct
+import asiquote.{Quote, QuotePage, QuoteWithProducts, Status}
+import user.User
 
 object CustomFormats {
 
@@ -18,10 +18,13 @@ object CustomFormats {
 
   implicit val customerFormat = Json.format[Customer]
   implicit val companyFormat = Json.format[Company]
-  implicit val customerCompanyFormat = Json.format[CustomerCompany]
+  implicit val userFormat = Json.format[User]
+  implicit val customerCompanyFormat = Json.format[CustomerCompanyHandler]
 
   implicit val quoteFormat = Json.format[Quote]
   implicit val productFormat = Json.format[ASIProduct]
   implicit val productCustomerPageFormat = Json.format[QuoteWithProducts]
   implicit val quotePageFormat = Json.format[QuotePage]
+
+  implicit val mockEnquiryFormat = Json.format[Enquiry]
 }

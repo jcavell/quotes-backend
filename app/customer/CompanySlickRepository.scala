@@ -1,4 +1,4 @@
-package company
+package customer
 
 import javax.inject.{Inject, Singleton}
 
@@ -16,11 +16,21 @@ trait CompaniesComponent {
   class Companies(tag: Tag) extends Table[Company](tag, "company") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def * = (id.?, name) <> (Company.tupled, Company.unapply _)
+    def phone1 = column[Option[String]]("phone1")
+    def phone2 = column[Option[String]]("phone2")
+    def phone3 = column[Option[String]]("phone3")
+    def website = column[Option[String]]("website")
+    def twitter = column[Option[String]]("twitter")
+    def facebook = column[Option[String]]("facebook")
+    def linkedIn = column[Option[String]]("linked_in")
+    def source = column[Option[String]]("source")
+    def clientOrSupplier = column[String]("client_or_supplier")
+    def active = column[Boolean]("active")
+
+    def * = (id.?, name, phone1, phone2, phone3, website, twitter, facebook, linkedIn, source, clientOrSupplier, active) <> (Company.tupled, Company.unapply _)
   }
 
 }
-
 @Singleton()
 class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
   extends CompaniesComponent

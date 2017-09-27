@@ -17,7 +17,7 @@ trait QuotesComponent {
 
   import profile.api._
 
-  class Quotes(tag: Tag) extends Table[Quote](tag, "asi_quote") {
+  class Quotes(tag: Tag) extends Table[ASIQuote](tag, "asi_quote") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def status = column[String]("status")
     def requestTimestamp = column[DateTime]("request_timestamp")
@@ -31,7 +31,7 @@ trait QuotesComponent {
     def requestQuantity = column[Int]("request_quantity")
     def requestOtherRequirements = column[Option[String]]("request_other_requirements")
     def customerId = column[Long]("customer_id")
-    def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (ASIQuote.tupled, ASIQuote.unapply _)
   }
 
 }
@@ -45,9 +45,9 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   val quotes = TableQuery[Quotes]
 
-  def all: Future[List[Quote]] = db.run(quotes.to[List].result)
+  def all: Future[List[ASIQuote]] = db.run(quotes.to[List].result)
 
-  def insert(quote: Quote): Future[Quote] = {
+  def insert(quote: ASIQuote): Future[ASIQuote] = {
     val action = quotes returning quotes.map {_.id} += quote
 
     db.run(action.asTry).map { result =>
@@ -58,7 +58,7 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
     }
   }
 
-  def update(quote: Quote): Future[Quote] = {
+  def update(quote: ASIQuote): Future[ASIQuote] = {
     val action = quotes.filter(_.id === quote.id).update(quote)
 
     db.run(action.asTry).map { result =>

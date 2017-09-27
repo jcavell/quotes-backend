@@ -14,6 +14,11 @@ POST    /customers                     customer.CustomerAPIController.insertCust
 PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Int)
 DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Int)
 
+GET     /quotes                             quote.QuoteAPIController.getQuotes()
+POST    /quotes                             quote.QuoteAPIController.insertQuote()
+PUT     /quotes/:id                         quote.QuoteAPIController.updateQuote(id:Int)
+DELETE  /quotes/:id                         quote.QuoteAPIController.deleteQuote(id:Int)
+
 GET     /users                     user.UserAPIController.getUsers()
 POST    /users                     user.UserAPIController.insertUser()
 PUT     /users/:id                             user.UserAPIController.updateUser(id:Int)

@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 import customer.{Company, Customer}
 import play.api.db.DBApi
 import asiproduct.{ASIProduct, ASIProductAnormRepository}
-import asiquote.Status.Status
+import asiquote.ASIStatus.Status
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
@@ -17,7 +17,7 @@ import scala.util.{Failure, Try}
 
 
 
-case class QuoteWithProducts(quote: Quote, company: Company, customer: Customer, products: ListBuffer[ASIProduct])
+case class QuoteWithProducts(quote: ASIQuote, company: Company, customer: Customer, products: ListBuffer[ASIProduct])
 
 case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)

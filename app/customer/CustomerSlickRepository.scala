@@ -51,7 +51,7 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def allWithCompanyAndRep = {
+  def getCustomerRecords = {
     val query = for {
       ((((customer, company), rep), invoiceAddress), deliveryAddress) <-
         customers join

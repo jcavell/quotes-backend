@@ -2,7 +2,7 @@ package db
 
 import com.github.tminglei.slickpg._
 import play.api.libs.json.{JsValue, Json}
-import asiquote.Status
+import asiquote.ASIStatus
 import slick.basic.Capability
 import slick.driver.JdbcProfile
 
@@ -29,11 +29,11 @@ trait PgProfileWithAddons extends ExPostgresProfile
   }
 
   trait EnumImplicits {
-    implicit val statusTypeMapper = createEnumJdbcType("quote_status", Status)
-    implicit val statusListTypeMapper = createEnumListJdbcType("quote_status", Status)
+    implicit val statusTypeMapper = createEnumJdbcType("quote_status", ASIStatus)
+    implicit val statusListTypeMapper = createEnumListJdbcType("quote_status", ASIStatus)
 
-    implicit val statusColumnExtensionMethodsBuilder = createEnumColumnExtensionMethodsBuilder(Status)
-    implicit val statusOptionColumnExtensionMethodsBuilder = createEnumOptionColumnExtensionMethodsBuilder(Status)
+    implicit val statusColumnExtensionMethodsBuilder = createEnumColumnExtensionMethodsBuilder(ASIStatus)
+    implicit val statusOptionColumnExtensionMethodsBuilder = createEnumOptionColumnExtensionMethodsBuilder(ASIStatus)
   }
 
 }

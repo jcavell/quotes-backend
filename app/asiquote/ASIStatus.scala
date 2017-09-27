@@ -3,7 +3,7 @@ package asiquote
 /*
 Not currently used
  */
-object Status extends Enumeration {
+object ASIStatus extends Enumeration {
   type Status = Value
   val REQUESTED, WITH_CUSTOMER, WITH_DESIGN, WITH_ACCOUNTS = Value
 }

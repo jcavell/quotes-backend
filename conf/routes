@@ -19,6 +19,9 @@ POST    /quotes                             quote.QuoteAPIController.insertQuote
 PUT     /quotes/:id                         quote.QuoteAPIController.updateQuote(id:Int)
 DELETE  /quotes/:id                         quote.QuoteAPIController.deleteQuote(id:Int)
 
+GET     /quotes/:quoteId/line-items                 quote.QuoteAPIController.getQuoteLineItems(quoteId:Long)
+
+
 GET     /users                     user.UserAPIController.getUsers()
 POST    /users                     user.UserAPIController.insertUser()
 PUT     /users/:id                             user.UserAPIController.updateUser(id:Int)

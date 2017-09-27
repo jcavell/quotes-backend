@@ -42,8 +42,8 @@ trait QuotesComponent {
 
     def * = (id.?, status, title, quoteCreatedDate, quoteSentDate, saleSentDate, invoiceSentDate, quoteLossReason, dateRequired, customerName, customerEmail, paymentTerms, paymentDueDate, paymentStatus, notes, invoiceAddressId, deliveryAddressId, customerId, repId, assignedUserId, enquiryId, active) <> (Quote.tupled, Quote.unapply _)
   }
-
 }
+
 @Singleton()
 class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
   extends QuotesComponent

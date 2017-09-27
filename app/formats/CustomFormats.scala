@@ -7,8 +7,8 @@ import customer.{Company, Customer, CustomerRecord, Enquiry}
 import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
-import asiquote.{ASIQuote, QuotePage, QuoteWithProducts, ASIStatus}
-import quote.Quote
+import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
+import quote.{Quote, QuoteLineItem}
 import user.User
 
 object CustomFormats {
@@ -18,6 +18,7 @@ object CustomFormats {
   implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ssZ")
 
+  implicit val quoteLineItemFormat = Json.format[QuoteLineItem]
   implicit val quoteFormat = Json.format[Quote]
 
   implicit val customerFormat = Json.format[Customer]

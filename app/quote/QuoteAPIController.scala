@@ -10,10 +10,17 @@ import formats.CustomFormats._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteLineItemRepository: QuoteLineItemSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getQuotes() = Action.async { implicit request =>
     quoteRepository.all.map { page =>
+      val json = Json.toJson(page)
+      Ok(json)
+    }
+  }
+
+  def getQuoteLineItems(quoteId: Long) = Action.async { implicit request =>
+    quoteLineItemRepository.findByQuoteId(quoteId).map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }

@@ -46,7 +46,7 @@ insert into contact(id, name, email, direct_phone, is_main_contact, supplier_id,
 
 insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (1,'Tommy', 'Tom Tom','Lord Tomathan Cavell', 'tommy@gmail.com','0123123123123', 'CEO', true, '@jonnycavell', 1, 2, 1, 1, false);
 insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id,rep_id, company_id, active) values (2,'Billy', 'Bill Bill','Bill', 'bill@gmail.com','999999999', 'President', true, null, 3, 4, 2, 2, true);
-insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby', 'Bob Bob','Mr Bob', 'cleaner@gmail.com','+44 888888 777', 'Cleaner', false, '@cleaner', 5, 6, 2, 3, true);
+insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby', 'Bob Bob','Mr Bob', 'cleaner@gmail.com','+44 888888 777', 'Cleaner', false, '@cleaner', null, null, 2, 3, true);
 
 
 

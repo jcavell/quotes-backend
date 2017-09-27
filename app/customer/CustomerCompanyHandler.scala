@@ -7,4 +7,5 @@ case class CustomerRecord(
                            customer: Customer,
                            company: Company,
                            rep: User,
-                           invoiceAddress: Option[Address])
+                           invoiceAddress: Option[Address],
+                           deliveryAddress: Option[Address])

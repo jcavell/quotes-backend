@@ -53,14 +53,15 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def allWithCompanyAndRep = {
     val query = for {
-      (((customer, company), rep), invoiceAddress) <-
+      ((((customer, company), rep), invoiceAddress), deliveryAddress) <-
         customers join
         companyRepository.companies on(_.companyId === _.id) join
         userRepository.users on(_._1.repId === _.id) joinLeft
-        addressRepository.addresses on(_._1._1.invoiceAddressId === _.id)
-    } yield (customer, company, rep, invoiceAddress)
+        addressRepository.addresses on(_._1._1.invoiceAddressId === _.id) joinLeft
+          addressRepository.addresses on(_._1._1._1.deliveryAddressId === _.id)
+    } yield (customer, company, rep, invoiceAddress, deliveryAddress)
 
-    db.run(query.to[List].result.map(l => l.map (t => CustomerRecord(t._1, t._2, t._3, t._4))))
+    db.run(query.to[List].result.map(l => l.map (t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
   }
 
   def insert(customer: Customer): Future[Customer] = {

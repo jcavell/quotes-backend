@@ -33,7 +33,7 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
     )
   }
 
-  def updateCustomer(id: Int) = Action.async(parse.json) { implicit request =>
+  def updateCustomer(id: Long) = Action.async(parse.json) { implicit request =>
     request.body.validate[Customer].fold(
       errors => Future(BadRequest(errors.mkString)),
       customer => {
@@ -44,7 +44,7 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
     )
   }
 
-  def deleteCustomer(id: Int) = Action.async { implicit request =>
+  def deleteCustomer(id: Long) = Action.async { implicit request =>
     customerRepository.delete(id).map { a =>
       Ok("Deleted Customer")
     }

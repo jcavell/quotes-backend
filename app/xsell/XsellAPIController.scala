@@ -33,7 +33,7 @@ class XsellAPIController @Inject()(xsellRepo: XsellSlickRepository, cc: Controll
     )
   }
 
-  def updateXsell(id: Int) = Action(parse.json) { implicit request =>
+  def updateXsell(id:Long) = Action(parse.json) { implicit request =>
     request.body.validate[Xsell].fold(
       errors => BadRequest(errors.mkString),
       xsell => {
@@ -43,7 +43,7 @@ class XsellAPIController @Inject()(xsellRepo: XsellSlickRepository, cc: Controll
     )
   }
 
-  def deleteXsell(id: Int) = Action.async { implicit request =>
+  def deleteXsell(id:Long) = Action.async { implicit request =>
     xsellRepo.delete(id).map { a =>
       Ok("Deleted Xsell")
     }

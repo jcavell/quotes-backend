@@ -55,6 +55,8 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   def all: Future[List[Quote]] = db.run(quotes.to[List].result)
 
+  def get(quoteId: Long):Future[Option[Quote]] = db.run(quotes.filter(_.id === quoteId).result.headOption)
+
   def insert(quote: Quote): Future[Quote] = {
     val action = quotes returning quotes.map {_.id} += quote
 

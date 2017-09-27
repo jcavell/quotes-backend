@@ -6,38 +6,42 @@
 
 GET     /companies                             customer.CompanyAPIController.getCompanies()
 POST    /companies                             customer.CompanyAPIController.insertCompany()
-PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Int)
-DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Int)
+PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Long)
+DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Long)
 
 GET     /customers                             customer.CustomerAPIController.getCustomers()
 POST    /customers                     customer.CustomerAPIController.insertCustomer()
-PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Int)
-DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Int)
+PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Long)
+DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Long)
 
 GET     /quotes                             quote.QuoteAPIController.getQuotes()
+GET     /quotes/:id                             quote.QuoteAPIController.getQuote(id:Long)
 POST    /quotes                             quote.QuoteAPIController.insertQuote()
-PUT     /quotes/:id                         quote.QuoteAPIController.updateQuote(id:Int)
-DELETE  /quotes/:id                         quote.QuoteAPIController.deleteQuote(id:Int)
+PUT     /quotes/:id                         quote.QuoteAPIController.updateQuote(id:Long)
+DELETE  /quotes/:id                         quote.QuoteAPIController.deleteQuote(id:Long)
 
-GET     /quotes/:quoteId/line-items                 quote.QuoteAPIController.getQuoteLineItems(quoteId:Long)
+GET     /quotes/:quoteId/line-items                 quote.QuoteAPIController.getLineItems(quoteId:Long)
+POST    /quote-line-items                             quote.QuoteAPIController.insertQuoteLineItem()
+PUT     /quote-line-items/:id                         quote.QuoteAPIController.updateQuoteLineItem(id:Long)
+DELETE  /quote-line-items/:id                         quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
 
 
 GET     /users                     user.UserAPIController.getUsers()
 POST    /users                     user.UserAPIController.insertUser()
-PUT     /users/:id                             user.UserAPIController.updateUser(id:Int)
-DELETE  /users/:id                             user.UserAPIController.deleteUser(id:Int)
+PUT     /users/:id                             user.UserAPIController.updateUser(id:Long)
+DELETE  /users/:id                             user.UserAPIController.deleteUser(id:Long)
 
 GET     /xsells                                xsell.XsellAPIController.getXsells()
 POST    /xsells                                xsell.XsellAPIController.insertXsell()
-PUT     /xsells/:id                            xsell.XsellAPIController.updateXsell(id:Int)
-DELETE  /xsells/:id                            xsell.XsellAPIController.deleteXsell(id:Int)
+PUT     /xsells/:id                            xsell.XsellAPIController.updateXsell(id:Long)
+DELETE  /xsells/:id                            xsell.XsellAPIController.deleteXsell(id:Long)
 
 GET     /product                               asiproduct.ASIProductAPIController.getASIProduct()
 
 GET     /mock-enquiries                   customer.MockEnquiryAPIController.getMockEnquiries()
 GET     /unimported-mock-enquiries        customer.MockEnquiryAPIController.getUnimportedMockEnquiries()
 POST    /mock-enquiries                   customer.MockEnquiryAPIController.insertMockEnquiry()
-DELETE  /mock-enquiries/:id               customer.MockEnquiryAPIController.deleteMockEnquiry(id:Int)
+DELETE  /mock-enquiries/:id               customer.MockEnquiryAPIController.deleteMockEnquiry(id:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                          controllers.Assets.at(path="/public", file)

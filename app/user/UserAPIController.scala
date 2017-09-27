@@ -33,7 +33,7 @@ class UserAPIController @Inject()(userRepo: UserSlickRepository, cc: ControllerC
     )
   }
 
-  def updateUser(id: Int) = Action(parse.json) { implicit request =>
+  def updateUser(id: Long) = Action(parse.json) { implicit request =>
     request.body.validate[User].fold(
       errors => BadRequest(errors.mkString),
       user => {
@@ -43,7 +43,7 @@ class UserAPIController @Inject()(userRepo: UserSlickRepository, cc: ControllerC
     )
   }
 
-  def deleteUser(id: Int) = Action.async { implicit request =>
+  def deleteUser(id: Long) = Action.async { implicit request =>
     userRepo.delete(id).map { a =>
       Ok("Deleted User")
     }

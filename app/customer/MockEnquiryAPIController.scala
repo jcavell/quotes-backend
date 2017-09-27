@@ -35,7 +35,7 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: EnquiryRepositor
     )
   }
 
-  def deleteMockEnquiry(id: Int) = Action.async { implicit request =>
+  def deleteMockEnquiry(id: Long) = Action.async { implicit request =>
     mockEnquiryRepository.delete(id).map { a =>
       Ok("Deleted MockEnquiry")
     }

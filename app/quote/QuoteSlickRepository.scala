@@ -49,16 +49,22 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   def all: Future[List[Quote]] = db.run(quotes.to[List].result)
 
-  def getQuoteRecords = {
-    val query = for {
+  def getQuoteRecord(quoteId: Long) = getQuoteRecords(Some(quoteId)) map (_.headOption)
+
+  def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
+    val query =
+    for {
       (((quote, quoteMeta), invoiceAddress), deliveryAddress) <-
       quotes join
-      quoteMetaSlickRepository.quoteMetas on(_.id === _.quoteId) joinLeft
-      addressSlickRepository.addresses on (_._1.invoiceAddressId === _.id) joinLeft
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft
+        addressSlickRepository.addresses on (_._1.invoiceAddressId === _.id) joinLeft
         addressSlickRepository.addresses on (_._1._1.deliveryAddressId === _.id)
     } yield (quote, quoteMeta, invoiceAddress, deliveryAddress)
 
-    db.run(query.to[List].result)
+    maybeQuoteId match {
+      case Some(quoteId) => db.run(query.filter(_._1.id === quoteId).result.map(l => l.map (t => QuoteRecord(t._1, t._2, t._3, t._4))))
+      case None => db.run(query.to[List].result.map(l => l.map (t => QuoteRecord(t._1, t._2, t._3, t._4))))
+    }
   }
 
   def get(quoteId: Long):Future[Option[Quote]] = db.run(quotes.filter(_.id === quoteId).result.headOption)

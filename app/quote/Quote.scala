@@ -8,6 +8,8 @@ case class Quote(id: Option[Long] = None,
                  customerName: String, // snapshot
                  customerEmail: String, // snapshot
                  specialInstructions: Option[String] = None,
+
+                 // relations
                  invoiceAddressId: Option[Long] = None, // Invoice address just for this quote
                  deliveryAddressId: Option[Long] = None, // Delivery address just for this quote
                  customerId: Long, // Customer as now (references Company)

@@ -20,7 +20,18 @@ class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteL
   }
 
   def getQuote(quoteId: Long) = Action.async { implicit request =>
-    quoteRepository.getQuoteRecord(quoteId).map { page =>
+
+    val quoteAndLineItems = for{
+      quoteRecord <- quoteRepository.getQuoteRecord(quoteId)
+      quoteLineItems <- quoteLineItemRepository.findByQuoteId(quoteId)
+    } yield (quoteRecord, quoteLineItems)
+
+    quoteAndLineItems.map { ql =>
+      val page = ql._1 match{
+        case Some(quoteRecord) => Some(quoteRecord.copy(lineItems = Some(ql._2)))
+        case None => None
+      }
+
       val json = Json.toJson(page)
       Ok(json)
     }

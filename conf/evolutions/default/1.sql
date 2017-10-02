@@ -115,7 +115,7 @@ create table enquiry (
 create sequence xsell_seq start with 1000;
 create table xsell (
   id bigint NOT NULL default nextval('xsell_seq'),
-  product_id                        bigint not null,
+  product_id bigint not null,
   constraint pk_xsell primary key (id))
 ;
 
@@ -124,26 +124,17 @@ create table xsell (
 create SEQUENCE quote_seq start with 1000;
 create table quote(
   id bigint NOT NULL default nextval('quote_seq'),
-  status varchar(10) NOT NULL default 'created',
   title varchar(150) NOT NULL ,
-  quote_created_date TIMESTAMP NOT NULL DEFAULT now(),
-  quote_sent_date TIMESTAMP,
-  sale_sent_date TIMESTAMP,
-  invoice_sent_date TIMESTAMP,
-  quote_loss_reason VARCHAR(50),
+  created_date TIMESTAMP NOT NULL DEFAULT now(),
   date_required TIMESTAMP NOT NULL,
   customer_name VARCHAR(255) NOT NULL,
   customer_email VARCHAR(200) NOT NULL ,
-  payment_terms VARCHAR(100),
-  payment_due_date TIMESTAMP,
-  payment_status VARCHAR(20),
   notes VARCHAR(2000),
   special_instructions VARCHAR(1000),
   invoice_address_id BIGINT,
   delivery_address_id BIGINT,
   customer_id BIGINT NOT NULL ,
   rep_id BIGINT NOT NULL,
-  assigned_user_id BIGINT,
   enquiry_id BIGINT,
   active BOOLEAN default true,
   constraint pk_quote primary key (id)
@@ -160,11 +151,33 @@ create index ix_quote_customer_1 on quote (customer_id);
 alter table quote add constraint fk_quote_rep foreign key (rep_id) references iuser (id) on delete restrict on update restrict;
 create index ix_quote_rep_1 on quote (rep_id);
 
-alter table quote add constraint fk_quote_assigned_user foreign key (assigned_user_id) references iuser (id) on delete restrict on update restrict;
-create index ix_quote_assigned_user_1 on quote (assigned_user_id);
-
 alter table quote add constraint fk_quote_enquiry foreign key (enquiry_id) references enquiry (id) on delete restrict on update restrict;
 create index ix_quote_enquiry_1 on quote (enquiry_id);
+
+
+create SEQUENCE quote_meta_seq start with 1000;
+create table quote_meta(
+  id bigint NOT NULL default nextval('quote_meta_seq'),
+  status varchar(10) NOT NULL default 'NEW',
+  stage varchar(10) NOT NULL default 'QUOTE',
+  quote_loss_reason VARCHAR(50),
+  quote_sent_date TIMESTAMP,
+  sale_sent_date TIMESTAMP,
+  invoice_sent_date TIMESTAMP,
+  payment_terms VARCHAR(100),
+  payment_due_date TIMESTAMP,
+  payment_status VARCHAR(20),
+  assigned_group varchar(20),
+  assigned_user_id BIGINT,
+  quote_id BIGINT,
+  constraint pk_quote_meta primary key (id)
+);
+alter table quote_meta add constraint fk_quote_meta_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+create index ix_quote_meta_quote_id_1 on quote_meta (quote_id);
+
+alter table quote_meta add constraint fk_quote_meta_assigned_user foreign key (assigned_user_id) references iuser (id) on delete restrict on update restrict;
+create index ix_quote_meta_assigned_user_1 on quote_meta (assigned_user_id);
+
 
 
 create SEQUENCE supplier_seq start with 1000;

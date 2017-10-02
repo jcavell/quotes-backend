@@ -52,7 +52,9 @@ insert into customer (id,first_name, last_name, salutation, email,mobile_phone,p
 insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id,rep_id, company_id, active) values (2,'Billy', 'Bill Bill','Bill', 'bill@gmail.com','999999999', 'President', true, null, 3, 4, 2, 2, true);
 insert into customer (id,first_name, last_name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby', 'Bob Bob','Mr Bob', 'cleaner@gmail.com','+44 888888 777', 'Cleaner', false, '@cleaner', null, null, 2, 3, true);
 
-insert into quote(id, status, title, date_required, customer_name, customer_email, invoice_address_id, delivery_address_id, customer_id, rep_id, assigned_user_id) values (1, 'new', 'Quote for Tommy', '2017-10-22 23:01:11', 'Bobby Sands', 'bobby@temp.com', 9, 10, 3, 2, 1);
+insert into quote(id, title, date_required, customer_name, customer_email, invoice_address_id, delivery_address_id, customer_id, rep_id) values (1, 'Quote for Tommy', '2017-10-22 23:01:11', 'Bobby Sands', 'bobby@temp.com', 9, 10, 3, 2);
+
+insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (1, 1, 'NEW', 'QUOTE', 'REP', 1);
 
 insert into quote_line_item(id, sku, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (1, 'SKU101', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 1, 2);
 insert into quote_line_item(id, sku, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (2, 'SKU102', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 1, 1);

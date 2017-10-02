@@ -1,0 +1,18 @@
+{
+  "productId": "123123",
+  "productName": "blah blah",
+  "productDescription": "blah blah blah",
+  "category": "promotional-pens/metal-promotional-pens/metal-promotional-pens",
+  "productImages": [
+    {
+      "heightPx": 120,
+      "widthPx": 200,
+      "URL": "https://www.everythingbranded.co.uk/images/133.jpg"
+    },
+    {
+      "heightPx": 120,
+      "widthPx": 200,
+      "URL": "https://www.everythingbranded.co.uk/images/134.jpg"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "enquiryId": 1,
+    "enquiryTimestamp": "2017-08-28T13:41:25+0100",
+    "productId": "550517409",
+    "colour": "Red",
+    "customerName": "Baggy McBaggy",
+    "customerTel": "111111000000",
+    "customerEmail": "baggy@gmail.com",
+    "company": "Bags Ltd",
+    "dateRequired": "2017-10-28T13:41:25+0100",
+    "quantity": 5000,
+    "otherRequirements": "I want a great bag ASAP please",
+    "uploadedFileURL": "https://www.everythingbranded.co.uk/uploads/134.jpg",
+    "repEmail": "billy@everythingbranded.co.uk",
+    "xsellProductIds": [
+      "123213233",
+      "432131321"
+    ]
+  }
+]

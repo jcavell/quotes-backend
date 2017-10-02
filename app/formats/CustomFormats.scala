@@ -8,7 +8,7 @@ import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
 import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
-import quote.{Quote, QuoteLineItem}
+import quote.{Quote, QuoteLineItem, QuoteMeta}
 import user.User
 
 object CustomFormats {
@@ -20,6 +20,7 @@ object CustomFormats {
 
   implicit val quoteLineItemFormat = Json.format[QuoteLineItem]
   implicit val quoteFormat = Json.format[Quote]
+  implicit val quoteMetaFormat = Json.format[QuoteMeta]
 
   implicit val customerFormat = Json.format[Customer]
   implicit val companyFormat = Json.format[Company]

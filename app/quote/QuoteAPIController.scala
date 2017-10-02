@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteLineItemRepository: QuoteLineItemSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getQuotes() = Action.async { implicit request =>
-    quoteRepository.all.map { page =>
+    quoteRepository.getQuoteRecords.map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }

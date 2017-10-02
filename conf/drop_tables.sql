@@ -8,10 +8,14 @@ ALTER TABLE public.quote DROP CONSTRAINT fk_quote_customer;
 ALTER TABLE public.quote DROP CONSTRAINT fk_quote_rep;
 ALTER TABLE public.quote DROP CONSTRAINT fk_quote_assigned_user;
 ALTER TABLE public.quote DROP CONSTRAINT fk_quote_enquiry;
+ALTER TABLE public.quote_meta DROP CONSTRAINT fk_quote_meta_quote;
+
 ALTER TABLE public.customer DROP CONSTRAINT fk_customer_delivery_address;
 ALTER TABLE public.customer DROP CONSTRAINT fk_customer_invoice_address;
 ALTER TABLE public.customer DROP CONSTRAINT fk_customer_handler_1;
 ALTER TABLE public.customer DROP CONSTRAINT fk_customer_company_1;
+
+
 DROP TABLE public.quote_line_item;
 DROP TABLE public.contact;
 DROP TABLE public.quote;
@@ -23,7 +27,7 @@ DROP TABLE public.company;
 DROP TABLE public.address;
 DROP TABLE public.xsell;
 DROP TABLE public.play_evolutions;
-
+DROP TABLE IF EXISTS QUOTE_META;
 
 DROP SEQUENCE public.address_seq RESTRICT;
 DROP SEQUENCE public.company_seq RESTRICT;
@@ -33,6 +37,7 @@ DROP SEQUENCE public.enquiry_seq RESTRICT;
 DROP SEQUENCE public.iuser_seq RESTRICT;
 DROP SEQUENCE public.quote_line_item_seq RESTRICT;
 DROP SEQUENCE public.quote_seq RESTRICT;
+DROP SEQUENCE IF EXISTS public.quote_meta_seq RESTRICT;
 DROP SEQUENCE public.supplier_seq RESTRICT;
 DROP SEQUENCE public.xsell_seq RESTRICT;
 

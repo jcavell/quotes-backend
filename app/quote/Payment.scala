@@ -4,9 +4,9 @@ import org.joda.time.DateTime
 
 case class Payment(
                     id: Option[Long] = None,
-                    quoteIdId: Long,
+                    quoteId: Long,
                     amount: BigDecimal,
-                    ref: Option[String],
+                    paymentRef: Option[String],
                     paymentType: String, // BACs
                     paymentDate: DateTime
                   ) {

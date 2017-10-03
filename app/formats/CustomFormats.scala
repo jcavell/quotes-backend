@@ -20,6 +20,8 @@ object CustomFormats {
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ssZ")
 
   implicit val paymentStatusesReads = Reads.enumNameReads(PaymentStatuses)
+  implicit val quoteStatusesReads = Reads.enumNameReads(QuoteStatuses)
+  implicit val quoteStagesReads = Reads.enumNameReads(QuoteStages)
 
   implicit val addressFormat = Json.format[Address]
   implicit val quoteLineItemFormat = Json.format[QuoteLineItem]

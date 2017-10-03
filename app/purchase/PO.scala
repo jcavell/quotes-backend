@@ -10,10 +10,10 @@ case class PO(id: Option[Long] = None,
               invoiceReceived: Boolean,
               supplierAddressId: Long, // Snapshot supplier address just for this quote
               deliveryAddressId: Long, // Snapshot delivery address just for this PO
-              invoiceId: Long,
-              supplier: Long,
-              supplierContact: Long,
-              userId: Long, // Rep as now
+              quoteId: Long,
+              supplierId: Long, // Supplier co., as now
+              contactId: Long, // Supplier contact, as now
+              repId: Long, // Rep as now
 
               // common fields
               createdDate: Option[DateTime] = None,

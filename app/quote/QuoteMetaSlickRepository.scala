@@ -7,6 +7,8 @@ import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import quote.PaymentStatuses.PaymentStatus
+import quote.QuoteStages.QuoteStage
+import quote.QuoteStatuses.QuoteStatus
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,8 +22,8 @@ trait QuoteMetasComponent {
 
   class QuoteMetas(tag: Tag) extends Table[QuoteMeta](tag, "quote_meta") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def status = column[String]("status")
-    def stage = column[String]("stage")
+    def status = column[QuoteStatus]("status")
+    def stage = column[QuoteStage]("stage")
     def quoteLossReason = column[Option[String]]("quote_loss_reason")
     def quoteSentDate = column[Option[DateTime]]("quote_sent_date")
     def saleSentDate = column[Option[DateTime]]("sale_sent_date")

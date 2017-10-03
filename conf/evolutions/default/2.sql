@@ -42,6 +42,14 @@ insert into address(id, name, company, fao, line1, line2, townCity, county, post
 insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (10, 'Tom Delivery Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
+insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (11, 'Supplier 2 address for PO', 'Supplier 2', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+
+insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (12, 'Tom Delivery Address for PO', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+
+insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (13, 'Supplier 1 address for PO', 'Supplier 1', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+
+
+
 
 insert into contact(id, name, email, direct_phone, is_main_contact, supplier_id, po_address_id) values (1, 'Mr Supplier 1', 'mrsupplier1@gmail.com', '11111', true, 1, 7);
 
@@ -57,7 +65,16 @@ insert into quote(id, title, date_required, customer_name, customer_email, invoi
 insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (1, 1, 'NEW', 'QUOTE', 'REP', 1);
 
 insert into quote_line_item(id, sku, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (1, 'SKU101', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 1, 2);
+
 insert into quote_line_item(id, sku, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (2, 'SKU102', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 1, 1);
+
+insert into po(id, purchase_title, date_required, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (1, 'Lovely brush - purchased', '2017-10-22 23:01:11', 11, 12, 1, 1, 2, 1);
+
+insert into po(id, purchase_title, date_required, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (2, 'Lovely pudding - purchased', '2017-10-22 23:01:11', 13, 12, 1, 2, 1, 1);
+
+insert into po_line_item(id, sku, quantity, description, cost, vat, quote_line_item_id, po_id) values (1, 'SKU101', 300, 'Bottle Opener', 1.23, 0.20, 1, 1);
+
+insert into po_line_item(id, sku, quantity, description, cost, vat, quote_line_item_id, po_id) values (2, 'SKU102', 300, 'Lego', 1.23, 0.20, 2, 2);
 
 insert into xsell(id, product_id) values (1, 550309392);
 insert into xsell(id, product_id) values (2, 551177353);

@@ -2,7 +2,9 @@
 
 # --- !Ups
 
-
+create TYPE pay_status as ENUM ('UNPAID', 'PART_PAID', 'PAID');
+create TYPE quote_status as ENUM ('NEW');
+create TYPE quote_stage as ENUM ('QUOTE', 'SALES', 'INVOICE');
 
 create sequence iuser_seq start with 1000;
 create table iuser (
@@ -156,12 +158,12 @@ create index ix_quote_rep_1 on quote (rep_id);
 alter table quote add constraint fk_quote_enquiry foreign key (enquiry_id) references enquiry (id) on delete restrict on update restrict;
 create index ix_quote_enquiry_1 on quote (enquiry_id);
 
-create TYPE pay_status as ENUM ('UNPAID', 'PART_PAID', 'PAID');
+
 create SEQUENCE quote_meta_seq start with 1000;
 create table quote_meta(
   id bigint NOT NULL default nextval('quote_meta_seq'),
-  status varchar(10) NOT NULL default 'NEW',
-  stage varchar(10) NOT NULL default 'QUOTE',
+  status quote_status default 'NEW',
+  stage quote_stage default 'QUOTE',
   quote_loss_reason VARCHAR(50),
   quote_sent_date TIMESTAMP,
   sale_sent_date TIMESTAMP,
@@ -236,6 +238,84 @@ alter table quote_line_item add constraint fk_quote_line_item_supplier foreign k
 create index ix_quote_line_item_supplier_1 on quote_line_item (supplier_id);
 
 create index ix_quote_line_item_sku_1 on quote_line_item (sku);
+
+create SEQUENCE po_seq start with 1000;
+create table po (
+  id BIGINT NOT NULL DEFAULT nextval('po_seq'),
+  created_date TIMESTAMP NOT NULL DEFAULT now(),
+  purchase_title VARCHAR(200),
+  supplier_reference VARCHAR(50),
+  date_required TIMESTAMP NOT NULL ,
+  invoice_received BOOLEAN NOT NULL DEFAULT false,
+  supplier_address_id BIGINT NOT NULL,
+  delivery_address_id BIGINT NOT NULL ,
+  quote_id BIGINT NOT NULL,
+  supplier_id BIGINT NOT NULL,
+  contact_id BIGINT NOT NULL,
+  rep_id BIGINT NOT NULL,
+  notes VARCHAR(10000),
+  active BOOLEAN NOT NULL DEFAULT true,
+  CONSTRAINT pk_po PRIMARY KEY (id)
+);
+
+alter table po add constraint fk_po_supplier_address foreign key (supplier_address_id) references address (id) on delete restrict on update restrict;
+create index ix_po_supplier_address_1 on po (supplier_address_id);
+
+alter table po add constraint fk_po_delivery_address foreign key (delivery_address_id) references address (id) on delete restrict on update restrict;
+create index ix_po_delivery_address_1 on po (delivery_address_id);
+
+alter table po add constraint fk_po_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+create index ix_po_quote_1 on po (quote_id);
+
+alter table po add constraint fk_po_rep foreign key (rep_id) references iuser (id) on delete restrict on update restrict;
+create index ix_po_rep_1 on po (rep_id);
+
+alter table po add constraint fk_po_supplier foreign key (supplier_id) references supplier (id) on delete restrict on update restrict;
+create index ix_po_supplier_1 on po (supplier_id);
+
+alter table po add constraint fk_po_contact foreign key (contact_id) references contact (id) on delete restrict on update restrict;
+create index ix_po_contact_1 on po (contact_id);
+
+
+
+create SEQUENCE po_line_item_seq start with 1000;
+create table po_line_item (
+  id BIGINT NOT NULL DEFAULT nextval('po_line_item_seq'),
+  sku VARCHAR(30) NOT NULL ,
+  quantity INT NOT NULL,
+  colour VARCHAR(30),
+  description VARCHAR(255),
+  price_includes VARCHAR(255),
+  cost NUMERIC(5,3),
+  vat NUMERIC(2,1),
+  quote_line_item_id BIGINT NOT NULL ,
+  po_id BIGINT NOT NULL,
+  CONSTRAINT pk_po_line_item PRIMARY KEY (id)
+);
+alter table po_line_item add constraint fk_po_line_item_quote_line_item foreign key (quote_line_item_id) references quote_line_item (id) on delete restrict on update restrict;
+create index ix_po_line_item_quote_line_item_1 on po_line_item (quote_line_item_id);
+
+alter table po_line_item add constraint fk_po_line_item_po foreign key (po_id) references po (id) on delete restrict on update restrict;
+create index ix_po_line_item_po_id_1 on po_line_item (po_id);
+
+create index ix_po_line_item_sku_1 on po_line_item (sku);
+
+
+
+create SEQUENCE payment_seq start with 1000;
+create table payment (
+  id BIGINT NOT NULL DEFAULT nextval('payment_seq'),
+  quote_id BIGINT NOT NULL ,
+  amount NUMERIC(5,3) NOT NULL ,
+  payment_ref VARCHAR(200) NOT NULL ,
+  payment_type VARCHAR(200) NOT NULL ,
+  payment_date TIMESTAMP NOT NULL DEFAULT now(),
+  CONSTRAINT pk_payment PRIMARY KEY (id)
+);
+alter table payment add constraint fk_payment_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+create index ix_payment_quote_1 on payment (quote_id);
+
+
 
 # --- !Downs
 

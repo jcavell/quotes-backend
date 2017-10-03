@@ -41,6 +41,8 @@ class ContactSlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   val contacts = TableQuery[Contacts]
 
+  def findBySupplierId(supplierId: Long):Future[Seq[Contact]] = db.run(contacts.filter(_.supplierId === supplierId).result)
+
   def all: Future[List[Contact]] = db.run(contacts.to[List].result)
 
   def getContactRecords = {

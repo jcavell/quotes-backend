@@ -9,6 +9,12 @@ POST    /companies                             customer.CompanyAPIController.ins
 PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Long)
 DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Long)
 
+GET     /suppliers                             supplier.SupplierAPIController.getSuppliers()
+GET     /suppliers/:id                             supplier.SupplierAPIController.getSupplier(id:Long)
+POST    /suppliers                             supplier.SupplierAPIController.insertSupplier()
+PUT     /suppliers/:id                         supplier.SupplierAPIController.updateSupplier(id:Long)
+DELETE  /suppliers/:id                         supplier.SupplierAPIController.deleteSupplier(id:Long)
+
 GET     /customers                             customer.CustomerAPIController.getCustomers()
 POST    /customers                     customer.CustomerAPIController.insertCustomer()
 PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Long)

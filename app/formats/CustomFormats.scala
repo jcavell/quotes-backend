@@ -11,7 +11,7 @@ import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
 import purchase.{PO, PORecord}
 import quote.PaymentStatuses.PaymentStatus
 import quote._
-import supplier.{Contact, Supplier}
+import supplier.{Contact, Supplier, SupplierRecord}
 import user.User
 
 object CustomFormats {
@@ -41,6 +41,7 @@ object CustomFormats {
   implicit val ContactFormat = Json.format[Contact]
   implicit val POFormat = Json.format[PO]
   implicit val PORecordFormat = Json.format[PORecord]
+  implicit val supplierRecordFormat = Json.format[SupplierRecord]
 
   implicit val asiQuoteFormat = Json.format[ASIQuote]
   implicit val productFormat = Json.format[ASIProduct]

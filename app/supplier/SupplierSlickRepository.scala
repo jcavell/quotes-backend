@@ -31,6 +31,8 @@ class SupplierSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   val suppliers = TableQuery[Suppliers]
 
+  def findById(id: Long):Future[Option[Supplier]] = db.run(suppliers.filter(_.id === id).result.headOption)
+
   def all: Future[List[Supplier]] = db.run(suppliers.to[List].result)
 
   def insert(supplier: Supplier): Future[Supplier] = {

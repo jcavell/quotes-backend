@@ -8,8 +8,10 @@ import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
 import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
+import purchase.{PO, PORecord}
 import quote.PaymentStatuses.PaymentStatus
 import quote._
+import supplier.{Contact, Supplier}
 import user.User
 
 object CustomFormats {
@@ -32,7 +34,13 @@ object CustomFormats {
   implicit val companyFormat = Json.format[Company]
   implicit val userFormat = Json.format[User]
   implicit val customerCompanyFormat = Json.format[CustomerRecord]
-  implicit val quoteRecord = Json.format[QuoteRecord]
+  implicit val quoteRecordFormat = Json.format[QuoteRecord]
+
+
+  implicit val SupplierFormat = Json.format[Supplier]
+  implicit val ContactFormat = Json.format[Contact]
+  implicit val POFormat = Json.format[PO]
+  implicit val PORecordFormat = Json.format[PORecord]
 
   implicit val asiQuoteFormat = Json.format[ASIQuote]
   implicit val productFormat = Json.format[ASIProduct]

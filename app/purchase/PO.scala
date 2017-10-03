@@ -8,15 +8,15 @@ case class PO(id: Option[Long] = None,
               supplierReference: Option[String],
               dateRequired: DateTime,
               invoiceReceived: Boolean,
-              supplierAddressId: Long, // Snapshot supplier address just for this quote
-              deliveryAddressId: Long, // Snapshot delivery address just for this PO
+              supplierAddressId: Option[Long], // Snapshot supplier address just for this quote
+              deliveryAddressId: Option[Long], // Snapshot delivery address just for this PO
               quoteId: Long,
               supplierId: Long, // Supplier co., as now
               contactId: Long, // Supplier contact, as now
               repId: Long, // Rep as now
 
-              // common fields
-              createdDate: Option[DateTime] = None,
+              // common
+              createdDate: DateTime,
               notes: Option[String] = None,
               active: Boolean = true
              )

@@ -9,6 +9,7 @@ case class Contact(
                     position: Option[String] = None,
                     isMainContact: Boolean = true,
                     supplierId: Long,
+                    repId: Option[Long],
                     POAddressId: Option[Long],
                     active: Boolean = true
 ) {}

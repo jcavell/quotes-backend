@@ -26,6 +26,9 @@ PUT     /quote-line-items/:id                         quote.QuoteAPIController.u
 DELETE  /quote-line-items/:id                         quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
 
 
+GET     /pos                             purchase.PurchaseAPIController.getPOs()
+
+
 GET     /users                     user.UserAPIController.getUsers()
 POST    /users                     user.UserAPIController.insertUser()
 PUT     /users/:id                             user.UserAPIController.updateUser(id:Long)

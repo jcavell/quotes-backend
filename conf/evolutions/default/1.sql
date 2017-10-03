@@ -202,6 +202,7 @@ create table contact (
   mobile_phone VARCHAR(100),
   position VARCHAR(100),
   is_main_contact BOOLEAN NOT NULL DEFAULT true,
+  rep_id BIGINT,
   supplier_id BIGINT NOT NULL,
   po_address_id BIGINT,
   active BOOLEAN NOT NULL DEFAULT true,
@@ -212,6 +213,10 @@ create index ix_contact_supplier_1 on contact (supplier_id);
 
 alter table contact add constraint fk_contact_po_address foreign key (po_address_id) references address (id) on delete restrict on update restrict;
 create index ix_contact_po_address_1 on contact (po_address_id);
+
+alter table contact add constraint fk_contact_rep foreign key (rep_id) references iuser (id) on delete restrict on update restrict;
+create index ix_contact_rep_1 on contact (rep_id);
+
 create index ix_name on contact(name);
 create index ix_email on contact(email);
 
@@ -246,6 +251,7 @@ create table po (
   purchase_title VARCHAR(200),
   supplier_reference VARCHAR(50),
   date_required TIMESTAMP NOT NULL ,
+  po_sent_date TIMESTAMP,
   invoice_received BOOLEAN NOT NULL DEFAULT false,
   supplier_address_id BIGINT NOT NULL,
   delivery_address_id BIGINT NOT NULL ,

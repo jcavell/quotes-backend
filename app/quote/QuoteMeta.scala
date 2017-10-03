@@ -2,6 +2,13 @@ package quote
 
 import org.joda.time.DateTime
 import play.api.libs.json.JsValue
+import quote.PaymentStatuses.PaymentStatus
+
+
+object PaymentStatuses extends Enumeration {
+  type PaymentStatus = Value
+  val UNPAID, PART_PAID, PAID = Value
+}
 
 case class QuoteMeta(id: Option[Long] = None,
                      status: String, // NEW,
@@ -12,7 +19,7 @@ case class QuoteMeta(id: Option[Long] = None,
                      invoiceSentDate: Option[DateTime] = None,
                      paymentTerms: Option[String] = None, // pro-forma
                      paymentDueDate: Option[DateTime] = None,
-                     paymentStatus: Option[String] = None, // UNPAID, PART_PAID, PAID
+                     paymentStatus: Option[PaymentStatus] = None, // UNPAID, PART_PAID, PAID
                      assignedGroup: Option[String], // REP, DESIGN, CUSTOMER
                      assignedUserId: Option[Long] = None,
                      //history: Option[JsValue] = None,

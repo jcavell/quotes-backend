@@ -8,7 +8,8 @@ import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
 import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
-import quote.{Quote, QuoteLineItem, QuoteMeta, QuoteRecord}
+import quote.PaymentStatuses.PaymentStatus
+import quote._
 import user.User
 
 object CustomFormats {
@@ -17,6 +18,8 @@ object CustomFormats {
   implicit val jodaReads = JodaReads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ssZ")
   implicit val jodaFormat: Format[DateTime] = Format(jodaReads, jodaWrites)
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ssZ")
+
+  implicit val paymentStatusesReads = Reads.enumNameReads(PaymentStatuses)
 
   implicit val addressFormat = Json.format[Address]
   implicit val quoteLineItemFormat = Json.format[QuoteLineItem]

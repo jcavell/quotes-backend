@@ -3,6 +3,7 @@ package db
 import com.github.tminglei.slickpg._
 import play.api.libs.json.{JsValue, Json}
 import asiquote.ASIStatus
+import quote.PaymentStatuses
 import slick.basic.Capability
 import slick.driver.JdbcProfile
 
@@ -34,6 +35,12 @@ trait PgProfileWithAddons extends ExPostgresProfile
 
     implicit val statusColumnExtensionMethodsBuilder = createEnumColumnExtensionMethodsBuilder(ASIStatus)
     implicit val statusOptionColumnExtensionMethodsBuilder = createEnumOptionColumnExtensionMethodsBuilder(ASIStatus)
+
+    implicit val paymentStatusesTypeMapper = createEnumJdbcType("payment_status", PaymentStatuses)
+    implicit val paymentStatusesListMapper = createEnumListJdbcType("payment_status", PaymentStatuses)
+
+    implicit val paymentStatusesMethodsBuilder = createEnumColumnExtensionMethodsBuilder(PaymentStatuses)
+    implicit val paymentStatusesExtensionMethodsBuilder = createEnumOptionColumnExtensionMethodsBuilder(PaymentStatuses)
   }
 
 }

@@ -2,6 +2,8 @@
 
 # --- !Ups
 
+
+
 create sequence iuser_seq start with 1000;
 create table iuser (
   id bigint not null default nextval('iuser_seq'),
@@ -154,7 +156,7 @@ create index ix_quote_rep_1 on quote (rep_id);
 alter table quote add constraint fk_quote_enquiry foreign key (enquiry_id) references enquiry (id) on delete restrict on update restrict;
 create index ix_quote_enquiry_1 on quote (enquiry_id);
 
-
+create TYPE pay_status as ENUM ('UNPAID', 'PART_PAID', 'PAID');
 create SEQUENCE quote_meta_seq start with 1000;
 create table quote_meta(
   id bigint NOT NULL default nextval('quote_meta_seq'),
@@ -166,10 +168,10 @@ create table quote_meta(
   invoice_sent_date TIMESTAMP,
   payment_terms VARCHAR(100),
   payment_due_date TIMESTAMP,
-  payment_status VARCHAR(20),
   assigned_group varchar(20),
   assigned_user_id BIGINT,
   quote_id BIGINT,
+  payment_status pay_status default 'UNPAID',
   constraint pk_quote_meta primary key (id)
 );
 alter table quote_meta add constraint fk_quote_meta_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
@@ -240,6 +242,7 @@ create index ix_quote_line_item_sku_1 on quote_line_item (sku);
 SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists quote;
+drop table if exists quote_meta;
 drop table if exists quote_line_item;
 drop table if exists contact;
 drop table if exists supplier;
@@ -253,6 +256,7 @@ drop table if exists iuser;
 drop sequence if exists supplier_seq;
 drop SEQUENCE if EXISTS quote_line_item_seq;
 drop sequence if exists quote_seq;
+drop sequence if exists quote__meta_seq;
 drop sequence if exists enquiry_seq;
 drop sequence if exists xsell_seq;
 drop sequence if exists company_seq;

@@ -1,4 +1,4 @@
-package quote
+package purchase
 
 case class POLineItem(id: Option[Long] = None,
                       sku: String,

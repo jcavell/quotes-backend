@@ -2,9 +2,11 @@ package quote
 
 import javax.inject.{Inject, Singleton}
 
+import db.PgProfileWithAddons.api._
 import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import quote.PaymentStatuses.PaymentStatus
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,7 +28,7 @@ trait QuoteMetasComponent {
     def invoiceSentDate = column[Option[DateTime]]("invoice_sent_date")
     def paymentTerms = column[Option[String]]("payment_terms")
     def paymentDueDate = column[Option[DateTime]]("payment_due_date")
-    def paymentStatus = column[Option[String]]("payment_status")
+    def paymentStatus = column[Option[PaymentStatus]]("payment_status")
     def assignedGroup = column[Option[String]]("assigned_group")
     def assignedUserId = column[Option[Long]]("assigned_user_id")
     def quoteId = column[Long]("quote_id")

@@ -1,4 +1,4 @@
-package quote
+package purchase
 
 import org.joda.time.DateTime
 

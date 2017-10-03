@@ -5,8 +5,10 @@ import javax.inject.{Inject, Singleton}
 import address.AddressSlickRepository
 import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
+import customer.{CompanySlickRepository, CustomerSlickRepository}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
+import user.UserSlickRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -39,7 +41,7 @@ trait QuotesComponent {
 }
 
 @Singleton()
-class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, quoteMetaSlickRepository: QuoteMetaSlickRepository, addressSlickRepository: AddressSlickRepository)(implicit executionContext: ExecutionContext)
+class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, quoteMetaSlickRepository: QuoteMetaSlickRepository, customerSlickRepository: CustomerSlickRepository, companySlickRepository: CompanySlickRepository, userSlickRepository: UserSlickRepository, addressSlickRepository: AddressSlickRepository)(implicit executionContext: ExecutionContext)
   extends QuotesComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
@@ -54,16 +56,20 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
   def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
     val query =
     for {
-      (((quote, quoteMeta), invoiceAddress), deliveryAddress) <-
-      quotes join
-        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft
-        addressSlickRepository.addresses on (_._1.invoiceAddressId === _.id) joinLeft
-        addressSlickRepository.addresses on (_._1._1.deliveryAddressId === _.id)
-    } yield (quote, quoteMeta, invoiceAddress, deliveryAddress)
+      ((((((quote, quoteMeta), customer), company), rep), invoiceAddress), deliveryAddress) <-
+      quotes join // t1.t1
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) join  // t1.t2
+        customerSlickRepository.customers on (_._1.customerId === _.id) join  // t2
+        companySlickRepository.companies on (_._2.companyId === _.id) join  // t3
+        userSlickRepository.users on (_._1._1._1.repId === _.id) joinLeft  // t4
+        userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft  // t5
+        addressSlickRepository.addresses on (_._1._1._1._1._1.invoiceAddressId === _.id) joinLeft  // t6
+        addressSlickRepository.addresses on (_._1._1._1._1._1._1.deliveryAddressId === _.id)  // t7
+    } yield (quote, quoteMeta, customer, company, rep, invoiceAddress, deliveryAddress)
 
     maybeQuoteId match {
-      case Some(quoteId) => db.run(query.filter(_._1.id === quoteId).result.map(l => l.map (t => QuoteRecord(t._1, t._2, t._3, t._4))))
-      case None => db.run(query.to[List].result.map(l => l.map (t => QuoteRecord(t._1, t._2, t._3, t._4))))
+      case Some(quoteId) => db.run(query.filter(_._1._1.id === quoteId).result.map(l => l.map (t => QuoteRecord(t._1._1, t._1._2, t._2, t._3, t._4, t._5, t._6, t._7))))
+      case None => db.run(query.to[List].result.map(l => l.map (t => QuoteRecord(t._1._1, t._1._2, t._2, t._3, t._4, t._5, t._6, t._7))))
     }
   }
 

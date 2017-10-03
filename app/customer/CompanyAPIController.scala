@@ -3,7 +3,6 @@ package customer
 import javax.inject._
 
 import formats.CustomFormats._
-import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -19,9 +18,9 @@ class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, 
       customers <- customerSlickRepository.getCustomerRecords(maybeCompanyId = Some(companyId))
     } yield (company, customers)
 
-    companyAndCustomers.map { sc =>
-      val companyRecord = sc._1 match{
-        case Some(s) => Some(CompanyRecord(s, sc._2))
+    companyAndCustomers.map { cc =>
+      val companyRecord = cc._1 match{
+        case Some(s) => Some(CompanyRecord(s, cc._2))
         case None => None
       }
       val json = Json.toJson(companyRecord)

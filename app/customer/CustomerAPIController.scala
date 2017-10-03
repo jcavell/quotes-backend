@@ -12,8 +12,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepository, cc:ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
   def getCustomer(id: Long) = Action.async { implicit request =>
     customerRepository.getCustomerRecord(id).map { customer =>
       val json = Json.toJson(customer)

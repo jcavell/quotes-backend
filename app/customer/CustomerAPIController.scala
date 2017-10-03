@@ -14,9 +14,16 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
 
   implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
+  def getCustomer(id: Long) = Action.async { implicit request =>
+    customerRepository.getCustomerRecord(id).map { customer =>
+      val json = Json.toJson(customer)
+      Ok(json)
+    }
+  }
+
   def getCustomers() = Action.async { implicit request =>
-    customerRepository.getCustomerRecords.map { customerCompanyReps =>
-      val json = Json.toJson(customerCompanyReps)
+    customerRepository.getCustomerRecords().map { customers =>
+      val json = Json.toJson(customers)
       Ok(json)
     }
   }

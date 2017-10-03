@@ -39,6 +39,7 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   val companies = TableQuery[Companies]
 
+  def findById(id: Long):Future[Option[Company]] = db.run(companies.filter(_.id === id).result.headOption)
   def all: Future[List[Company]] = db.run(companies.to[List].result)
 
   def insert(company: Company): Future[Company] = {

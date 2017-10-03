@@ -51,7 +51,9 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def getCustomerRecords = {
+  def getCustomerRecord(customerId: Long) = getCustomerRecords(Some(customerId)) map (_.headOption)
+
+  def getCustomerRecords(maybeCustomerId: Option[Long] = None, maybeCompanyId: Option[Long] = None) = {
     val query = for {
       ((((customer, company), rep), invoiceAddress), deliveryAddress) <-
         customers join
@@ -61,7 +63,14 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
           addressRepository.addresses on(_._1._1._1.deliveryAddressId === _.id)
     } yield (customer, company, rep, invoiceAddress, deliveryAddress)
 
-    db.run(query.to[List].result.map(l => l.map (t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+    maybeCustomerId match {
+      case None =>
+        maybeCompanyId match {
+          case Some(companyId) => db.run(query.filter(_._1.companyId === companyId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+          case None => db.run(query.to[List].result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+        }
+      case Some(customerId) => db.run(query.filter(_._1.id === customerId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+    }
   }
 
   def insert(customer: Customer): Future[Customer] = {

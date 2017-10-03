@@ -2,6 +2,7 @@ package customer
 
 import javax.inject._
 
+import formats.CustomFormats._
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
@@ -9,11 +10,24 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, customerSlickRepository: CustomerSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  implicit val customDateWrites: Writes[java.util.Date] = dateWrites("yyyy-MM-dd'T'HH:mm:ss'Z'")
-  implicit val companyFormat = Json.format[Company]
+  def getCompany(companyId: Long) = Action.async { implicit request =>
 
+    val companyAndCustomers = for{
+      company <- companyRepository.findById(companyId)
+      customers <- customerSlickRepository.getCustomerRecords(maybeCompanyId = Some(companyId))
+    } yield (company, customers)
+
+    companyAndCustomers.map { sc =>
+      val companyRecord = sc._1 match{
+        case Some(s) => Some(CompanyRecord(s, sc._2))
+        case None => None
+      }
+      val json = Json.toJson(companyRecord)
+      Ok(json)
+    }
+  }
 
   def getCompanies() = Action.async { implicit request =>
     companyRepository.all.map { page =>

@@ -3,7 +3,7 @@ package formats
 import address.Address
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import customer.{Company, Customer, CustomerRecord, Enquiry}
+import customer._
 import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
@@ -35,6 +35,7 @@ object CustomFormats {
   implicit val userFormat = Json.format[User]
   implicit val customerCompanyFormat = Json.format[CustomerRecord]
   implicit val quoteRecordFormat = Json.format[QuoteRecord]
+  implicit val companyRecordFormat = Json.format[CompanyRecord]
 
 
   implicit val SupplierFormat = Json.format[Supplier]

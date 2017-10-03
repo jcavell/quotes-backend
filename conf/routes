@@ -5,6 +5,7 @@
 #GET     /quotes                                asiquote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
 
 GET     /companies                             customer.CompanyAPIController.getCompanies()
+GET     /companies/:id                             customer.CompanyAPIController.getCompany(id:Long)
 POST    /companies                             customer.CompanyAPIController.insertCompany()
 PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Long)
 DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Long)
@@ -16,6 +17,7 @@ PUT     /suppliers/:id                         supplier.SupplierAPIController.up
 DELETE  /suppliers/:id                         supplier.SupplierAPIController.deleteSupplier(id:Long)
 
 GET     /customers                             customer.CustomerAPIController.getCustomers()
+GET     /customers/:id                             customer.CustomerAPIController.getCustomer(id:Long)
 POST    /customers                     customer.CustomerAPIController.insertCustomer()
 PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Long)
 DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Long)

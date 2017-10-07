@@ -9,6 +9,7 @@ import slick.driver.JdbcProfile
 
 
 trait PgProfileWithAddons extends ExPostgresProfile
+  with PgArraySupport
   with PgEnumSupport
   with PgPlayJsonSupport {
 
@@ -30,6 +31,8 @@ trait PgProfileWithAddons extends ExPostgresProfile
   }
 
   trait EnumImplicits {
+    implicit val simpleLongListTypeMapper = new SimpleArrayJdbcType[Long]("int8").to(_.toList)
+
     implicit val statusTypeMapper = createEnumJdbcType("quote_status", ASIStatus)
     implicit val statusListTypeMapper = createEnumListJdbcType("quote_status", ASIStatus)
     implicit val statusColumnExtensionMethodsBuilder = createEnumColumnExtensionMethodsBuilder(ASIStatus)

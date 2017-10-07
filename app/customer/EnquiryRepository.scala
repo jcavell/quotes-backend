@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
+import db.PgProfileWithAddons.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -17,20 +18,28 @@ trait EnquiryComponent {
 
   class Enquiries(tag: Tag) extends Table[Enquiry](tag, "enquiry") {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
-    def requestId = column[Long]("request_id")
-    def requestTimestamp = column[DateTime]("request_timestamp")
+    def enquiryId = column[Long]("enquiry_id")
+    def enquiryTimestamp = column[DateTime]("enquiry_timestamp")
+    def internalProductId = column[Long]("internal_product_id")
     def productId = column[String]("product_id")
-    def customerFirstName = column[String]("customer_first_name")
-    def customerLastName = column[String]("customer_last_name")
-    def customerTel = column[String]("customer_tel")
+    def productName = column[String]("product_name")
+    def brand = column[Option[String]]("brand")
+    def colour = column[Option[String]]("colour")
+    def customerName = column[String]("customer_name")
+    def customerTelephone = column[String]("customer_telephone")
     def customerEmail= column[String]("customer_email")
     def company= column[String]("company")
     def dateRequired = column[DateTime]("date_required")
     def quantity= column[Int]("quantity")
+    def repId = column[Int]("rep_id")
+    def repEmail = column[String]("rep_email")
+    def source = column[Option[String]]("source")
+    def subject = column[Option[String]]("subject")
+    def xsellProductIds = column[List[Long]]("xsell_product_ids")
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")
 
-    def * = (id, requestId, requestTimestamp, productId, customerFirstName, customerLastName, customerTel, customerEmail, company, dateRequired, quantity, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
+    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, dateRequired, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
   }
 
 }

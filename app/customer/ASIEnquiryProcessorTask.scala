@@ -35,7 +35,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
   def findOrAddCustomer(qr: Enquiry, company: Company):Future[Customer] = customerRepository.findByEmail(qr.customerEmail).flatMap { customerOption =>
     customerOption match {
       case Some(p) => Future(p)
-      case _ => customerRepository.insert(Customer(firstName = qr.customerFirstName, lastName = qr.customerLastName, email = qr.customerEmail, mobilePhone = Some(qr.customerTel), companyId = company.id.get))
+      case _ => customerRepository.insert(Customer(firstName = qr.customerName, lastName = qr.customerName, email = qr.customerEmail, mobilePhone = Some(qr.customerTelephone), companyId = company.id.get))
     }
   }
 
@@ -51,7 +51,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
   }
 
   def insertQuote(qr: Enquiry, customerId: Long): Future[ASIQuote] = {
-    val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.requestTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerFirstName, requestCustomerLastName = qr.customerLastName, requestCustomerTel = qr.customerTel, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
+    val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.enquiryTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerName, requestCustomerLastName = qr.customerName, requestCustomerTel = qr.customerTelephone, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
     val result = quoteSlickRepository.insert(quote)
     Logger.debug("Result from inserting into quote repo: " + result)

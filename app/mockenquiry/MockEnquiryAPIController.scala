@@ -37,7 +37,7 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: MockEnquirySlick
       errors => Future(BadRequest(errors.mkString)),
       mockEnquiry => {
         mockEnquiryRepository.insert(mockEnquiry).map { mockEnquiryWithId =>
-          Ok(Json.toJson(mockEnquiryWithId))
+          Created(Json.toJson(mockEnquiryWithId))
         }
       }
     )
@@ -45,7 +45,7 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: MockEnquirySlick
 
   def deleteMockEnquiry(id: Long) = Action.async { implicit request =>
     mockEnquiryRepository.delete(id).map { a =>
-      Ok("Deleted MockEnquiry")
+      Ok("Deleted Mock Enquiry")
     }
   }
 

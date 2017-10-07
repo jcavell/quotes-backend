@@ -61,7 +61,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
     val insertedEnquiry = for {
       company <- findOrAddCompany(enquiry.company)
       customer <- findOrAddCustomer(enquiry, company)
-      insertedEnquiry <- enquiryRepository.insert(enquiry)
+      insertedEnquiry <- enquiryRepository.insert(enquiry.copy(imported = true))
       // quote <- insertQuote(qr, customer.id.get)
       // asi <- asiProductGetter.get(qr.productId)
       // product <- asiProductRepository.insert(asi)

@@ -1,16 +1,15 @@
 package formats
 
 import address.Address
-import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
-import customer._
-import play.api.libs.json._
-import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
-import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
-import mockenquiry.MockEnquiry
+import asiquote.{ASIQuote, QuotePage, QuoteWithProducts}
+import company.{Company, CompanyRecord}
+import customer._
+import enquiry.Enquiry
+import org.joda.time.DateTime
+import play.api.libs.json.Writes.dateWrites
+import play.api.libs.json._
 import purchase.{PO, PORecord}
-import quote.PaymentStatuses.PaymentStatus
 import quote._
 import supplier.{Contact, Supplier, SupplierRecord}
 import user.User
@@ -50,5 +49,5 @@ object CustomFormats {
   implicit val productCustomerPageFormat = Json.format[QuoteWithProducts]
   implicit val quotePageFormat = Json.format[QuotePage]
 
-  implicit val mockEnquiryFormat = Json.format[MockEnquiry]
+  implicit val enquiryFormat = Json.format[Enquiry]
 }

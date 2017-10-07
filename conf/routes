@@ -4,11 +4,11 @@
 
 #GET     /quotes                                asiquote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
 
-GET     /companies                             customer.CompanyAPIController.getCompanies()
-GET     /companies/:id                             customer.CompanyAPIController.getCompany(id:Long)
-POST    /companies                             customer.CompanyAPIController.insertCompany()
-PUT     /companies/:id                         customer.CompanyAPIController.updateCompany(id:Long)
-DELETE  /companies/:id                         customer.CompanyAPIController.deleteCompany(id:Long)
+GET     /companies                             company.CompanyAPIController.getCompanies()
+GET     /companies/:id                             company.CompanyAPIController.getCompany(id:Long)
+POST    /companies                             company.CompanyAPIController.insertCompany()
+PUT     /companies/:id                         company.CompanyAPIController.updateCompany(id:Long)
+DELETE  /companies/:id                         company.CompanyAPIController.deleteCompany(id:Long)
 
 GET     /suppliers                             supplier.SupplierAPIController.getSuppliers()
 GET     /suppliers/:id                             supplier.SupplierAPIController.getSupplier(id:Long)

@@ -2,8 +2,7 @@ package customer
 
 case class Customer(
                     id: Option[Long] = None,
-                    firstName: String,
-                    lastName: String,
+                    name: String,
                     salutation: Option[String] = None,
                     email: String,
                     directPhone: Option[String] = None,

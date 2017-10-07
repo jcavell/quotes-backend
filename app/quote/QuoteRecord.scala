@@ -1,7 +1,8 @@
 package quote
 
 import address.Address
-import customer.{Company, Customer}
+import company.Company
+import customer.{Customer}
 import user.User
 
 case class QuoteRecord(

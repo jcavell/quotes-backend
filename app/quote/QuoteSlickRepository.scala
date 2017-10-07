@@ -5,7 +5,8 @@ import javax.inject.{Inject, Singleton}
 import address.AddressSlickRepository
 import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
-import customer.{CompanySlickRepository, CustomerSlickRepository}
+import company.CompanySlickRepository
+import customer.{CustomerSlickRepository}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import user.UserSlickRepository

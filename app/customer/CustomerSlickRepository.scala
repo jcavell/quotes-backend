@@ -3,6 +3,7 @@ package customer
 import javax.inject.{Inject, Singleton}
 
 import address.AddressSlickRepository
+import company.CompanySlickRepository
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
@@ -18,8 +19,7 @@ trait CustomersComponent {
 
   class Customers(tag: Tag) extends Table[Customer](tag, "customer") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def firstName = column[String]("first_name")
-    def lastName = column[String]("last_name")
+    def name = column[String]("name")
     def salutation = column[Option[String]]("salutation")
     def email = column[String]("email")
     def directPhone = column[Option[String]]("direct_phone")
@@ -36,7 +36,7 @@ trait CustomersComponent {
     def companyId = column[Long]("company_id")
     def invoiceAddressId = column[Option[Long]]("invoice_address_id")
     def deliveryAddressId = column[Option[Long]]("delivery_address_id")
-    def * = (id.?, firstName, lastName, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, repId, companyId, invoiceAddressId, deliveryAddressId) <> (Customer.tupled, Customer.unapply _)
+    def * = (id.?, name, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, repId, companyId, invoiceAddressId, deliveryAddressId) <> (Customer.tupled, Customer.unapply _)
   }
 }
 

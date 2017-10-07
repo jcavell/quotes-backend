@@ -1,21 +1,23 @@
-package customer
+package enquiry
 
 import javax.inject.Inject
 
 import akka.actor.ActorSystem
 import asiproduct._
 import asiquote.{ASIQuote, QuoteSlickRepository}
-import mockenquiry.{MockEnquiry, MockEnquirySlickRepository}
+import company.{Company, CompanySlickRepository}
+import customer.{Customer, CustomerSlickRepository}
+import mockenquiry.MockEnquirySlickRepository
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
+import formats.CustomFormats._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import formats.CustomFormats._
 
 
-class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockQuoteRequestRepository: MockEnquirySlickRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
+class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, asiProductGetter: ASIProductGetter, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, quoteSlickRepository: QuoteSlickRepository, mockEnquiryRepository: MockEnquirySlickRepository, asiProductRepository: ASIProductSlickRepository)(implicit executionContext: ExecutionContext) {
 
 
 
@@ -27,21 +29,21 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
   def getMockEnquiries() = {
     ws.url("http://localhost:9000/unimported-mock-enquiries").
       get() map { response =>
-      val mockEnquiries = Json.parse(response.body).as[Seq[MockEnquiry]];
+      val mockEnquiries = Json.parse(response.body).as[Seq[Enquiry]];
       mockEnquiries.foreach(importEnquiry(_));
     }
   }
 
 
-  def findOrAddCustomer(qr: MockEnquiry, company: Company):Future[Customer] = customerRepository.findByEmail(qr.customerEmail).flatMap { customerOption =>
+  def findOrAddCustomer(qr: Enquiry, company: Company):Future[Customer] = customerRepository.findByEmail(qr.customerEmail).flatMap { customerOption =>
     customerOption match {
       case Some(p) => Future(p)
-      case _ => customerRepository.insert(Customer(firstName = qr.customerName, lastName = qr.customerName, email = qr.customerEmail, mobilePhone = Some(qr.customerTelephone), companyId = company.id.get))
+      case _ => customerRepository.insert(Customer(name = qr.customerName, email = qr.customerEmail, mobilePhone = Some(qr.customerTelephone), companyId = company.id.get))
     }
   }
 
-  def flagMockEnquiryImported(qr: MockEnquiry): Future[MockEnquiry] = {
-    mockQuoteRequestRepository.update(qr.copy(imported = true))
+  def flagMockEnquiryImported(qr: Enquiry): Future[Enquiry] = {
+    mockEnquiryRepository.update(qr.copy(imported = true))
   }
 
   def findOrAddCompany(name: String): Future[Company] = companyRepository.findByName(name).flatMap { companyOption =>
@@ -51,7 +53,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
     }
   }
 
-  def insertQuote(qr: MockEnquiry, customerId: Long): Future[ASIQuote] = {
+  def insertQuote(qr: Enquiry, customerId: Long): Future[ASIQuote] = {
     val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.enquiryTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerName, requestCustomerLastName = qr.customerName, requestCustomerTel = qr.customerTelephone, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
     val result = quoteSlickRepository.insert(quote)
@@ -59,7 +61,7 @@ class ASIEnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, 
     result
   }
 
-  def importEnquiry(qr: MockEnquiry) = {
+  def importEnquiry(qr: Enquiry) = {
 
     val quote = for {
       company <- findOrAddCompany(qr.company)

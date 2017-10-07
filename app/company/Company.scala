@@ -1,4 +1,4 @@
-package customer
+package company
 
 /**
   * Created by jcavell on 24/09/2017.

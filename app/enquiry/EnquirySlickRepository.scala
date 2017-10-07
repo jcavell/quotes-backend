@@ -1,23 +1,22 @@
-package mockenquiry
+package enquiry
 
 import javax.inject.{Inject, Singleton}
 
-import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
+import db.PgProfileWithAddons.api._
+import org.joda.time.DateTime
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
-import db.PgProfileWithAddons.api._
-import enquiry.Enquiry
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-trait MockEnquiryComponent {
+trait EnquiryComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import profile.api._
 
-  class MockEnquiries(tag: Tag) extends Table[Enquiry](tag, "mock_enquiry") {
+  class Enquiries(tag: Tag) extends Table[Enquiry](tag, "enquiry") {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def enquiryId = column[Long]("enquiry_id")
     def enquiryTimestamp = column[DateTime]("enquiry_timestamp")
@@ -46,13 +45,13 @@ trait MockEnquiryComponent {
 }
 
 @Singleton()
-class MockEnquirySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
-  extends MockEnquiryComponent
+class EnquirySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+  extends EnquiryComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 
-  val enquiries = TableQuery[MockEnquiries]
+  val enquiries = TableQuery[Enquiries]
 
   def all: Future[List[Enquiry]] = db.run(enquiries.to[List].result)
 
@@ -74,9 +73,9 @@ class MockEnquirySlickRepository @Inject()(protected val dbConfigProvider: Datab
   }
 
 
-  def update(mockQuoteRequest: Enquiry): Future[Enquiry] = {
-    val mockQuoteRequestToUpdate: Enquiry = mockQuoteRequest.copy(mockQuoteRequest.id)
-    db.run(enquiries.filter(_.id === mockQuoteRequest.id).update(mockQuoteRequestToUpdate)).map(_ => (mockQuoteRequest))
+  def update(enquiry: Enquiry): Future[Enquiry] = {
+    val mockQuoteRequestToUpdate: Enquiry = enquiry.copy(enquiry.id)
+    db.run(enquiries.filter(_.id === enquiry.id).update(mockQuoteRequestToUpdate)).map(_ => (enquiry))
   }
 
   def delete(id: Long): Future[Unit] = db.run(enquiries.filter(_.id === id).delete).map(_ => ())

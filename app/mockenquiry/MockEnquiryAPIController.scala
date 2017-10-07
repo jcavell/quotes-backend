@@ -2,6 +2,7 @@ package mockenquiry
 
 import javax.inject._
 
+import enquiry.Enquiry
 import formats.CustomFormats._
 import play.api.libs.json._
 import play.api.mvc._
@@ -25,7 +26,7 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: MockEnquirySlick
   }
 
   def insertMockEnquiry() = Action.async(parse.json) { implicit request =>
-    request.body.validate[MockEnquiry].fold(
+    request.body.validate[Enquiry].fold(
       errors => Future(BadRequest(errors.mkString)),
       mockEnquiry => {
         mockEnquiryRepository.insert(mockEnquiry).map { mockEnquiryWithId =>

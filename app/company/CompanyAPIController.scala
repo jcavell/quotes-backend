@@ -1,10 +1,11 @@
-package customer
+package company
 
 import javax.inject._
 
-import formats.CustomFormats._
+import customer.CustomerSlickRepository
 import play.api.libs.json._
 import play.api.mvc._
+import formats.CustomFormats._
 
 import scala.concurrent.{ExecutionContext, Future}
 

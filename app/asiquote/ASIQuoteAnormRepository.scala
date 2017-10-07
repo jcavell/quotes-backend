@@ -6,10 +6,11 @@ import anorm.SqlParser._
 import anorm._
 import db.DatabaseExecutionContext
 import org.joda.time.DateTime
-import customer.{Company, Customer}
+import customer.Customer
 import play.api.db.DBApi
 import asiproduct.{ASIProduct, ASIProductAnormRepository}
 import asiquote.ASIStatus.Status
+import company.Company
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future

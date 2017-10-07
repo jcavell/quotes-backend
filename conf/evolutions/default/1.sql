@@ -62,8 +62,7 @@ create index ix_company_name on company(name);
 create sequence customer_seq start with 1000;
 create table customer (
   id bigint not null default nextval('customer_seq'),
-  first_name                      varchar(255) not null,
-  last_name                      varchar(255) not null,
+  name                      varchar(255) not null,
   salutation                      varchar(255),
   email                 varchar(255) not null,
   direct_phone                      varchar(255),
@@ -83,8 +82,7 @@ create table customer (
   constraint pk_customer primary key (id))
 ;
 
-create index ix_customer_first_name on customer(first_name);
-create index ix_customer_last_name on customer(last_name);
+create index ix_customer_name on customer(name);
 create index ix_customer_salutation on customer(salutation);
 create index ix_customer_email on customer(email);
 
@@ -97,6 +95,33 @@ create index ix_customer_handler_1 on customer (rep_id);
 alter table customer add constraint fk_customer_delivery_address foreign key (delivery_address_id) references address (id) on delete restrict on update restrict;
 
 alter table customer add constraint fk_customer_invoice_address foreign key (invoice_address_id) references address (id) on delete restrict on update restrict;
+
+create sequence mock_enquiry_seq start with 1000;
+create table mock_enquiry (
+  id bigint NOT NULL default nextval('mock_enquiry_seq'),
+  enquiry_id bigint not null,
+  enquiry_timestamp TIMESTAMP not null,
+  internal_product_id BIGINT not null,
+  product_id varchar(200) not null,
+  product_name VARCHAR (255) not null,
+  brand VARCHAR (255),
+  colour VARCHAR (255),
+  customer_name VARCHAR (255) not null,
+  customer_email VARCHAR (255) not null,
+  customer_telephone VARCHAR (255) not null,
+  company VARCHAR (255) not null,
+  date_required TIMESTAMP not null,
+  quantity int not null,
+  rep_id int not null,
+  rep_email VARCHAR (255) not null,
+  source VARCHAR (255),
+  subject VARCHAR (255),
+  xsell_product_ids BIGINT[],
+  other_requirements VARCHAR (255),
+  imported BOOLEAN,
+  constraint pk_mock_enquiry primary key (id))
+;
+
 
 create sequence enquiry_seq start with 1000;
 create table enquiry (

@@ -1,4 +1,4 @@
-package customer
+package mockenquiry
 
 import javax.inject.{Inject, Singleton}
 
@@ -11,12 +11,12 @@ import db.PgProfileWithAddons.api._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-trait EnquiryComponent {
+trait MockEnquiryComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import profile.api._
 
-  class Enquiries(tag: Tag) extends Table[Enquiry](tag, "enquiry") {
+  class MockEnquiries(tag: Tag) extends Table[MockEnquiry](tag, "enquiry") {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def enquiryId = column[Long]("enquiry_id")
     def enquiryTimestamp = column[DateTime]("enquiry_timestamp")
@@ -39,25 +39,26 @@ trait EnquiryComponent {
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")
 
-    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, dateRequired, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
+    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, dateRequired, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (MockEnquiry.tupled, MockEnquiry.unapply _)
   }
 
 }
+
 @Singleton()
-class EnquiryRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
-  extends EnquiryComponent
+class MockEnquirySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+  extends MockEnquiryComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 
-  val enquiries = TableQuery[Enquiries]
+  val enquiries = TableQuery[MockEnquiries]
 
-  def all: Future[List[Enquiry]] = db.run(enquiries.to[List].result)
+  def all: Future[List[MockEnquiry]] = db.run(enquiries.to[List].result)
 
-  def allUnimported: Future[List[Enquiry]] = db.run(enquiries.filter(_.imported ===  false).to[List].result)
+  def allUnimported: Future[List[MockEnquiry]] = db.run(enquiries.filter(_.imported ===  false).to[List].result)
 
 
-  def insert(enquiry: Enquiry): Future[Enquiry] = {
+  def insert(enquiry: MockEnquiry): Future[MockEnquiry] = {
     val action = enquiries returning enquiries.map {_.id} += enquiry
 
     db.run(action.asTry).map { result =>
@@ -72,8 +73,8 @@ class EnquiryRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
   }
 
 
-  def update(mockQuoteRequest: Enquiry): Future[Enquiry] = {
-    val mockQuoteRequestToUpdate: Enquiry = mockQuoteRequest.copy(mockQuoteRequest.id)
+  def update(mockQuoteRequest: MockEnquiry): Future[MockEnquiry] = {
+    val mockQuoteRequestToUpdate: MockEnquiry = mockQuoteRequest.copy(mockQuoteRequest.id)
     db.run(enquiries.filter(_.id === mockQuoteRequest.id).update(mockQuoteRequestToUpdate)).map(_ => (mockQuoteRequest))
   }
 

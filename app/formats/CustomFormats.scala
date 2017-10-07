@@ -8,6 +8,7 @@ import play.api.libs.json._
 import play.api.libs.json.Writes.dateWrites
 import asiproduct.ASIProduct
 import asiquote.{ASIQuote, ASIStatus, QuotePage, QuoteWithProducts}
+import mockenquiry.MockEnquiry
 import purchase.{PO, PORecord}
 import quote.PaymentStatuses.PaymentStatus
 import quote._
@@ -49,5 +50,5 @@ object CustomFormats {
   implicit val productCustomerPageFormat = Json.format[QuoteWithProducts]
   implicit val quotePageFormat = Json.format[QuotePage]
 
-  implicit val mockEnquiryFormat = Json.format[Enquiry]
+  implicit val mockEnquiryFormat = Json.format[MockEnquiry]
 }

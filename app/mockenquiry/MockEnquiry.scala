@@ -1,8 +1,11 @@
-package customer
+package mockenquiry
 
 import org.joda.time.DateTime
 
-case class Enquiry(
+/**
+  * Created by jcavell on 07/10/2017.
+  */
+case class MockEnquiry(
                     id: Option[Long],
                     enquiryId: Long,
                     enquiryTimestamp: DateTime,

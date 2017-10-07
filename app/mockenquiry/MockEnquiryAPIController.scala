@@ -1,4 +1,4 @@
-package customer
+package mockenquiry
 
 import javax.inject._
 
@@ -8,7 +8,7 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MockEnquiryAPIController @Inject()(mockEnquiryRepository: EnquiryRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class MockEnquiryAPIController @Inject()(mockEnquiryRepository: MockEnquirySlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getMockEnquiries() = Action.async { implicit request =>
     mockEnquiryRepository.all.map { page =>
@@ -25,7 +25,7 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: EnquiryRepositor
   }
 
   def insertMockEnquiry() = Action.async(parse.json) { implicit request =>
-    request.body.validate[Enquiry].fold(
+    request.body.validate[MockEnquiry].fold(
       errors => Future(BadRequest(errors.mkString)),
       mockEnquiry => {
         mockEnquiryRepository.insert(mockEnquiry).map { mockEnquiryWithId =>

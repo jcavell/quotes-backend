@@ -73,10 +73,15 @@ class MockEnquirySlickRepository @Inject()(protected val dbConfigProvider: Datab
     }
   }
 
+  def flagMockEnquiryImported(enquiryId: Long) = {
+    val q = for { e <- enquiries if e.enquiryId === enquiryId } yield e.imported
+    db.run(q.update(true))
 
-  def update(mockQuoteRequest: Enquiry): Future[Enquiry] = {
-    val mockQuoteRequestToUpdate: Enquiry = mockQuoteRequest.copy(mockQuoteRequest.id)
-    db.run(enquiries.filter(_.id === mockQuoteRequest.id).update(mockQuoteRequestToUpdate)).map(_ => (mockQuoteRequest))
+  }
+
+  def update(enquiry: Enquiry): Future[Enquiry] = {
+    val mockQuoteRequestToUpdate: Enquiry = enquiry.copy(enquiry.id)
+    db.run(enquiries.filter(_.id === enquiry.id).update(mockQuoteRequestToUpdate)).map(_ => (enquiry))
   }
 
   def delete(id: Long): Future[Unit] = db.run(enquiries.filter(_.id === id).delete).map(_ => ())

@@ -25,6 +25,13 @@ class MockEnquiryAPIController @Inject()(mockEnquiryRepository: MockEnquirySlick
     }
   }
 
+  def flagImported(id: Long) = Action.async { implicit request =>
+    mockEnquiryRepository.flagMockEnquiryImported(id).map { _ =>
+      val json = Json.toJson(true)
+      Ok(json)
+    }
+  }
+
   def insertMockEnquiry() = Action.async(parse.json) { implicit request =>
     request.body.validate[Enquiry].fold(
       errors => Future(BadRequest(errors.mkString)),

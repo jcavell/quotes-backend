@@ -53,6 +53,8 @@ GET           /mock-enquiries                    mockenquiry.MockEnquiryAPIContr
 GET           /unimported-mock-enquiries         mockenquiry.MockEnquiryAPIController.getUnimportedMockEnquiries()
 POST          /mock-enquiries                    mockenquiry.MockEnquiryAPIController.insertMockEnquiry()
 DELETE        /mock-enquiries/:id                mockenquiry.MockEnquiryAPIController.deleteMockEnquiry(id:Long)
+POST        /flag-mock-enquiry-imported/:id                mockenquiry.MockEnquiryAPIController.flagImported(id:Long)
+
 
 GET           /enquiries                         enquiry.EnquiryAPIController.getEnquiries()
 

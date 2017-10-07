@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, mockEnquiryRepository: MockEnquirySlickRepository, enquiryRepository: EnquirySlickRepository)(implicit executionContext: ExecutionContext) {
+class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, mockEnquiryRepository: MockEnquirySlickRepository, enquiryRepository: EnquirySlickRepository, enquiryWSClient: EnquiryWSClient)(implicit executionContext: ExecutionContext) {
 
 
 
@@ -39,10 +39,6 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
       case Some(p) => Future(p)
       case _ => customerRepository.insert(Customer(name = qr.customerName, email = qr.customerEmail, mobilePhone = Some(qr.customerTelephone), companyId = company.id.get))
     }
-  }
-
-  def flagMockEnquiryImported(qr: Enquiry): Future[Enquiry] = {
-    mockEnquiryRepository.update(qr.copy(imported = true))
   }
 
   def findOrAddCompany(name: String): Future[Company] = companyRepository.findByName(name).flatMap { companyOption =>
@@ -70,7 +66,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
       // asi <- asiProductGetter.get(qr.productId)
       // product <- asiProductRepository.insert(asi)
       // quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)
-      f <- flagMockEnquiryImported(enquiry)
+      f <- enquiryWSClient.flagImported(enquiry.enquiryId)
     } yield insertedEnquiry
 
     Logger.debug(s"Inserted ${insertedEnquiry}")

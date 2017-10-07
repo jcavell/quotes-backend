@@ -18,7 +18,7 @@ class EnquiryAPIController @Inject()(enquiryRepository: EnquirySlickRepository, 
   }
 
 
-  def deletEnquiry(id: Long) = Action.async { implicit request =>
+  def deleteEnquiry(id: Long) = Action.async { implicit request =>
     enquiryRepository.delete(id).map { a =>
       Ok("Deleted Enquiry")
     }

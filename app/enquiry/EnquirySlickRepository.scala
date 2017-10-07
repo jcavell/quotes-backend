@@ -57,7 +57,6 @@ class EnquirySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   def allUnimported: Future[List[Enquiry]] = db.run(enquiries.filter(_.imported ===  false).to[List].result)
 
-
   def insert(enquiry: Enquiry): Future[Enquiry] = {
     val action = enquiries returning enquiries.map {_.id} += enquiry
 

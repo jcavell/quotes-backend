@@ -8,7 +8,7 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class ASIQuoteAPIController @Inject()(quoteRepo: QuoteRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class ASIQuoteAPIController @Inject()(quoteRepo: ASIQuoteRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
 //  def getQuotes(page: Int, orderBy: Int, filter: String, companyName: String, email: String) = Action.async { implicit request =>
 //    val results =

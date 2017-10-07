@@ -18,16 +18,16 @@ import scala.util.{Failure, Try}
 
 
 
-case class QuoteWithProducts(quote: ASIQuote, company: Company, customer: Customer, products: ListBuffer[ASIProduct])
+case class ASIQuoteWithProducts(quote: ASIQuote, company: Company, customer: Customer, products: ListBuffer[ASIProduct])
 
-case class QuotePage(quotes: Seq[QuoteWithProducts], page: Int, offset: Long, total: Long) {
+case class QuotePage(quotes: Seq[ASIQuoteWithProducts], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
   lazy val next = Option(page + 1).filter(_ => (offset + quotes.size) < total)
 }
 
 
 @javax.inject.Singleton
-class QuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnormRepository)(implicit ec: DatabaseExecutionContext) {
+class ASIQuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAnormRepository)(implicit ec: DatabaseExecutionContext) {
 
 //  private val db = dbapi.database("default")
 //

@@ -4,57 +4,60 @@
 
 #GET     /quotes                                asiquote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
 
-GET     /companies                             company.CompanyAPIController.getCompanies()
-GET     /companies/:id                             company.CompanyAPIController.getCompany(id:Long)
-POST    /companies                             company.CompanyAPIController.insertCompany()
-PUT     /companies/:id                         company.CompanyAPIController.updateCompany(id:Long)
-DELETE  /companies/:id                         company.CompanyAPIController.deleteCompany(id:Long)
+GET           /companies                         company.CompanyAPIController.getCompanies()
+GET           /companies/:id                     company.CompanyAPIController.getCompany(id:Long)
+POST          /companies                         company.CompanyAPIController.insertCompany()
+PUT           /companies/:id                     company.CompanyAPIController.updateCompany(id:Long)
+DELETE        /companies/:id                     company.CompanyAPIController.deleteCompany(id:Long)
 
-GET     /suppliers                             supplier.SupplierAPIController.getSuppliers()
-GET     /suppliers/:id                             supplier.SupplierAPIController.getSupplier(id:Long)
-POST    /suppliers                             supplier.SupplierAPIController.insertSupplier()
-PUT     /suppliers/:id                         supplier.SupplierAPIController.updateSupplier(id:Long)
-DELETE  /suppliers/:id                         supplier.SupplierAPIController.deleteSupplier(id:Long)
+GET           /suppliers                         supplier.SupplierAPIController.getSuppliers()
+GET           /suppliers/:id                     supplier.SupplierAPIController.getSupplier(id:Long)
+POST          /suppliers                         supplier.SupplierAPIController.insertSupplier()
+PUT           /suppliers/:id                     supplier.SupplierAPIController.updateSupplier(id:Long)
+DELETE        /suppliers/:id                     supplier.SupplierAPIController.deleteSupplier(id:Long)
 
-GET     /customers                             customer.CustomerAPIController.getCustomers()
-GET     /customers/:id                             customer.CustomerAPIController.getCustomer(id:Long)
-POST    /customers                     customer.CustomerAPIController.insertCustomer()
-PUT     /customers/:id                 customer.CustomerAPIController.updateCustomer(id:Long)
-DELETE  /customers/:id                 customer.CustomerAPIController.deleteCustomer(id:Long)
+GET           /customers                         customer.CustomerAPIController.getCustomers()
+GET           /customers/:id                     customer.CustomerAPIController.getCustomer(id:Long)
+POST          /customers                         customer.CustomerAPIController.insertCustomer()
+PUT           /customers/:id                     customer.CustomerAPIController.updateCustomer(id:Long)
+DELETE        /customers/:id                     customer.CustomerAPIController.deleteCustomer(id:Long)
 
-GET     /quotes                             quote.QuoteAPIController.getQuotes()
-GET     /quotes/:id                             quote.QuoteAPIController.getQuote(id:Long)
-POST    /quotes                             quote.QuoteAPIController.insertQuote()
-PUT     /quotes/:id                         quote.QuoteAPIController.updateQuote(id:Long)
-DELETE  /quotes/:id                         quote.QuoteAPIController.deleteQuote(id:Long)
+GET           /quotes                            quote.QuoteAPIController.getQuotes()
+GET           /quotes/:id                        quote.QuoteAPIController.getQuote(id:Long)
+POST          /quotes                            quote.QuoteAPIController.insertQuote()
+PUT           /quotes/:id                        quote.QuoteAPIController.updateQuote(id:Long)
+DELETE        /quotes/:id                        quote.QuoteAPIController.deleteQuote(id:Long)
 
-GET     /quotes/:quoteId/line-items                 quote.QuoteAPIController.getLineItems(quoteId:Long)
-POST    /quote-line-items                             quote.QuoteAPIController.insertQuoteLineItem()
-PUT     /quote-line-items/:id                         quote.QuoteAPIController.updateQuoteLineItem(id:Long)
-DELETE  /quote-line-items/:id                         quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
-
-
-GET     /pos                             purchase.PurchaseAPIController.getPOs()
+GET           /quotes/:quoteId/line-items        quote.QuoteAPIController.getLineItems(quoteId:Long)
+POST          /quote-line-items                  quote.QuoteAPIController.insertQuoteLineItem()
+PUT           /quote-line-items/:id              quote.QuoteAPIController.updateQuoteLineItem(id:Long)
+DELETE        /quote-line-items/:id              quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
 
 
-GET     /users                     user.UserAPIController.getUsers()
-POST    /users                     user.UserAPIController.insertUser()
-PUT     /users/:id                             user.UserAPIController.updateUser(id:Long)
-DELETE  /users/:id                             user.UserAPIController.deleteUser(id:Long)
+GET           /pos                               purchase.PurchaseAPIController.getPOs()
 
-GET     /xsells                                xsell.XsellAPIController.getXsells()
-POST    /xsells                                xsell.XsellAPIController.insertXsell()
-PUT     /xsells/:id                            xsell.XsellAPIController.updateXsell(id:Long)
-DELETE  /xsells/:id                            xsell.XsellAPIController.deleteXsell(id:Long)
 
-GET     /product                               asiproduct.ASIProductAPIController.getASIProduct()
+GET           /users                             user.UserAPIController.getUsers()
+POST          /users                             user.UserAPIController.insertUser()
+PUT           /users/:id                         user.UserAPIController.updateUser(id:Long)
+DELETE        /users/:id                         user.UserAPIController.deleteUser(id:Long)
 
-GET     /mock-enquiries                   mockenquiry.MockEnquiryAPIController.getMockEnquiries()
-GET     /unimported-mock-enquiries        mockenquiry.MockEnquiryAPIController.getUnimportedMockEnquiries()
-POST    /mock-enquiries                   mockenquiry.MockEnquiryAPIController.insertMockEnquiry()
-DELETE  /mock-enquiries/:id               mockenquiry.MockEnquiryAPIController.deleteMockEnquiry(id:Long)
+GET           /xsells                            xsell.XsellAPIController.getXsells()
+POST          /xsells                            xsell.XsellAPIController.insertXsell()
+PUT           /xsells/:id                        xsell.XsellAPIController.updateXsell(id:Long)
+DELETE        /xsells/:id                        xsell.XsellAPIController.deleteXsell(id:Long)
+
+GET           /product                           asiproduct.ASIProductAPIController.getASIProduct()
+
+GET           /mock-enquiries                    mockenquiry.MockEnquiryAPIController.getMockEnquiries()
+GET           /unimported-mock-enquiries         mockenquiry.MockEnquiryAPIController.getUnimportedMockEnquiries()
+POST          /mock-enquiries                    mockenquiry.MockEnquiryAPIController.insertMockEnquiry()
+DELETE        /mock-enquiries/:id                mockenquiry.MockEnquiryAPIController.deleteMockEnquiry(id:Long)
+
+GET           /enquiries                         enquiry.EnquiryAPIController.getEnquiries()
+
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                          controllers.Assets.at(path="/public", file)
+GET           /assets/*file                      controllers.Assets.at(path="/public", file)
 
 

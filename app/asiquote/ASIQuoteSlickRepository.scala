@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
 
 import play.api.Logger
 
-trait QuotesComponent {
+trait ASIQuotesComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import profile.api._
@@ -37,8 +37,8 @@ trait QuotesComponent {
 }
 
 @Singleton()
-class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
-  extends QuotesComponent
+class ASIQuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
+  extends ASIQuotesComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._

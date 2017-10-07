@@ -2,7 +2,7 @@ package formats
 
 import address.Address
 import asiproduct.ASIProduct
-import asiquote.{ASIQuote, QuotePage, QuoteWithProducts}
+import asiquote.{ASIQuote, QuotePage, ASIQuoteWithProducts}
 import company.{Company, CompanyRecord}
 import customer._
 import enquiry.Enquiry
@@ -46,7 +46,7 @@ object CustomFormats {
 
   implicit val asiQuoteFormat = Json.format[ASIQuote]
   implicit val productFormat = Json.format[ASIProduct]
-  implicit val productCustomerPageFormat = Json.format[QuoteWithProducts]
+  implicit val productCustomerPageFormat = Json.format[ASIQuoteWithProducts]
   implicit val quotePageFormat = Json.format[QuotePage]
 
   implicit val enquiryFormat = Json.format[Enquiry]

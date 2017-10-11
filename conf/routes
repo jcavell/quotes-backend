@@ -22,6 +22,8 @@ POST          /customers                         customer.CustomerAPIController.
 PUT           /customers/:id                     customer.CustomerAPIController.updateCustomer(id:Long)
 DELETE        /customers/:id                     customer.CustomerAPIController.deleteCustomer(id:Long)
 
+PUT           /addresses/:id                     address.AddressAPIController.updateAddress(id:Long)
+
 GET           /quotes                            quote.QuoteAPIController.getQuotes()
 GET           /quotes/:id                        quote.QuoteAPIController.getQuote(id:Long)
 POST          /quotes                            quote.QuoteAPIController.insertQuote()

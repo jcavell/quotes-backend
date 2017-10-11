@@ -60,9 +60,15 @@ class AddressSlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
   }
 
 
-  def update(id: Long, address: Address): Future[Unit] = {
-    val addressToUpdate: Address = address.copy(Some(id))
-    db.run(addresses.filter(_.id === id).update(addressToUpdate)).map(_ => ())
+  def update(address: Address): Future[Address] = {
+    val action = addresses.filter(_.id === address.id).update(address)
+
+    db.run(action.asTry).map { result =>
+      result match {
+        case Success(r) => address
+        case Failure(e) => Logger.error(s"Error updating address: $e"); throw e
+      }
+    }
   }
 
   def delete(id: Long): Future[Unit] = db.run(addresses.filter(_.id === id).delete).map(_ => ())

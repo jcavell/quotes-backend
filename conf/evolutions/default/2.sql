@@ -68,9 +68,9 @@ insert into quote(id, title, date_required, customer_name, customer_email, invoi
 
 insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (1, 1, 'NEW', 'QUOTE', 'REP', 1);
 
-insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (1, 'product_id101', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 1, 2);
+insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (1, '21387', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 1, 2);
 
-insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (2, 'product_id102', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 1, 1);
+insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (2, '134', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 1, 1);
 
 insert into po(id, purchase_title, date_required, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (1, 'Lovely brush - purchased', '2017-10-22 23:01:11', 11, 12, 1, 1, 2, 1);
 

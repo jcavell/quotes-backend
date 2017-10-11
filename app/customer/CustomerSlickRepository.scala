@@ -55,21 +55,21 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def getCustomerRecords(maybeCustomerId: Option[Long] = None, maybeCompanyId: Option[Long] = None) = {
     val query = for {
-      ((((customer, company), rep), invoiceAddress), deliveryAddress) <-
+      (((customer, company), invoiceAddress), deliveryAddress) <-
         customers join
-        companyRepository.companies on(_.companyId === _.id) join
-        userRepository.users on(_._1.repId === _.id) joinLeft
-        addressRepository.addresses on(_._1._1.invoiceAddressId === _.id) joinLeft
-          addressRepository.addresses on(_._1._1._1.deliveryAddressId === _.id)
-    } yield (customer, company, rep, invoiceAddress, deliveryAddress)
+        companyRepository.companies on(_.companyId === _.id) joinLeft
+        // userRepository.users on(_._1.repId === _.id) joinLeft
+        addressRepository.addresses on(_._1.invoiceAddressId === _.id) joinLeft
+          addressRepository.addresses on(_._1._1.deliveryAddressId === _.id)
+    } yield (customer, company, invoiceAddress, deliveryAddress)
 
     maybeCustomerId match {
       case None =>
         maybeCompanyId match {
-          case Some(companyId) => db.run(query.filter(_._1.companyId === companyId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
-          case None => db.run(query.to[List].result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+          case Some(companyId) => db.run(query.filter(_._1.companyId === companyId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+          case None => db.run(query.to[List].result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
         }
-      case Some(customerId) => db.run(query.filter(_._1.id === customerId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4, t._5))))
+      case Some(customerId) => db.run(query.filter(_._1.id === customerId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
     }
   }
 
@@ -84,7 +84,7 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
     }
   }
 
-  def findByEmail(email: String):Future[Option[Customer]] = db.run(customers.filter(_.email === email).result.headOption)
+  def findByCompanyAndEmail(companyId: Long, email: String):Future[Option[Customer]] = db.run(customers.filter(cust => cust.email === email && cust.companyId === companyId).result.headOption)
 
   def update(customer: Customer): Future[Customer] = {
     val action = customers.filter(_.id === customer.id).update(customer)

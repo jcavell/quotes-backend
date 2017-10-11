@@ -17,7 +17,7 @@ trait QuotesLineItemComponent {
 
   class QuoteLineItems(tag: Tag) extends Table[QuoteLineItem](tag, "quote_line_item") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def sku = column[String]("sku")
+    def productId = column[String]("product_id")
     def quantity = column[Int]("quantity")
     def colour = column[Option[String]]("colour")
     def description = column[Option[String]]("description")
@@ -29,7 +29,7 @@ trait QuotesLineItemComponent {
     def quoteId = column[Long]("quote_id")
     def supplierId = column[Long]("supplier_id")
 
-    def * = (id.?, sku, quantity, colour, description, priceIncludes, cost, markup, sell, vat, quoteId, supplierId) <> (QuoteLineItem.tupled, QuoteLineItem.unapply _)
+    def * = (id.?, productId, quantity, colour, description, priceIncludes, cost, markup, sell, vat, quoteId, supplierId) <> (QuoteLineItem.tupled, QuoteLineItem.unapply _)
   }
 
 }

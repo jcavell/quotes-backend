@@ -34,17 +34,23 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   }
 
 
-  def findOrAddCustomer(qr: Enquiry, company: Company):Future[Customer] = customerRepository.findByEmail(qr.customerEmail).flatMap { customerOption =>
+  def findOrAddCustomer(enquiry: Enquiry, company: Company):Future[Customer] = customerRepository.findByCompanyAndEmail(company.id.get, enquiry.customerEmail).flatMap { customerOption =>
     customerOption match {
       case Some(p) => Future(p)
-      case _ => customerRepository.insert(Customer(name = qr.customerName, email = qr.customerEmail, mobilePhone = Some(qr.customerTelephone), companyId = company.id.get))
+      case _ => customerRepository.insert(Customer(name = enquiry.customerName, email = enquiry.customerEmail, mobilePhone = Some(enquiry.customerTelephone), companyId = company.id.get, source = enquiry.source))
     }
   }
 
-  def findOrAddCompany(name: String): Future[Company] = companyRepository.findByName(name).flatMap { companyOption =>
-    companyOption match {
-      case Some(c) => Future(c)
-      case None => companyRepository.insert(Company(name = name))
+  def findOrAddCompany(enquiry: Enquiry): Future[Company] = {
+
+    val givenCompany = enquiry.company.toLowerCase
+    val companyName = if(givenCompany.isEmpty || givenCompany == "none" || givenCompany == "na" || givenCompany == "n/a") enquiry.customerEmail else enquiry.company
+
+    companyRepository.findByName(companyName).flatMap { companyOption =>
+      companyOption match {
+        case Some(c) => Future(c)
+        case None => companyRepository.insert(Company(name = companyName))
+      }
     }
   }
 
@@ -59,7 +65,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   def importEnquiry(enquiry: Enquiry) = {
 
     val insertedEnquiry = for {
-      company <- findOrAddCompany(enquiry.company)
+      company <- findOrAddCompany(enquiry)
       customer <- findOrAddCustomer(enquiry, company)
       insertedEnquiry <- enquiryRepository.insert(enquiry.copy(imported = true))
       // quote <- insertQuote(qr, customer.id.get)

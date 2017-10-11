@@ -1,7 +1,7 @@
 package quote
 
 case class QuoteLineItem(id: Option[Long] = None,
-                         sku: String,
+                         productId: String,
                          quantity: Int,
                          colour: Option[String] = None,
                          description: Option[String],

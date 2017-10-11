@@ -3,7 +3,7 @@ package product
 
 case class Product(
                     id: Option[Long] = None,
-                    sku: String,
+                    productId: String,
                     description: String
                   ) {
 

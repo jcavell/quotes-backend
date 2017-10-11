@@ -256,7 +256,7 @@ create index ix_email on contact(email);
 create SEQUENCE quote_line_item_seq start with 1000;
 create table quote_line_item (
   id BIGINT NOT NULL DEFAULT nextval('quote_line_item_seq'),
-  sku VARCHAR(30) NOT NULL ,
+  product_id VARCHAR(30) NOT NULL ,
   quantity INT NOT NULL,
   colour VARCHAR(30),
   description VARCHAR(255),
@@ -275,7 +275,7 @@ create index ix_quote_line_item_quote_1 on quote_line_item (quote_id);
 alter table quote_line_item add constraint fk_quote_line_item_supplier foreign key (supplier_id) references supplier (id) on delete restrict on update restrict;
 create index ix_quote_line_item_supplier_1 on quote_line_item (supplier_id);
 
-create index ix_quote_line_item_sku_1 on quote_line_item (sku);
+create index ix_quote_line_item_product_id_1 on quote_line_item (product_id);
 
 create SEQUENCE po_seq start with 1000;
 create table po (
@@ -320,7 +320,7 @@ create index ix_po_contact_1 on po (contact_id);
 create SEQUENCE po_line_item_seq start with 1000;
 create table po_line_item (
   id BIGINT NOT NULL DEFAULT nextval('po_line_item_seq'),
-  sku VARCHAR(30) NOT NULL ,
+  product_id VARCHAR(30) NOT NULL ,
   quantity INT NOT NULL,
   colour VARCHAR(30),
   description VARCHAR(255),
@@ -337,7 +337,7 @@ create index ix_po_line_item_quote_line_item_1 on po_line_item (quote_line_item_
 alter table po_line_item add constraint fk_po_line_item_po foreign key (po_id) references po (id) on delete restrict on update restrict;
 create index ix_po_line_item_po_id_1 on po_line_item (po_id);
 
-create index ix_po_line_item_sku_1 on po_line_item (sku);
+create index ix_po_line_item_product_id_1 on po_line_item (product_id);
 
 
 

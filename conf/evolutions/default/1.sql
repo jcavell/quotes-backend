@@ -110,7 +110,7 @@ create table mock_enquiry (
   customer_email VARCHAR (255) not null,
   customer_telephone VARCHAR (255) not null,
   company VARCHAR (255) not null,
-  date_required TIMESTAMP not null,
+  required_date TIMESTAMP not null,
   quantity int not null,
   rep_id int not null,
   rep_email VARCHAR (255) not null,
@@ -137,7 +137,7 @@ create table enquiry (
   customer_email VARCHAR (255) not null,
   customer_telephone VARCHAR (255) not null,
   company VARCHAR (255) not null,
-  date_required TIMESTAMP not null,
+  required_date TIMESTAMP not null,
   quantity int not null,
   rep_id int not null,
   rep_email VARCHAR (255) not null,
@@ -162,15 +162,19 @@ create SEQUENCE quote_seq start with 1000;
 create table quote(
   id bigint NOT NULL default nextval('quote_seq'),
   title varchar(150) NOT NULL ,
+  company_name VARCHAR(300) NOT NULL ,
+  customer_name VARCHAR(300) NOT NULL ,
+  customer_email VARCHAR(300) NOT NULL ,
+  customer_mobile_phone VARCHAR(100),
+  customer_direct_phone VARCHAR(100),
   created_date TIMESTAMP NOT NULL DEFAULT now(),
-  date_required TIMESTAMP NOT NULL,
-  customer_name VARCHAR(255) NOT NULL,
-  customer_email VARCHAR(200) NOT NULL ,
+  required_date TIMESTAMP NOT NULL,
   notes VARCHAR(2000),
   special_instructions VARCHAR(1000),
   invoice_address_id BIGINT,
   delivery_address_id BIGINT,
-  customer_id BIGINT NOT NULL ,
+  customer_id BIGINT,
+  company_id BIGINT,
   rep_id BIGINT NOT NULL,
   enquiry_id BIGINT,
   active BOOLEAN default true,
@@ -184,6 +188,9 @@ create index ix_quote_delivery_address_1 on quote (delivery_address_id);
 
 alter table quote add constraint fk_quote_customer foreign key (customer_id) references customer (id) on delete restrict on update restrict;
 create index ix_quote_customer_1 on quote (customer_id);
+
+alter table quote add constraint fk_quote_company foreign key (company_id) references company (id) on delete restrict on update restrict;
+create index ix_quote_company_1 on quote (company_id);
 
 alter table quote add constraint fk_quote_rep foreign key (rep_id) references iuser (id) on delete restrict on update restrict;
 create index ix_quote_rep_1 on quote (rep_id);
@@ -307,7 +314,7 @@ create table po (
   created_date TIMESTAMP NOT NULL DEFAULT now(),
   purchase_title VARCHAR(200),
   supplier_reference VARCHAR(50),
-  date_required TIMESTAMP NOT NULL ,
+  required_date TIMESTAMP NOT NULL ,
   po_sent_date TIMESTAMP,
   invoice_received BOOLEAN NOT NULL DEFAULT false,
   supplier_address_id BIGINT NOT NULL,

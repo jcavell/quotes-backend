@@ -8,13 +8,14 @@ import user.User
 case class QuoteRecord(
                         quote:Quote,
                         quoteMeta: QuoteMeta,
-                        customer: Customer,
-                        company: Company,
+                        customer: Option[Customer],
+                        company: Option[Company],
                         rep: User,
                         assignedUser: Option[User] = None,
                         invoiceAddress: Option[Address] = None,
                         deliveryAddress: Option[Address] = None,
-                        lineItems: Option[Seq[QuoteLineItem]] = None
+                        lineItems: Option[Seq[QuoteLineItem]] = None,
+                        xsellItems: Option[Seq[QuoteXsellItem]] = None
                       ) {
 
 }

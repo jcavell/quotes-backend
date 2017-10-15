@@ -68,7 +68,7 @@ insert into product(product_id, name) VALUES (21387, 'Bottle opener');
 insert into product(product_id, name) VALUES (134, 'Lego');
 
 
-insert into quote(id, title, date_required, customer_name, customer_email, invoice_address_id, delivery_address_id, customer_id, rep_id) values (1, 'Quote for Tommy', '2017-10-22 23:01:11', 'Bobby Sands', 'bobby@temp.com', 9, 10, 3, 2);
+insert into quote(id, title, company_name, customer_name, customer_email, customer_mobile_phone, required_date, invoice_address_id, delivery_address_id, rep_id) values (1, 'Quote for Bobby', 'Bobby Co', 'Bobby Sands', 'bobby@temp.com', '123123123', '2017-10-22 23:01:11', 9, 10, 2);
 
 
 insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (1, 1, 'NEW', 'QUOTE', 'REP', 1);
@@ -81,9 +81,9 @@ insert into quote_line_item(id, product_id, quantity, description, cost, markup,
 
 insert into quote_xsell_item(product_id, quote_id) values (134, 1);
 
-insert into po(id, purchase_title, date_required, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (1, 'Lovely brush - purchased', '2017-10-22 23:01:11', 11, 12, 1, 1, 2, 1);
+insert into po(id, purchase_title, required_date, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (1, 'Lovely brush - purchased', '2017-10-22 23:01:11', 11, 12, 1, 1, 2, 1);
 
-insert into po(id, purchase_title, date_required, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (2, 'Lovely pudding - purchased', '2017-10-22 23:01:11', 13, 12, 1, 2, 1, 1);
+insert into po(id, purchase_title, required_date, supplier_address_id, delivery_address_id, quote_id, supplier_id, contact_id, rep_id) values (2, 'Lovely pudding - purchased', '2017-10-22 23:01:11', 13, 12, 1, 2, 1, 1);
 
 insert into po_line_item(id, product_id, quantity, description, cost, vat, quote_line_item_id, po_id) values (1, '21387', 300, 'Bottle Opener', 1.23, 0.20, 1, 1);
 

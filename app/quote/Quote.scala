@@ -4,20 +4,27 @@ import org.joda.time.DateTime
 
 case class Quote(id: Option[Long] = None,
                  title: String,
-                 dateRequired: DateTime, // TODO rename requiredDate
-                 customerName: String, // TODO delete
-                 customerEmail: String, // TODO delete
+                 requiredDate: DateTime, // TODO rename requiredDate
                  specialInstructions: Option[String] = None,
 
-                 // quote-specific relations
-                 invoiceAddressId: Option[Long] = None, // Invoice address just for this quote
-                 deliveryAddressId: Option[Long] = None, // Delivery address just for this quote
-                 customerId: Long, // Customer (references Company) just for this quote
-                 enquiryId: Option[Long] = None,
+                 // Customer snapshot data
+                 companyName: String,
+                 customerName: String,
+                 customerEmail: String,
+                 customerDirectPhone: Option[String] = None,
+                 customerMobilePhone: Option[String] = None,
 
+                 // Quote-specific relations - shapshots for this quote
+                 enquiryId: Option[Long] = None,
+                 invoiceAddressId: Option[Long] = None,
+                 deliveryAddressId: Option[Long] = None,
+
+                 // Ongoing relations that may change
+                 customerId: Option[Long], // Current customer
+                 companyId: Option[Long], // Current company
                  repId: Long, // Rep as now
 
-                 // common fields
+                 // Common fields
                  createdDate: DateTime,
                  notes: Option[String] = None,
                  active: Boolean = true

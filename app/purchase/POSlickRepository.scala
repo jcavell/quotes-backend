@@ -29,7 +29,7 @@ trait POsComponent {
 
     def supplierReference = column[Option[String]]("supplier_reference")
 
-    def dateRequired = column[DateTime]("date_required")
+    def requiredDate = column[DateTime]("required_date")
 
     def invoiceReceived = column[Boolean]("invoice_received")
 
@@ -52,7 +52,7 @@ trait POsComponent {
 
     def active = column[Boolean]("active")
 
-    def * = (id.?, poSentDate, purchaseTitle, supplierReference, dateRequired, invoiceReceived, supplierAddressId, deliveryAddressId, quoteId, supplierId, contactId, repId, createdDate, notes, active) <> (PO.tupled, PO.unapply _)
+    def * = (id.?, poSentDate, purchaseTitle, supplierReference, requiredDate, invoiceReceived, supplierAddressId, deliveryAddressId, quoteId, supplierId, contactId, repId, createdDate, notes, active) <> (PO.tupled, PO.unapply _)
   }
 
 }

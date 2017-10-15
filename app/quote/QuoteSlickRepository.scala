@@ -22,16 +22,25 @@ trait QuotesComponent {
   class Quotes(tag: Tag) extends Table[Quote](tag, "quote") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
-    def dateRequired = column[DateTime]("date_required")
-    def customerName = column[String]("customer_name")
-    def customerEmail = column[String]("customer_email")
+    def requiredDate = column[DateTime]("required_date")
     def specialInstructions = column[Option[String]]("special_instructions")
 
+    // Customer data
+    def companyName = column[String]("company_name")
+    def customerName = column[String]("customer_name")
+    def customerEmail = column[String]("customer_email")
+    
+    def customerDirectPhone = column[Option[String]]("customer_direct_phone")
+    def customerMobilePhone = column[Option[String]]("customer_mobile_phone")
+
+    // Quote relations
+    def enquiryId = column[Option[Long]]("enquiry_id")
     def invoiceAddressId = column[Option[Long]]("invoice_address_id")
     def deliveryAddressId = column[Option[Long]]("delivery_address_id")
-    def customerId = column[Long]("customer_id")
-    def enquiryId = column[Option[Long]]("enquiry_id")
 
+    // Global
+    def customerId = column[Option[Long]]("customer_id")
+    def companyId = column[Option[Long]]("company_id")
     def repId = column[Long]("rep_id")
 
     // common
@@ -39,7 +48,7 @@ trait QuotesComponent {
     def notes = column[Option[String]]("notes")
     def active = column[Boolean]("active")
 
-    def * = (id.?, title, dateRequired, customerName, customerEmail, specialInstructions, invoiceAddressId, deliveryAddressId, customerId, enquiryId, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, title, requiredDate, specialInstructions, companyName, customerName, customerEmail, customerDirectPhone, customerMobilePhone, enquiryId, invoiceAddressId, deliveryAddressId, customerId, companyId, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
   }
 }
 
@@ -61,9 +70,9 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
     for {
       ((((((quote, quoteMeta), customer), company), rep), invoiceAddress), deliveryAddress) <-
       quotes join // t1.t1
-        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) join  // t1.t2
-        customerSlickRepository.customers on (_._1.customerId === _.id) join  // t2
-        companySlickRepository.companies on (_._2.companyId === _.id) join  // t3
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft  // t1.t2
+        customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft  // t2
+        companySlickRepository.companies on (_._1._1.companyId === _.id) join  // t3
         userSlickRepository.users on (_._1._1._1.repId === _.id) joinLeft  // t4
         userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft  // t5
         addressSlickRepository.addresses on (_._1._1._1._1._1.invoiceAddressId === _.id) joinLeft  // t6

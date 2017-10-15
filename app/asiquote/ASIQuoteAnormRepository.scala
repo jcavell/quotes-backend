@@ -39,7 +39,7 @@ class ASIQuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAn
 //    get[Option[Int]]("quote.id") ~
 //      get[String]("quote.status") ~
 //      get[DateTime]("quote.request_timestamp") ~
-//      get[DateTime]("quote.request_date_required") ~
+//      get[DateTime]("quote.request_required_date") ~
 //      get[Long]("quote.request_product_id") ~
 //      get[String]("quote.request_customer_first_name") ~
 //      get[String]("quote.request_customer_last_name") ~
@@ -49,8 +49,8 @@ class ASIQuoteRepository @Inject()(dbapi: DBApi, productRepository: ASIProductAn
 //      get[Int]("quote.request_quantity") ~
 //      get[Option[String]]("quote.request_other_requirements") ~
 //      get[Int]("quote.customer_id") map {
-//      case id ~ status ~ quoteTimestamp ~ dateRequired ~ productId ~ customerFirstName ~ customerLastName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ customerId =>
-//        Quote(id, status, quoteTimestamp, dateRequired, productId, customerFirstName, customerLastName, customerEmail, customerTel, company, quantity, otherRequirements, customerId)
+//      case id ~ status ~ quoteTimestamp ~ requiredDate ~ productId ~ customerFirstName ~ customerLastName ~ customerEmail ~ customerTel ~ company ~ quantity ~ otherRequirements ~ customerId =>
+//        Quote(id, status, quoteTimestamp, requiredDate, productId, customerFirstName, customerLastName, customerEmail, customerTel, company, quantity, otherRequirements, customerId)
 //    }
 //  }
 //

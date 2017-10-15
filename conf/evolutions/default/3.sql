@@ -10,7 +10,7 @@ create table asi_quote (
   status VARCHAR (25)  not null,
   request_timestamp TIMESTAMP not null,
   request_product_id bigint not null,
-  request_date_required TIMESTAMP not null,
+  request_required_date TIMESTAMP not null,
   request_customer_first_name VARCHAR (500) not null,
   request_customer_last_name VARCHAR (500) not null,
   request_customer_email VARCHAR (500) not null,

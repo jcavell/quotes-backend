@@ -15,7 +15,7 @@ case class Enquiry(
                     customerTelephone: String,
                     customerEmail: String,
                     company: String,
-                    dateRequired: DateTime,
+                    requiredDate: DateTime,
                     quantity: Int,
                     repId: Int,
                     repEmail: String,

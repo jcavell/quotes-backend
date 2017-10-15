@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 case class ASIQuote(id: Option[Long] = None,
                     status: String,
                     requestTimestamp: DateTime,
-                    requestDateRequired: DateTime,
+                    requestRequiredDate: DateTime,
                     requestProductId: String,
                     requestCustomerFirstName: String,
                     requestCustomerLastName: String,

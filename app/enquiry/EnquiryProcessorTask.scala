@@ -55,7 +55,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   }
 
   def insertQuote(qr: Enquiry, customerId: Long) = {
-    val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.enquiryTimestamp, requestDateRequired = qr.dateRequired, requestProductId = qr.productId, requestCustomerFirstName = qr.customerName, requestCustomerLastName = qr.customerName, requestCustomerTel = qr.customerTelephone, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
+    val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.enquiryTimestamp, requestRequiredDate = qr.requiredDate, requestProductId = qr.productId, requestCustomerFirstName = qr.customerName, requestCustomerLastName = qr.customerName, requestCustomerTel = qr.customerTelephone, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
    // val result = quoteSlickRepository.insert(quote)
    // Logger.debug("Result from inserting into quote repo: " + result)

@@ -6,7 +6,7 @@ case class PO(id: Option[Long] = None,
               POSentDate: Option[DateTime] = None,
               purchaseTitle: Option[String] = None,
               supplierReference: Option[String],
-              dateRequired: DateTime,
+              requiredDate: DateTime,
               invoiceReceived: Boolean,
               supplierAddressId: Option[Long], // Snapshot supplier address just for this quote
               deliveryAddressId: Option[Long], // Snapshot delivery address just for this PO

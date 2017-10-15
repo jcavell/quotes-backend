@@ -21,7 +21,7 @@ trait ASIQuotesComponent {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def status = column[String]("status")
     def requestTimestamp = column[DateTime]("request_timestamp")
-    def requestDateRequired = column[DateTime]("request_date_required")
+    def requestRequiredDate = column[DateTime]("request_required_date")
     def requestProductId = column[String]("request_product_id")
     def requestCustomerFirstName = column[String]("request_customer_first_name")
     def requestCustomerLastName = column[String]("request_customer_last_name")
@@ -31,7 +31,7 @@ trait ASIQuotesComponent {
     def requestQuantity = column[Int]("request_quantity")
     def requestOtherRequirements = column[Option[String]]("request_other_requirements")
     def customerId = column[Long]("customer_id")
-    def * = (id.?, status, requestTimestamp, requestDateRequired, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (ASIQuote.tupled, ASIQuote.unapply _)
+    def * = (id.?, status, requestTimestamp, requestRequiredDate, requestProductId, requestCustomerFirstName, requestCustomerLastName, requestCustomerEmail, requestCustomerTel, requestCompany, requestQuantity, requestOtherRequirements, customerId) <> (ASIQuote.tupled, ASIQuote.unapply _)
   }
 
 }

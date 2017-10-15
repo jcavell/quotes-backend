@@ -29,7 +29,7 @@ trait EnquiryComponent {
     def customerTelephone = column[String]("customer_telephone")
     def customerEmail= column[String]("customer_email")
     def company= column[String]("company")
-    def dateRequired = column[DateTime]("date_required")
+    def requiredDate = column[DateTime]("required_date")
     def quantity= column[Int]("quantity")
     def repId = column[Int]("rep_id")
     def repEmail = column[String]("rep_email")
@@ -39,7 +39,7 @@ trait EnquiryComponent {
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")
 
-    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, dateRequired, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
+    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, requiredDate, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
   }
 
 }

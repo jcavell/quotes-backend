@@ -12,18 +12,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GazProductGetter @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
-
   private val username = "eb"
   private val pw = "SquiresNest1!"
   private val encodedCredentials = BaseEncoding.base64.encode((this.username + ':' + this.pw).getBytes(Charsets.UTF_8))
 
   private val headers = ("Authorization" -> ("Basic " + encodedCredentials))
 
+  // private val baseURL = "https://www.everythingbranded.co.uk/siteadmin/api/product"
+  private val baseURL = "http://localhost:3001/products"
+
   def get(productId: Long): Future[GazProduct] = {
 
-    println("Getting productId from Gaz: " + productId)
-
-    ws.url(s"https://www.everythingbranded.co.uk/siteadmin/api/product/$productId").
+    ws.url(s"$baseURL/$productId").
       addHttpHeaders(headers).
       get() map { response =>
 

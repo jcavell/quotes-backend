@@ -10,7 +10,7 @@ import formats.CustomFormats._
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteLineItemRepository: QuoteLineItemSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteLineItemRepository: QuoteLineItemSlickRepository, quoteXsellItemRepository: QuoteXsellItemSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getQuotes() = Action.async { implicit request =>
     quoteRepository.getQuoteRecords().map { page =>
@@ -102,6 +102,34 @@ class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteL
   def deleteQuoteLineItem(id: Long) = Action.async { implicit request =>
     quoteLineItemRepository.delete(id).map { a =>
       Ok("Deleted QuoteLineItem")
+    }
+  }
+
+
+
+  def getXsellItems(quoteId: Long) = Action.async { implicit request =>
+    quoteXsellItemRepository.findByQuoteId(quoteId).map { page =>
+      val json = Json.toJson(page)
+      Ok(json)
+    }
+  }
+
+  def insertQuoteXsellItem() = Action.async(parse.json) { implicit request =>
+    println("Validating quote xsell: " + request.body)
+    request.body.validate[QuoteXsellItem].fold(
+      errors => Future(BadRequest(errors.mkString)),
+      quotexsell => {
+        quoteXsellItemRepository.insert(quotexsell).map { quotexsellWithId =>
+          Ok(Json.toJson(quotexsellWithId))
+        }
+      }
+    )
+  }
+
+
+  def deleteQuotexsell(id: Long) = Action.async { implicit request =>
+    quoteXsellItemRepository.delete(id).map { a =>
+      Ok("Deleted quote xsell")
     }
   }
 

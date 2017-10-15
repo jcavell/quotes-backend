@@ -253,10 +253,18 @@ create index ix_contact_rep_1 on contact (rep_id);
 create index ix_name on contact(name);
 create index ix_email on contact(email);
 
+
+create table product(
+  product_id BIGINT UNIQUE NOT NULL,
+  name VARCHAR(200) NOT NULL,
+  active BOOLEAN DEFAULT true,
+  CONSTRAINT  pk_product PRIMARY KEY (product_id)
+);
+
 create SEQUENCE quote_line_item_seq start with 1000;
 create table quote_line_item (
   id BIGINT NOT NULL DEFAULT nextval('quote_line_item_seq'),
-  product_id VARCHAR(30) NOT NULL ,
+  product_id BIGINT NOT NULL ,
   quantity INT NOT NULL,
   colour VARCHAR(30),
   description VARCHAR(255),
@@ -275,7 +283,23 @@ create index ix_quote_line_item_quote_1 on quote_line_item (quote_id);
 alter table quote_line_item add constraint fk_quote_line_item_supplier foreign key (supplier_id) references supplier (id) on delete restrict on update restrict;
 create index ix_quote_line_item_supplier_1 on quote_line_item (supplier_id);
 
+alter table quote_line_item add constraint fk_quote_line_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
 create index ix_quote_line_item_product_id_1 on quote_line_item (product_id);
+
+
+create SEQUENCE quote_xsell_item_seq start with 1000;
+create table quote_xsell_item (
+  id BIGINT NOT NULL DEFAULT nextval('quote_xsell_item_seq'),
+  product_id BIGINT NOT NULL ,
+  quote_id BIGINT NOT NULL ,
+  CONSTRAINT pk_quote_xsell_item PRIMARY KEY (id)
+);
+alter table quote_xsell_item add constraint fk_quote_xsell_item_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
+create index ix_quote_xsell_item_quote_1 on quote_xsell_item (quote_id);
+
+alter table quote_xsell_item add constraint fk_quote_xsell_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
+create index ix_quote_xsell_item_product_id_1 on quote_xsell_item (product_id);
+
 
 create SEQUENCE po_seq start with 1000;
 create table po (
@@ -320,7 +344,7 @@ create index ix_po_contact_1 on po (contact_id);
 create SEQUENCE po_line_item_seq start with 1000;
 create table po_line_item (
   id BIGINT NOT NULL DEFAULT nextval('po_line_item_seq'),
-  product_id VARCHAR(30) NOT NULL ,
+  product_id BIGINT NOT NULL ,
   quantity INT NOT NULL,
   colour VARCHAR(30),
   description VARCHAR(255),

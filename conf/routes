@@ -35,6 +35,10 @@ POST          /quote-line-items                  quote.QuoteAPIController.insert
 PUT           /quote-line-items/:id              quote.QuoteAPIController.updateQuoteLineItem(id:Long)
 DELETE        /quote-line-items/:id              quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
 
+GET           /quotes/:quoteId/xsell-items        quote.QuoteAPIController.getXsellItems(quoteId:Long)
+POST          /xsell-line-items                  quote.QuoteAPIController.insertQuoteXsellItem()
+DELETE        /xsell-line-items/:id              quote.QuoteAPIController.deleteQuoteLineItem(id:Long)
+
 
 GET           /pos                               purchase.PurchaseAPIController.getPOs()
 

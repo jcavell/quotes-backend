@@ -26,18 +26,20 @@ trait QuotesComponent {
     def customerName = column[String]("customer_name")
     def customerEmail = column[String]("customer_email")
     def specialInstructions = column[Option[String]]("special_instructions")
+
     def invoiceAddressId = column[Option[Long]]("invoice_address_id")
     def deliveryAddressId = column[Option[Long]]("delivery_address_id")
     def customerId = column[Long]("customer_id")
-    def repId = column[Long]("rep_id")
     def enquiryId = column[Option[Long]]("enquiry_id")
+
+    def repId = column[Long]("rep_id")
 
     // common
     def createdDate = column[DateTime]("created_date")
     def notes = column[Option[String]]("notes")
     def active = column[Boolean]("active")
 
-    def * = (id.?, title, dateRequired, customerName, customerEmail, specialInstructions, invoiceAddressId, deliveryAddressId, customerId, repId, enquiryId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, title, dateRequired, customerName, customerEmail, specialInstructions, invoiceAddressId, deliveryAddressId, customerId, enquiryId, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
   }
 }
 

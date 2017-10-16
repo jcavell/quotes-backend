@@ -2,5 +2,5 @@ package quote
 
 object QuoteStages extends Enumeration {
   type QuoteStage = Value
-  val QUOTE, SALES, INVOICE = Value
+  val ENQUIRY, QUOTE, SALES, INVOICE = Value
 }

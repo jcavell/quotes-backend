@@ -8,7 +8,7 @@ import formats.CustomFormats._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class EnquiryAPIController @Inject()(enquiryRepository: EnquirySlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class EnquiryAPIController @Inject()(enquiryRepository: EnquirySlickRepository, enquiryProcessorTask: EnquiryProcessorTask, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getEnquiries() = Action.async { implicit request =>
     enquiryRepository.all.map { page =>
@@ -21,6 +21,12 @@ class EnquiryAPIController @Inject()(enquiryRepository: EnquirySlickRepository, 
   def deleteEnquiry(id: Long) = Action.async { implicit request =>
     enquiryRepository.delete(id).map { a =>
       Ok("Deleted Enquiry")
+    }
+  }
+
+  def importEnquiries() = Action.async { implicit request =>
+    enquiryProcessorTask.getMockEnquiries().map { a =>
+      Ok("Imported enquiries: " + a)
     }
   }
 

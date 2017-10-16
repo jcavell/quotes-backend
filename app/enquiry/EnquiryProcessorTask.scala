@@ -3,24 +3,24 @@ package enquiry
 import javax.inject.Inject
 
 import akka.actor.ActorSystem
-import asiquote.ASIQuote
 import company.{Company, CompanySlickRepository}
 import customer.{Customer, CustomerSlickRepository}
 import formats.CustomFormats._
 import mockenquiry.MockEnquirySlickRepository
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
+import quote._
 
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 
-class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, mockEnquiryRepository: MockEnquirySlickRepository, enquiryRepository: EnquirySlickRepository, enquiryWSClient: EnquiryWSClient)(implicit executionContext: ExecutionContext) {
+class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, companyRepository: CompanySlickRepository, customerRepository: CustomerSlickRepository, mockEnquiryRepository: MockEnquirySlickRepository, enquiryRepository: EnquirySlickRepository, quoteSlickRepository: QuoteSlickRepository, quoteLineItemSlickRepository: QuoteLineItemSlickRepository, quoteXsellItemSlickRepository: QuoteXsellItemSlickRepository, quoteMetaSlickRepository: QuoteMetaSlickRepository, enquiryWSClient: EnquiryWSClient)(implicit executionContext: ExecutionContext) {
 
 
-
-  actorSystem.scheduler.schedule(initialDelay = 0.seconds, interval = 1.minutes) {
+  actorSystem.scheduler.schedule(initialDelay = 0.seconds, interval = 10.minutes) {
     Logger.info("Looking for mock enquiries")
     getMockEnquiries()
   }
@@ -28,8 +28,8 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   def getMockEnquiries() = {
     ws.url("http://localhost:9000/unimported-mock-enquiries").
       get() map { response =>
-      val mockEnquiries = Json.parse(response.body).as[Seq[Enquiry]];
-      mockEnquiries.foreach(importEnquiry(_));
+      val mockEnquiries = Json.parse(response.body).as[Seq[Enquiry]]
+      mockEnquiries.map(importEnquiry(_));
     }
   }
 
@@ -54,28 +54,58 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
     }
   }
 
-  def insertQuote(qr: Enquiry, customerId: Long) = {
-    val quote = ASIQuote(status = "REQUESTED", requestTimestamp = qr.enquiryTimestamp, requestRequiredDate = qr.requiredDate, requestProductId = qr.productId, requestCustomerFirstName = qr.customerName, requestCustomerLastName = qr.customerName, requestCustomerTel = qr.customerTelephone, requestCustomerEmail = qr.customerEmail, requestCompany = qr.company, requestQuantity = qr.quantity, requestOtherRequirements = qr.otherRequirements, customerId = customerId)
 
-   // val result = quoteSlickRepository.insert(quote)
-   // Logger.debug("Result from inserting into quote repo: " + result)
-   // result
+  def insertQuote(enquiry: Enquiry): Future[Quote] = {
+    val title = s"${enquiry.subject}: ${enquiry.productName}"
+    val quote = Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, customerName = enquiry.customerName, customerMobilePhone = Some(enquiry.customerTelephone), customerEmail = enquiry.customerEmail, companyName = enquiry.company, repEmail = enquiry.repEmail, createdDate = DateTime.now)
+
+     val result = quoteSlickRepository.insert(quote)
+     result
+  }
+
+  def insertQuoteMeta(quote: Quote): Future[QuoteMeta] = {
+    val quoteMeta = QuoteMeta(status = QuoteStatuses.NEW, stage = QuoteStages.ENQUIRY, quoteId = quote.id.get)
+
+    val result = quoteMetaSlickRepository.insert(quoteMeta)
+    result
+  }
+
+  def insertQuoteLineItem(enquiry: Enquiry, quote: Quote): Future[QuoteLineItem] = {
+    val quoteLineItem = QuoteLineItem(productId = enquiry.productId, quantity = enquiry.quantity, colour = enquiry.colour, quoteId = quote.id.get)
+
+    val result = quoteLineItemSlickRepository.insert(quoteLineItem)
+    result
+  }
+
+
+  def insertQuoteXsells(productIds: Seq[Long], quote: Quote): Future[Seq[QuoteXsellItem]] = {
+    val xsells = productIds.map{ xsellId =>
+      val result = quoteXsellItemSlickRepository.insert(
+        QuoteXsellItem(productId = xsellId, quoteId = quote.id.get)
+      )
+      Logger.debug("Result from inserting into quote repo: " + result)
+      result
+    }
+    Future.sequence(xsells)
   }
 
   def importEnquiry(enquiry: Enquiry) = {
 
-    val insertedEnquiry = for {
-      company <- findOrAddCompany(enquiry)
-      customer <- findOrAddCustomer(enquiry, company)
+    val f = for {
+      // company <- findOrAddCompany(enquiry)
+      // customer <- findOrAddCustomer(enquiry, company)
       insertedEnquiry <- enquiryRepository.insert(enquiry.copy(imported = true))
-      // quote <- insertQuote(qr, customer.id.get)
+      quote <- insertQuote(enquiry)
+      quoteMeta <- insertQuoteMeta(quote)
+      quoteLineItem <- insertQuoteLineItem(enquiry, quote)
+      quoteXsells <- insertQuoteXsells(enquiry.xsellProductIds, quote)
       // asi <- asiProductGetter.get(qr.productId)
       // product <- asiProductRepository.insert(asi)
       // quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)
       f <- enquiryWSClient.flagImported(enquiry.enquiryId)
-    } yield insertedEnquiry
+    } yield (f)
 
-    Logger.debug(s"Inserted ${insertedEnquiry}")
+ Await.result(f, 100 seconds)
   }
 }
 

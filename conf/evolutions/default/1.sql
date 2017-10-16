@@ -4,7 +4,7 @@
 
 create TYPE pay_status as ENUM ('UNPAID', 'PART_PAID', 'PAID');
 create TYPE quote_status as ENUM ('NEW');
-create TYPE quote_stage as ENUM ('QUOTE', 'SALES', 'INVOICE');
+create TYPE quote_stage as ENUM ('ENQUIRY', 'QUOTE', 'SALES', 'INVOICE');
 
 create sequence iuser_seq start with 1000;
 create table iuser (
@@ -101,10 +101,10 @@ create table mock_enquiry (
   id bigint NOT NULL default nextval('mock_enquiry_seq'),
   enquiry_id bigint not null,
   enquiry_timestamp TIMESTAMP not null,
-  internal_product_id BIGINT not null,
-  product_id varchar(200) not null,
+  product_id BIGINT not null,
+  sku varchar(200) not null,
   product_name VARCHAR (255) not null,
-  brand VARCHAR (255),
+  supplier VARCHAR (255),
   colour VARCHAR (255),
   customer_name VARCHAR (255) not null,
   customer_email VARCHAR (255) not null,
@@ -128,10 +128,10 @@ create table enquiry (
   id bigint NOT NULL default nextval('enquiry_seq'),
   enquiry_id bigint not null,
   enquiry_timestamp TIMESTAMP not null,
-  internal_product_id BIGINT not null,
-  product_id varchar(200) not null,
+  product_id BIGINT not null,
+  sku varchar(200) not null,
   product_name VARCHAR (255) not null,
-  brand VARCHAR (255),
+  supplier VARCHAR (255),
   colour VARCHAR (255),
   customer_name VARCHAR (255) not null,
   customer_email VARCHAR (255) not null,
@@ -175,7 +175,8 @@ create table quote(
   delivery_address_id BIGINT,
   customer_id BIGINT,
   company_id BIGINT,
-  rep_id BIGINT NOT NULL,
+  rep_email VARCHAR(200) NOT NULL,
+  rep_id BIGINT,
   enquiry_id BIGINT,
   active BOOLEAN default true,
   constraint pk_quote primary key (id)
@@ -281,7 +282,7 @@ create table quote_line_item (
   sell NUMERIC(5,3),
   vat NUMERIC(2,1),
   quote_id BIGINT NOT NULL ,
-  supplier_id BIGINT NOT NULL,
+  supplier_id BIGINT,
   CONSTRAINT pk_quote_line_item PRIMARY KEY (id)
 );
 alter table quote_line_item add constraint fk_quote_line_item_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
@@ -290,8 +291,8 @@ create index ix_quote_line_item_quote_1 on quote_line_item (quote_id);
 alter table quote_line_item add constraint fk_quote_line_item_supplier foreign key (supplier_id) references supplier (id) on delete restrict on update restrict;
 create index ix_quote_line_item_supplier_1 on quote_line_item (supplier_id);
 
-alter table quote_line_item add constraint fk_quote_line_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
-create index ix_quote_line_item_product_id_1 on quote_line_item (product_id);
+-- alter table quote_line_item add constraint fk_quote_line_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
+-- create index ix_quote_line_item_product_id_1 on quote_line_item (product_id);
 
 
 create SEQUENCE quote_xsell_item_seq start with 1000;
@@ -304,8 +305,8 @@ create table quote_xsell_item (
 alter table quote_xsell_item add constraint fk_quote_xsell_item_quote foreign key (quote_id) references quote (id) on delete restrict on update restrict;
 create index ix_quote_xsell_item_quote_1 on quote_xsell_item (quote_id);
 
-alter table quote_xsell_item add constraint fk_quote_xsell_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
-create index ix_quote_xsell_item_product_id_1 on quote_xsell_item (product_id);
+-- alter table quote_xsell_item add constraint fk_quote_xsell_item_product foreign key (product_id) references product (product_id) on delete restrict on update restrict;
+-- create index ix_quote_xsell_item_product_id_1 on quote_xsell_item (product_id);
 
 
 create SEQUENCE po_seq start with 1000;

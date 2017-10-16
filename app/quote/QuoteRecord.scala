@@ -10,7 +10,7 @@ case class QuoteRecord(
                         quoteMeta: QuoteMeta,
                         customer: Option[Customer],
                         company: Option[Company],
-                        rep: User,
+                        rep: Option[User],
                         assignedUser: Option[User] = None,
                         invoiceAddress: Option[Address] = None,
                         deliveryAddress: Option[Address] = None,

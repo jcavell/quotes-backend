@@ -17,19 +17,18 @@ trait QuotesLineItemComponent {
 
   class QuoteLineItems(tag: Tag) extends Table[QuoteLineItem](tag, "quote_line_item") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def productId = column[String]("product_id")
+    def productId = column[Long]("product_id")
     def quantity = column[Int]("quantity")
     def colour = column[Option[String]]("colour")
     def description = column[Option[String]]("description")
     def priceIncludes = column[Option[String]]("price_includes")
-    def cost = column[BigDecimal]("cost")
-    def markup = column[BigDecimal]("markup")
-    def sell = column[BigDecimal]("sell")
+    def cost = column[Option[BigDecimal]]("cost")
+    def markup = column[Option[BigDecimal]]("markup")
     def vat = column[BigDecimal]("vat")
     def quoteId = column[Long]("quote_id")
-    def supplierId = column[Long]("supplier_id")
+    def supplierId = column[Option[Long]]("supplier_id")
 
-    def * = (id.?, productId, quantity, colour, description, priceIncludes, cost, markup, sell, vat, quoteId, supplierId) <> (QuoteLineItem.tupled, QuoteLineItem.unapply _)
+    def * = (id.?, productId, quantity, colour, description, priceIncludes, cost, markup, vat, quoteId, supplierId) <> (QuoteLineItem.tupled, QuoteLineItem.unapply _)
   }
 
 }

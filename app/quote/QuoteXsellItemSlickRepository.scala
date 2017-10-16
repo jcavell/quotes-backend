@@ -14,10 +14,11 @@ trait QuoteXsellItemsComponent {
   import profile.api._
 
   class QuoteXsellItems(tag: Tag) extends Table[QuoteXsellItem](tag, "quote_xsell_item") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def productId = column[Long]("product_id")
     def quoteId = column[Long]("quote_id")
 
-    def * = (productId, quoteId) <> (QuoteXsellItem.tupled, QuoteXsellItem.unapply _)
+    def * = (id.?, productId, quoteId) <> (QuoteXsellItem.tupled, QuoteXsellItem.unapply _)
   }
 
 }
@@ -34,16 +35,16 @@ class QuoteXsellItemSlickRepository @Inject()(protected val dbConfigProvider: Da
   def all: Future[List[QuoteXsellItem]] = db.run(quoteXsellItems.to[List].result)
 
   def insert(quoteXsellItem: QuoteXsellItem): Future[QuoteXsellItem] = {
-    val action = quoteXsellItems returning quoteXsellItems += quoteXsellItem
+    val action = quoteXsellItems returning quoteXsellItems.map {_.id} += quoteXsellItem
 
     db.run(action.asTry).map { result =>
       result match {
-        case Success(r) => quoteXsellItem
+        case Success(r) => quoteXsellItem.copy(id = Some(r))
         case Failure(e) => throw e
       }
     }
   }
   def findByQuoteId(quoteId: Long):Future[List[QuoteXsellItem]] = db.run(quoteXsellItems.filter(_.quoteId === quoteId).to[List].result)
 
-  def delete(productId: Long): Future[Unit] = db.run(quoteXsellItems.filter(_.productId === productId).delete).map(_ => ())
+  def delete(id: Long): Future[Unit] = db.run(quoteXsellItems.filter(_.id === id).delete).map(_ => ())
 }

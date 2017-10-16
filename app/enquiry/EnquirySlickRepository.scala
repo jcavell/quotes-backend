@@ -20,10 +20,10 @@ trait EnquiryComponent {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def enquiryId = column[Long]("enquiry_id")
     def enquiryTimestamp = column[DateTime]("enquiry_timestamp")
-    def internalProductId = column[Long]("internal_product_id")
-    def productId = column[String]("product_id")
+    def productId = column[Long]("product_id")
+    def sku = column[String]("sku")
     def productName = column[String]("product_name")
-    def brand = column[Option[String]]("brand")
+    def supplier = column[Option[String]]("supplier")
     def colour = column[Option[String]]("colour")
     def customerName = column[String]("customer_name")
     def customerTelephone = column[String]("customer_telephone")
@@ -39,7 +39,7 @@ trait EnquiryComponent {
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")
 
-    def * = (id, enquiryId, enquiryTimestamp, internalProductId, productId, productName, brand, colour, customerName, customerTelephone, customerEmail, company, requiredDate, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
+    def * = (id, enquiryId, enquiryTimestamp, productId, sku, productName, supplier, colour, customerName, customerTelephone, customerEmail, company, requiredDate, quantity, repId, repEmail, source, subject, xsellProductIds, otherRequirements, imported) <> (Enquiry.tupled, Enquiry.unapply _)
   }
 
 }

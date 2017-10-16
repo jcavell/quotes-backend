@@ -41,14 +41,16 @@ trait QuotesComponent {
     // Global
     def customerId = column[Option[Long]]("customer_id")
     def companyId = column[Option[Long]]("company_id")
-    def repId = column[Long]("rep_id")
+
+    def repEmail = column[String]("rep_email")
+    def repId = column[Option[Long]]("rep_id")
 
     // common
     def createdDate = column[DateTime]("created_date")
     def notes = column[Option[String]]("notes")
     def active = column[Boolean]("active")
 
-    def * = (id.?, title, requiredDate, specialInstructions, companyName, customerName, customerEmail, customerDirectPhone, customerMobilePhone, enquiryId, invoiceAddressId, deliveryAddressId, customerId, companyId, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, title, requiredDate, specialInstructions, companyName, customerName, customerEmail, customerDirectPhone, customerMobilePhone, enquiryId, invoiceAddressId, deliveryAddressId, customerId, companyId, repEmail, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
   }
 }
 
@@ -72,7 +74,7 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
       quotes join // t1.t1
         quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft  // t1.t2
         customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft  // t2
-        companySlickRepository.companies on (_._1._1.companyId === _.id) join  // t3
+        companySlickRepository.companies on (_._1._1.companyId === _.id) joinLeft  // t3
         userSlickRepository.users on (_._1._1._1.repId === _.id) joinLeft  // t4
         userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft  // t5
         addressSlickRepository.addresses on (_._1._1._1._1._1.invoiceAddressId === _.id) joinLeft  // t6

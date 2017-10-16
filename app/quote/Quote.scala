@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 
 case class Quote(id: Option[Long] = None,
                  title: String,
-                 requiredDate: DateTime, // TODO rename requiredDate
+                 requiredDate: DateTime,
                  specialInstructions: Option[String] = None,
 
                  // Customer snapshot data
@@ -20,9 +20,12 @@ case class Quote(id: Option[Long] = None,
                  deliveryAddressId: Option[Long] = None,
 
                  // Ongoing relations that may change
-                 customerId: Option[Long], // Current customer
-                 companyId: Option[Long], // Current company
-                 repId: Long, // Rep as now
+                 customerId: Option[Long] = None, // Current customer
+                 companyId: Option[Long] = None, // Current company
+
+
+                 repEmail: String,
+                 repId: Option[Long] = None, // Rep as now
 
                  // Common fields
                  createdDate: DateTime,

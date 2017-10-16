@@ -22,7 +22,7 @@ case class QuoteMeta(id: Option[Long] = None,
                      paymentTerms: Option[String] = None, // pro-forma
                      paymentDueDate: Option[DateTime] = None,
                      paymentStatus: Option[PaymentStatus] = None, // UNPAID, PART_PAID, PAID
-                     assignedGroup: Option[String], // REP, DESIGN, CUSTOMER
+                     assignedGroup: Option[String] = None, // REP, DESIGN, CUSTOMER
                      assignedUserId: Option[Long] = None,
                      //history: Option[JsValue] = None,
                      quoteId: Long

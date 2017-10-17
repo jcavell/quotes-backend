@@ -20,7 +20,7 @@ case class Enquiry(
                     repId: Int,
                     repEmail: String,
                     source: Option[String],
-                    subject: Option[String],
+                    subject: String,
                     xsellProductIds: List[Long],
                     otherRequirements: Option[String],
                     imported: Boolean = false

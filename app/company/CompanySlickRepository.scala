@@ -8,9 +8,6 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-/**
-  * Created by jcavell on 07/10/2017.
-  */
 @Singleton()
 class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext)
   extends CompaniesComponent
@@ -23,7 +20,9 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
   def findById(id: Long):Future[Option[Company]] = db.run(companies.filter(_.id === id).result.headOption)
   def all: Future[List[Company]] = db.run(companies.to[List].result)
 
-  def insert(company: Company): Future[Company] = {
+  def insert(co: Company): Future[Company] = {
+
+    val company = co.copyWithCanonicalFields
     val action = companies returning companies.map {_.id} += company
 
     db.run(action.asTry).map { result =>
@@ -36,11 +35,11 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   def findByName(name: String):Future[Option[Company]] = db.run(companies.filter(_.name === name).result.headOption)
 
-  def update(id: Long, company: Company): Future[Company] = {
+  def update(id: Long, co: Company): Future[Company] = {
+    val company = co.copyWithCanonicalFields
     val companyToUpdate: Company = company.copy(Some(id))
     db.run(companies.filter(_.id === id).update(companyToUpdate)).map(_ => (company))
   }
 
   def delete(id: Long): Future[Unit] = db.run(companies.filter(_.id === id).delete).map(_ => ())
-
 }

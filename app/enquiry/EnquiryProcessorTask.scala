@@ -94,7 +94,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
     val f = for {
       // company <- findOrAddCompany(enquiry)
       // customer <- findOrAddCustomer(enquiry, company)
-      insertedEnquiry <- enquiryRepository.insert(enquiry.copy(imported = true))
+      insertedEnquiry <- enquiryRepository.insert(enquiry)
       quote <- insertQuote(enquiry)
       quoteMeta <- insertQuoteMeta(quote)
       quoteLineItem <- insertQuoteLineItem(enquiry, quote)
@@ -105,6 +105,7 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
       f <- enquiryWSClient.flagImported(enquiry.enquiryId)
     } yield (f)
 
+    // TODO remove the await and have proper transaction and error handling
  Await.result(f, 100 seconds)
   }
 }

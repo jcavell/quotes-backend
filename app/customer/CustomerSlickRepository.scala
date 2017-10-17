@@ -20,10 +20,11 @@ trait CustomersComponent {
   class Customers(tag: Tag) extends Table[Customer](tag, "customer") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def salutation = column[Option[String]]("salutation")
+    def canonicalName = column[String]("canonical_name")
     def email = column[String]("email")
     def directPhone = column[Option[String]]("direct_phone")
     def mobilePhone = column[Option[String]]("mobile_phone")
+    def canonicalMobilePhone = column[Option[String]]("canonical_mobile_phone")
     def source = column[Option[String]]("source")
     def position = column[Option[String]]("position")
     def isMainContact = column[Boolean]("is_main_contact")
@@ -36,7 +37,7 @@ trait CustomersComponent {
     def companyId = column[Long]("company_id")
     def invoiceAddressId = column[Option[Long]]("invoice_address_id")
     def deliveryAddressId = column[Option[Long]]("delivery_address_id")
-    def * = (id.?, name, salutation, email, directPhone, mobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, repId, companyId, invoiceAddressId, deliveryAddressId) <> (Customer.tupled, Customer.unapply _)
+    def * = (id.?, name, canonicalName, email, directPhone, mobilePhone, canonicalMobilePhone, source, position, isMainContact, twitter, facebook, linkedIn, skype, active, repId, companyId, invoiceAddressId, deliveryAddressId) <> (Customer.tupled, Customer.unapply _)
   }
 }
 
@@ -73,7 +74,10 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
     }
   }
 
-  def insert(customer: Customer): Future[Customer] = {
+  def insert(cust: Customer): Future[Customer] = {
+
+    val customer = cust.copyWithCanonicalFields
+
     val action = customers returning customers.map {_.id} += customer
 
     db.run(action.asTry).map { result =>
@@ -86,7 +90,8 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def findByCompanyAndEmail(companyId: Long, email: String):Future[Option[Customer]] = db.run(customers.filter(cust => cust.email === email && cust.companyId === companyId).result.headOption)
 
-  def update(customer: Customer): Future[Customer] = {
+  def update(cust: Customer): Future[Customer] = {
+    val customer = cust.copyWithCanonicalFields
     val action = customers.filter(_.id === customer.id).update(customer)
 
     db.run(action.asTry).map { result =>
@@ -98,5 +103,4 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
   }
 
   def delete(id: Long): Future[Unit] = db.run(customers.filter(_.id === id).delete).map(_ => ())
-
 }

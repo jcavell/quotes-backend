@@ -7,9 +7,9 @@ insert into iuser(id, name, email, active) values(1, 'Jonny Cavell', 'jonny.cave
 insert into iuser(id, name, email, mobile_phone, active) values(2, 'Melvin Snedley', 'melvin@gmail.com', '0784593 478734', true);
 
 
-insert into company (id,name, phone1, source, active) values (  1,'Apple Inc.', '123123123', 'TV', true);
-insert into company (id,name, phone1, source, website, active) values (  2,'Orange Inc.', '555555', 'Newspaper', 'https://www.website.com', true);
-insert into company (id,name, phone1, phone2, source, active) values (  3,'Pear Inc.', '+44 34098234', 'phone two 777', 'Twitter', true);
+insert into company (id,name, canonical_name, phone1, source, active) values (  1,'Apple Inc.','apple',   '123123123', 'TV', true);
+insert into company (id,name, canonical_name, phone1, source, website, active) values (  2,'Orange Inc.', 'orange', '555555', 'Newspaper', 'https://www.website.com', true);
+insert into company (id,name, canonical_name, phone1, phone2, source, active) values (  3,'Pear Inc.', 'pear','+44 34098234', 'phone two 777', 'Twitter', true);
 
 
 
@@ -56,11 +56,11 @@ insert into contact(id, name, email, direct_phone, is_main_contact, supplier_id,
 insert into contact(id, name, email, direct_phone, is_main_contact, supplier_id, po_address_id) values (2, 'Mr Supplier 2', 'mrsupplier2@gmail.com', '2222222', true, 2, 8);
 
 
-insert into customer (id, name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (1,'Tommy Tom Tom','Lord Tomathan Cavell', 'tommy@gmail.com','0123123123123', 'CEO', true, '@jonnycavell', 1, 2, 1, 1, false);
+insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (1,'Tommy Tom Tom','tommytomtom', 'tommy@gmail.com','0123123123123', '0123123123123', 'CEO', true, '@jonnycavell', 1, 2, 1, 1, false);
 
-insert into customer (id, name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id,rep_id, company_id, active) values (2,'Billy Bob', 'asdfa', 'bill@gmail.com','999999999', 'President', true, null, 3, 4, 2, 2, true);
+insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id,rep_id, company_id, active) values (2,'Billy Bob', 'billybob', 'bill@gmail.com','999999999', '999999999', 'President', true, null, 3, 4, 2, 2, true);
 
-insert into customer (id, name, salutation, email,mobile_phone,position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby Fowler','Mr Bob', 'cleaner@gmail.com','+44 888888 777', 'Cleaner', false, '@cleaner', null, null, 2, 3, true);
+insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby Fowler', 'bobbyfowler', 'cleaner@gmail.com','+44 888888 777', '44888888777', 'Cleaner', false, '@cleaner', null, null, 2, 3, true);
 
 
 insert into product(product_id, name) VALUES (10854, 'Promotional 5oz Natural Cotton Shopper');

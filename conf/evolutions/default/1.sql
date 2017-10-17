@@ -44,9 +44,13 @@ create sequence company_seq start with 1000;
 create table company (
   id bigint not null default nextval('company_seq'),
   name                      varchar(255) not null,
+  canonical_name                      varchar(255) not null,
   phone1 VARCHAR(50),
+  canonical_phone1 VARCHAR(50),
   phone2 VARCHAR(50),
+  canonical_phone2 VARCHAR(50),
   phone3 VARCHAR(50),
+  canonical_phone3 VARCHAR(50),
   website VARCHAR(255),
   twitter VARCHAR(255),
   facebook VARCHAR(255),
@@ -56,17 +60,18 @@ create table company (
   constraint pk_company primary key (id))
 ;
 create index ix_company_name on company(name);
-
+create index ix_company_canonical_name on company(canonical_name);
 
 
 create sequence customer_seq start with 1000;
 create table customer (
   id bigint not null default nextval('customer_seq'),
   name                      varchar(255) not null,
-  salutation                      varchar(255),
+  canonical_name                      varchar(255) not null,
   email                 varchar(255) not null,
   direct_phone                      varchar(255),
   mobile_phone                      varchar(255),
+  canonical_mobile_phone                      varchar(255),
   source                      varchar(255),
   position                      varchar(255),
   is_main_contact BOOLEAN default true,
@@ -83,8 +88,10 @@ create table customer (
 ;
 
 create index ix_customer_name on customer(name);
-create index ix_customer_salutation on customer(salutation);
 create index ix_customer_email on customer(email);
+create index ix_customer_canonical_name on customer(canonical_name);
+create index ix_customer_mobile_phone on customer(mobile_phone);
+create index ix_customer_canonical_mobile_phone on customer(canonical_mobile_phone);
 
 alter table customer add constraint fk_customer_company_1 foreign key (company_id) references company (id) on delete restrict on update restrict;
 create index ix_customer_company_1 on customer (company_id);

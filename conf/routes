@@ -23,6 +23,7 @@ PUT           /customers/:id                     customer.CustomerAPIController.
 DELETE        /customers/:id                     customer.CustomerAPIController.deleteCustomer(id:Long)
 
 PUT           /addresses/:id                     address.AddressAPIController.updateAddress(id:Long)
+POST          /addresses                            address.AddressAPIController.insertAddress()
 
 GET           /quotes                            quote.QuoteAPIController.getQuotes()
 GET           /quotes/:id                        quote.QuoteAPIController.getQuote(id:Long)

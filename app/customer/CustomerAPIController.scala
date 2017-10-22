@@ -2,8 +2,8 @@ package customer
 
 import javax.inject._
 
+import db.SearchAndSort
 import formats.CustomFormats._
-import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -20,7 +20,15 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
   }
 
   def getCustomers() = Action.async { implicit request =>
-    customerRepository.getCustomerRecords().map { customers =>
+
+    val searchAndSort = SearchAndSort(orderField = request.queryString.get("orderField") match {
+      case Some(a) => Some(a.head)
+      case None => None
+    },orderAsc = request.queryString.get("orderAsc") match {
+      case Some(a) => a.head == "true"
+      case None => true
+    })
+    customerRepository.getCustomerRecords(searchAndSort).map { customers =>
       val json = Json.toJson(customers)
       Ok(json)
     }

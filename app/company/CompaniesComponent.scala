@@ -14,7 +14,7 @@ trait CompaniesComponent {
   class Companies(tag: Tag) extends Table[Company](tag, "company") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def canonicalName = column[String]("canonical_name")
+    def canonicalName = column[Option[String]]("canonical_name")
     def phone1 = column[Option[String]]("phone1")
     def canonicalPhone1 = column[Option[String]]("canonical_phone1")
     def phone2 = column[Option[String]]("phone2")

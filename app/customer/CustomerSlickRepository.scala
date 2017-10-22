@@ -2,14 +2,16 @@ package customer
 
 import javax.inject.{Inject, Singleton}
 
-import address.AddressSlickRepository
-import company.CompanySlickRepository
+import address.{Address, AddressSlickRepository}
+import company.{Company, CompanySlickRepository}
+import db.SearchAndSort
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 import play.api.Logger
+import slick.model.Column
 import user.UserSlickRepository
 
 trait CustomersComponent {
@@ -20,7 +22,7 @@ trait CustomersComponent {
   class Customers(tag: Tag) extends Table[Customer](tag, "customer") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def canonicalName = column[String]("canonical_name")
+    def canonicalName = column[Option[String]]("canonical_name")
     def email = column[String]("email")
     def directPhone = column[Option[String]]("direct_phone")
     def mobilePhone = column[Option[String]]("mobile_phone")
@@ -52,23 +54,31 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def getCustomerRecord(customerId: Long) = getCustomerRecords(Some(customerId)) map (_.headOption)
+  def getCustomerRecord(customerId: Long) = getCustomerRecords(SearchAndSort(), Some(customerId)) map (_.headOption)
 
-  def getCustomerRecords(maybeCustomerId: Option[Long] = None, maybeCompanyId: Option[Long] = None) = {
+  def getCustomerRecords(searchAndSort: SearchAndSort, maybeCustomerId: Option[Long] = None, maybeCompanyId: Option[Long] = None) = {
     val query = for {
       (((customer, company), invoiceAddress), deliveryAddress) <-
-        customers join
-        companyRepository.companies on(_.companyId === _.id) joinLeft
+      customers join
+        companyRepository.companies on (_.companyId === _.id) joinLeft
         // userRepository.users on(_._1.repId === _.id) joinLeft
-        addressRepository.addresses on(_._1.invoiceAddressId === _.id) joinLeft
-          addressRepository.addresses on(_._1._1.deliveryAddressId === _.id)
+        addressRepository.addresses on (_._1.invoiceAddressId === _.id) joinLeft
+        addressRepository.addresses on (_._1._1.deliveryAddressId === _.id)
     } yield (customer, company, invoiceAddress, deliveryAddress)
 
     maybeCustomerId match {
       case None =>
         maybeCompanyId match {
           case Some(companyId) => db.run(query.filter(_._1.companyId === companyId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
-          case None => db.run(query.to[List].result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+
+          case None => {
+            db.run(query.to[List].sortBy(t =>
+              if (searchAndSort.hasOrderDesc("name")) t._1.name.desc
+              else if (searchAndSort.hasOrderAsc("email")) t._1.email.asc
+              else if (searchAndSort.hasOrderDesc("email")) t._1.email.desc
+              else t._1.name.asc
+            ).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+          }
         }
       case Some(customerId) => db.run(query.filter(_._1.id === customerId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
     }

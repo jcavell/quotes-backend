@@ -43,8 +43,8 @@ create index ix_address_postcode on address(postcode);
 create sequence company_seq start with 1000;
 create table company (
   id bigint not null default nextval('company_seq'),
-  name                      varchar(255) not null,
-  canonical_name                      varchar(255) not null,
+  name                      varchar(255) not null UNIQUE ,
+  canonical_name                      varchar(255) not null UNIQUE,
   phone1 VARCHAR(50),
   canonical_phone1 VARCHAR(50),
   phone2 VARCHAR(50),

@@ -3,7 +3,7 @@ package customer
 case class Customer(
                     id: Option[Long] = None,
                     name: String,
-                    canonicalName: String = "",
+                    canonicalName: Option[String] = None,
                     email: String,
                     directPhone: Option[String] = None,
                     mobilePhone: Option[String] = None,
@@ -24,7 +24,7 @@ case class Customer(
 
   def copyWithCanonicalFields = copy(
     email = CustomerCanonicaliser.canonicaliseEmail(email),
-    canonicalName = CustomerCanonicaliser.canonicaliseName(name),
+    canonicalName = Some(CustomerCanonicaliser.canonicaliseName(name)),
     canonicalMobilePhone = mobilePhone.map(m => CustomerCanonicaliser.canonicaliseMobile(m))
   )
 }

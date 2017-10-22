@@ -6,23 +6,22 @@ object CompanyCanonicaliser {
   def canonicaliseName(input: String) = {
 
     val lowercased = input.toLowerCase
+    val withoutPunctuation = lowercased.replaceAll("[^a-z0-9]", "")
 
     val withoutLtd =
-      lowercased.replaceAll("limited", "").
-      replaceAll("ltd", "").
-      replaceAll("incorporated", "").
-      replaceAll("inc", "")
-
-    val withoutPunctuation = withoutLtd.replaceAll("[^a-z0-9]", "")
+      withoutPunctuation.replaceAll("limited", "").
+      replaceAll("ltd$", "").
+      replaceAll("incorporated$", "").
+      replaceAll("inc$", "")
 
     val withoutNone =
-      if (withoutPunctuation == "na" ||
-        withoutPunctuation == "none" ||
-        withoutPunctuation == "no" ||
-        withoutPunctuation == "me" ||
-        withoutPunctuation == "notgiven" ||
-        withoutPunctuation == "notapplicable") "" else
-      withoutPunctuation
+      if (withoutLtd == "na" ||
+        withoutLtd == "none" ||
+        withoutLtd == "no" ||
+        withoutLtd == "me" ||
+        withoutLtd == "notgiven" ||
+        withoutLtd == "notapplicable") "" else
+        withoutLtd
     withoutNone
   }
 

@@ -13,8 +13,17 @@ class CompanyCanonicaliserTest extends Specification {
     "remove non alphanumeric " in {
       CompanyCanonicaliser.canonicaliseName("THE; box1! of :( doom") mustEqual "thebox1ofdoom"
     }
-    "remove ltd, inc, incorporated or limited " in {
-      CompanyCanonicaliser.canonicaliseName("Health Ltd Inc incorporated Limited Products") mustEqual "healthproducts"
+    "remove ltd at end" in {
+      CompanyCanonicaliser.canonicaliseName("Health Products Ltd.") mustEqual "healthproducts"
+    }
+    "remove inc at end" in {
+      CompanyCanonicaliser.canonicaliseName("Health Products Inc.") mustEqual "healthproducts"
+    }
+    "remove limited at end" in {
+      CompanyCanonicaliser.canonicaliseName("Health Products Limited") mustEqual "healthproducts"
+    }
+    "remove Incorporated. at end" in {
+      CompanyCanonicaliser.canonicaliseName("Health Products Incorporated") mustEqual "healthproducts"
     }
     "none returns empty string " in {
       CompanyCanonicaliser.canonicaliseName("NONE!") mustEqual ""

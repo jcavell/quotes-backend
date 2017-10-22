@@ -3,7 +3,7 @@ package company
 import javax.inject._
 
 import customer.CustomerSlickRepository
-import db.SearchAndSort
+import db.{Search, Sort}
 import play.api.libs.json._
 import play.api.mvc._
 import formats.CustomFormats._
@@ -17,7 +17,7 @@ class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, 
 
     val companyAndCustomers = for{
       company <- companyRepository.findById(companyId)
-      customers <- customerSlickRepository.getCustomerRecords(SearchAndSort(), maybeCompanyId = Some(companyId))
+      customers <- customerSlickRepository.getCustomerRecords(Search(Some("companyId"), Some(companyId.toString)), Sort())
     } yield (company, customers)
 
     companyAndCustomers.map { cc =>

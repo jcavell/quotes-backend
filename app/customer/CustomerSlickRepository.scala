@@ -4,7 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import address.{Address, AddressSlickRepository}
 import company.{Company, CompanySlickRepository}
-import db.SearchAndSort
+import db.{Search, Sort}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
@@ -14,6 +14,8 @@ import play.api.Logger
 import slick.model.Column
 import user.UserSlickRepository
 
+import scala.collection.mutable.ListBuffer
+
 trait CustomersComponent {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
@@ -22,7 +24,7 @@ trait CustomersComponent {
   class Customers(tag: Tag) extends Table[Customer](tag, "customer") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def canonicalName = column[Option[String]]("canonical_name")
+    def canonicalName = column[String]("canonical_name")
     def email = column[String]("email")
     def directPhone = column[Option[String]]("direct_phone")
     def mobilePhone = column[Option[String]]("mobile_phone")
@@ -54,9 +56,12 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
 
   def all: Future[List[Customer]] = db.run(customers.to[List].result)
 
-  def getCustomerRecord(customerId: Long) = getCustomerRecords(SearchAndSort(), Some(customerId)) map (_.headOption)
+  def getCustomerRecord(customerId: Long) = getCustomerRecords(
+      Search(Some("customerId"), Some(customerId.toString)),
+      Sort()
+  ) map (_.headOption)
 
-  def getCustomerRecords(searchAndSort: SearchAndSort, maybeCustomerId: Option[Long] = None, maybeCompanyId: Option[Long] = None) = {
+  def getCustomerRecords(search: Search, searchAndSort: Sort) = {
     val query = for {
       (((customer, company), invoiceAddress), deliveryAddress) <-
       customers join
@@ -66,23 +71,30 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
         addressRepository.addresses on (_._1._1.deliveryAddressId === _.id)
     } yield (customer, company, invoiceAddress, deliveryAddress)
 
-    maybeCustomerId match {
-      case None =>
-        maybeCompanyId match {
-          case Some(companyId) => db.run(query.filter(_._1.companyId === companyId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+    val queryList = query.to[List]
+    val queryWithSearch =
+      if (search.containsSearchTerm) {
+        queryList.filter(t =>
+          List(
+            search.getSearchValueAsLong("id").map(id => t._1.id === id),
+            search.getSearchValueAsLong("companyId").map(companyId => t._1.companyId === companyId),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._1.canonicalName like s"%${multi.toLowerCase}%"),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._1.email like s"%${multi.toLowerCase}%")
+        ).collect(
+          { case Some(criteria) => criteria }).
+          reduceLeft(_ || _)
+        )
+      }
+      else queryList
 
-          case None => {
-            db.run(query.to[List].sortBy(t =>
-              if (searchAndSort.hasOrderDesc("name")) t._1.name.desc
-              else if (searchAndSort.hasOrderAsc("email")) t._1.email.asc
-              else if (searchAndSort.hasOrderDesc("email")) t._1.email.desc
-              else t._1.name.asc
-            ).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
-          }
-        }
-      case Some(customerId) => db.run(query.filter(_._1.id === customerId).result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
-    }
-  }
+    db.run(queryWithSearch.sortBy(t =>
+      if (searchAndSort.hasOrderDesc("name")) t._1.canonicalName.desc
+      else if (searchAndSort.hasOrderAsc("email")) t._1.email.asc
+      else if (searchAndSort.hasOrderDesc("email")) t._1.email.desc
+      else t._1.name.asc
+    ).
+      result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+ }
 
   def insert(cust: Customer): Future[Customer] = {
 

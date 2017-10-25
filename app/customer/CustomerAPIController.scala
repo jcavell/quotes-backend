@@ -20,10 +20,17 @@ class CustomerAPIController @Inject()(customerRepository: CustomerSlickRepositor
   }
 
   def getCustomers() = Action.async { implicit request =>
-
     val search = Search.fromRequestMap(request.queryString)
     val sort = Sort.fromRequestMap(request.queryString)
     customerRepository.getCustomerRecords(search, sort).map { customers =>
+      val json = Json.toJson(customers)
+      Ok(json)
+    }
+  }
+
+  def getCount() = Action.async { implicit request =>
+    val search = Search.fromRequestMap(request.queryString)
+    customerRepository.getCount(search).map { customers =>
       val json = Json.toJson(customers)
       Ok(json)
     }

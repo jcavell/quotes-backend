@@ -17,6 +17,7 @@ PUT           /suppliers/:id                     supplier.SupplierAPIController.
 DELETE        /suppliers/:id                     supplier.SupplierAPIController.deleteSupplier(id:Long)
 
 GET           /customers                         customer.CustomerAPIController.getCustomers()
+GET           /customer-count                    customer.CustomerAPIController.getCount()
 GET           /customers/:id                     customer.CustomerAPIController.getCustomer(id:Long)
 POST          /customers                         customer.CustomerAPIController.insertCustomer()
 PUT           /customers/:id                     customer.CustomerAPIController.updateCustomer(id:Long)

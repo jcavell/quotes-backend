@@ -61,7 +61,7 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
       Sort()
   ) map (_.headOption)
 
-  def getCustomerRecords(search: Search, searchAndSort: Sort) = {
+  def getCustomerRecords(search: Search, sort: Sort) = {
     val query = for {
       (((customer, company), invoiceAddress), deliveryAddress) <-
       customers join
@@ -88,13 +88,39 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
       else queryList
 
     db.run(queryWithSearch.sortBy(t =>
-      if (searchAndSort.hasOrderDesc("name")) t._1.canonicalName.desc
-      else if (searchAndSort.hasOrderAsc("email")) t._1.email.asc
-      else if (searchAndSort.hasOrderDesc("email")) t._1.email.desc
+      if (sort.hasOrderDesc("name")) t._1.canonicalName.desc
+      else if (sort.hasOrderAsc("email")) t._1.email.asc
+      else if (sort.hasOrderDesc("email")) t._1.email.desc
       else t._1.name.asc
     ).
       result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
  }
+
+
+  def getCount(search: Search) = {
+    val query = for {
+      (customer, company) <- customers join
+        companyRepository.companies on (_.companyId === _.id)
+    } yield (customer, company)
+
+    val queryList = query.to[List]
+    val queryWithSearch =
+      if (search.containsSearchTerm) {
+        queryList.filter(t =>
+          List(
+            search.getSearchValueAsLong("id").map(id => t._1.id === id),
+            search.getSearchValueAsLong("companyId").map(companyId => t._1.companyId === companyId),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._1.canonicalName like s"%${multi.toLowerCase}%"),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._1.email like s"%${multi.toLowerCase}%")
+          ).collect(
+            { case Some(criteria) => criteria }).
+            reduceLeft(_ || _)
+        )
+      }
+      else queryList
+
+    db.run(queryWithSearch.result.map(l => l.length))
+  }
 
   def insert(cust: Customer): Future[Customer] = {
 

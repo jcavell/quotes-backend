@@ -87,12 +87,14 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
       }
       else queryList
 
-    db.run(queryWithSearch.sortBy(t =>
-      if (sort.hasOrderDesc("name")) t._1.canonicalName.desc
-      else if (sort.hasOrderAsc("email")) t._1.email.asc
-      else if (sort.hasOrderDesc("email")) t._1.email.desc
-      else t._1.name.asc
+    db.run(queryWithSearch.
+      sortBy(t =>
+        if (sort.hasOrderDesc("name")) (t._1.canonicalName.desc, t._1.id.desc)
+        else if (sort.hasOrderAsc("email")) (t._1.email.asc, t._1.id.desc)
+        else if (sort.hasOrderDesc("email")) (t._1.email.desc, t._1.id.desc)
+        else (t._1.name.asc, t._1.id.desc)
     ).
+      drop(((search.page -1) * search.rpp)).take(search.rpp).
       result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
  }
 

@@ -6,7 +6,9 @@ import slick.lifted.{CanBeQueryCondition, Rep}
 
 case class Search(
                  searchField: Option[String] = None,
-                 searchValue: Option[String] = None) {
+                 searchValue: Option[String] = None,
+                 page: Int = 1,
+                 rpp: Int = 10){
 
   def containsSearchTerm = searchField.isDefined
 
@@ -25,6 +27,12 @@ object Search{
     }, searchValue = queryString.get("searchValue") match {
       case Some(a) => Some(a.head)
       case None => None
+    }, page = queryString.get("page") match {
+      case Some(a) => a.head.toInt
+      case None => 1
+    }, rpp = queryString.get("rpp") match {
+      case Some(a) => a.head.toInt
+      case None => 5
     })
   }
 }

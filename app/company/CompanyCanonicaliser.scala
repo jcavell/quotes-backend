@@ -22,7 +22,7 @@ object CompanyCanonicaliser {
         withoutLtd == "notgiven" ||
         withoutLtd == "notapplicable") "" else
         withoutLtd
-    withoutNone
+    if (withoutNone == "")  "N/A" else withoutNone
   }
 
   def canonicalisePhone(input: String) = {

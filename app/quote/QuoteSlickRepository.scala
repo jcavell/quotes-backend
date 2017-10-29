@@ -2,11 +2,11 @@ package quote
 
 import javax.inject.{Inject, Singleton}
 
-import address.AddressSlickRepository
+import address.{AddressCreator, AddressSlickRepository}
 import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import company.CompanySlickRepository
-import customer.{CustomerSlickRepository}
+import customer.{CustomerRecord, CustomerSlickRepository}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import user.UserSlickRepository
@@ -25,22 +25,11 @@ trait QuotesComponent {
     def requiredDate = column[DateTime]("required_date")
     def specialInstructions = column[Option[String]]("special_instructions")
 
-    // Customer data
-    def companyName = column[String]("company_name")
-    def customerName = column[String]("customer_name")
-    def customerEmail = column[String]("customer_email")
-    
-    def customerDirectPhone = column[Option[String]]("customer_direct_phone")
-    def customerMobilePhone = column[Option[String]]("customer_mobile_phone")
-
     // Quote relations
+    def customerId = column[Long]("customer_id")
     def enquiryId = column[Option[Long]]("enquiry_id")
     def invoiceAddressId = column[Option[Long]]("invoice_address_id")
     def deliveryAddressId = column[Option[Long]]("delivery_address_id")
-
-    // Global
-    def customerId = column[Option[Long]]("customer_id")
-    def companyId = column[Option[Long]]("company_id")
 
     def repEmail = column[String]("rep_email")
     def repId = column[Option[Long]]("rep_id")
@@ -50,7 +39,7 @@ trait QuotesComponent {
     def notes = column[Option[String]]("notes")
     def active = column[Boolean]("active")
 
-    def * = (id.?, title, requiredDate, specialInstructions, companyName, customerName, customerEmail, customerDirectPhone, customerMobilePhone, enquiryId, invoiceAddressId, deliveryAddressId, customerId, companyId, repEmail, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, title, requiredDate, specialInstructions, enquiryId, customerId, invoiceAddressId, deliveryAddressId, repEmail, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
   }
 }
 
@@ -72,19 +61,20 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
     for {
       ((((((quote, quoteMeta), customer), company), rep), invoiceAddress), deliveryAddress) <-
       quotes join // t1.t1
-        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft  // t1.t2
-        customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft  // t2
-        companySlickRepository.companies on (_._1._1.companyId === _.id) joinLeft  // t3
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) join  // t1.t2
+        customerSlickRepository.customers on (_._1.customerId === _.id) join  // t2
+        companySlickRepository.companies on (_._2.companyId === _.id) joinLeft  // t3
         userSlickRepository.users on (_._1._1._1.repId === _.id) joinLeft  // t4
         userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft  // t5
         addressSlickRepository.addresses on (_._1._1._1._1._1.invoiceAddressId === _.id) joinLeft  // t6
         addressSlickRepository.addresses on (_._1._1._1._1._1._1.deliveryAddressId === _.id)  // t7
     } yield (quote, quoteMeta, customer, company, rep, invoiceAddress, deliveryAddress)
 
-    maybeQuoteId match {
-      case Some(quoteId) => db.run(query.filter(_._1._1.id === quoteId).result.map(l => l.map (t => QuoteRecord(t._1._1, t._1._2, t._2, t._3, t._4, t._5, t._6, t._7))))
-      case None => db.run(query.to[List].result.map(l => l.map (t => QuoteRecord(t._1._1, t._1._2, t._2, t._3, t._4, t._5, t._6, t._7))))
-    }
+    val queryWithFilter = if(maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
+    db.run(queryWithFilter.
+      to[List].result.
+      map(l => l.map (t =>
+        QuoteRecord(t._1._1, t._1._2, CustomerRecord(t._2, t._3, AddressCreator.getOrDefaultAddress(t._6, "Invoice address", t._3.name), AddressCreator.getOrDefaultAddress(t._7, "Delivery address", t._3.name)), None, None, t._4, t._5))))
   }
 
   def get(quoteId: Long):Future[Option[Quote]] = db.run(quotes.filter(_.id === quoteId).result.headOption)

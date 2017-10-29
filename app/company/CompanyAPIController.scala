@@ -37,6 +37,27 @@ class CompanyAPIController @Inject()(companyRepository: CompanySlickRepository, 
     }
   }
 
+
+  def search() = Action.async { implicit request =>
+    val search = Search.fromRequestMap(request.queryString)
+    val sort = Sort.fromRequestMap(request.queryString)
+
+    companyRepository.search(search, sort).map { companies =>
+      val json = Json.toJson(companies)
+      Ok(json)
+    }
+  }
+
+  def count() = Action.async { implicit request =>
+    val search = Search.fromRequestMap(request.queryString)
+    val sort = Sort.fromRequestMap(request.queryString)
+
+    companyRepository.count(search, sort).map { customers =>
+      val json = Json.toJson(customers)
+      Ok(json)
+    }
+  }
+
   def insertCompany() = Action.async(parse.json) { implicit request =>
     println("Validating company: " + request.body)
     request.body.validate[Company].fold(

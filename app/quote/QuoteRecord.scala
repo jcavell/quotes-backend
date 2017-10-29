@@ -1,21 +1,16 @@
 package quote
 
-import address.Address
-import company.Company
-import customer.{Customer}
+import customer.CustomerRecord
 import user.User
 
 case class QuoteRecord(
                         quote:Quote,
                         quoteMeta: QuoteMeta,
-                        customer: Option[Customer],
-                        company: Option[Company],
-                        rep: Option[User],
-                        assignedUser: Option[User] = None,
-                        invoiceAddress: Option[Address] = None,
-                        deliveryAddress: Option[Address] = None,
+                        customerRecord: CustomerRecord,
                         lineItems: Option[Seq[QuoteLineItem]] = None,
-                        xsellItems: Option[Seq[QuoteXsellItem]] = None
+                        xsellItems: Option[Seq[QuoteXsellItem]] = None,
+                        rep: Option[User] = None,
+                        assignedUser: Option[User] = None
                       ) {
 
 }

@@ -4,7 +4,8 @@
 
 #GET     /quotes                                asiquote.QuoteAPIController.getQuotes(p:Int ?= 0, s:Int ?= 2, f ?= "", c ?= "", e ?= "")
 
-GET           /companies                         company.CompanyAPIController.getCompanies()
+GET           /companies                         company.CompanyAPIController.search()
+GET           /company-count                         company.CompanyAPIController.count()
 GET           /companies/:id                     company.CompanyAPIController.getCompany(id:Long)
 POST          /companies                         company.CompanyAPIController.insertCompany()
 PUT           /companies/:id                     company.CompanyAPIController.updateCompany(id:Long)

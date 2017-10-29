@@ -55,9 +55,9 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   }
 
 
-  def insertQuote(enquiry: Enquiry): Future[Quote] = {
+  def insertQuote(enquiry: Enquiry, customerId: Long): Future[Quote] = {
     val title = s"${enquiry.subject}: ${enquiry.productName}"
-    val quote = Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, customerName = enquiry.customerName, customerMobilePhone = Some(enquiry.customerTelephone), customerEmail = enquiry.customerEmail, companyName = enquiry.company, repEmail = enquiry.repEmail, createdDate = DateTime.now)
+    val quote = Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, repEmail = enquiry.repEmail, createdDate = DateTime.now, customerId = customerId)
 
      val result = quoteSlickRepository.insert(quote)
      result
@@ -92,10 +92,10 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   def importEnquiry(enquiry: Enquiry) = {
 
     val f = for {
-      // company <- findOrAddCompany(enquiry)
-      // customer <- findOrAddCustomer(enquiry, company)
       insertedEnquiry <- enquiryRepository.insert(enquiry)
-      quote <- insertQuote(enquiry)
+      company <- findOrAddCompany(enquiry)
+      customer <- findOrAddCustomer(enquiry, company)
+      quote <- insertQuote(enquiry, company.id.get)
       quoteMeta <- insertQuoteMeta(quote)
       quoteLineItem <- insertQuoteLineItem(enquiry, quote)
       quoteXsells <- insertQuoteXsells(enquiry.xsellProductIds, quote)

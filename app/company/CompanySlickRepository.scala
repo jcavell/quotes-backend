@@ -2,6 +2,7 @@ package company
 
 import javax.inject.{Inject, Singleton}
 
+import db.{Search, Sort}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
@@ -31,6 +32,29 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
         case Failure(e) => throw e
       }
     }
+  }
+
+  def search(search: Search, sort: Sort): Future[List[Company]] = db.run(getSearchQuery(search, sort))
+  
+  def count(search: Search, sort: Sort): Future[Int] = db.run(getSearchQuery(search, sort).map(_.length))
+  
+
+  def getSearchQuery(search: Search, sort: Sort) = {
+    val query = companies.to[List]
+    val queryWithSearch =
+      if (search.containsSearchTerm) {
+        query.filter(t => List(search.getSearchValue("name", CompanyCanonicaliser.canonicaliseName).
+            map(name => t.canonicalName like s"%${name.toLowerCase}%")).
+            collect(
+            { case Some(criteria) => criteria }).
+            reduceLeft(_ || _)
+        )
+      } else query
+
+    queryWithSearch.
+      sortBy(t => (t.name.asc, t.id.asc)).
+      drop(((search.page -1) * search.rpp)).take(search.rpp).
+      result
   }
 
   def findByName(name: String):Future[Option[Company]] = db.run(companies.filter(_.name === name).result.headOption)

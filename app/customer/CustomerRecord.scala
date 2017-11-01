@@ -7,5 +7,5 @@ import user.User
 case class CustomerRecord(
                            customer: Customer,
                            company: Company,
-                           invoiceAddress: Option[Address],
-                           deliveryAddress: Option[Address])
+                           invoiceAddress: Option[Address] = None,
+                           deliveryAddress: Option[Address] = None)

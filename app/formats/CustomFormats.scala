@@ -35,6 +35,7 @@ object CustomFormats {
   implicit val userFormat = Json.format[User]
   implicit val quoteXsellItemFormat = Json.format[QuoteXsellItem]
   implicit val customerCompanyFormat = Json.format[CustomerRecord]
+  implicit val enquiryFormat = Json.format[Enquiry]
   implicit val quoteRecordFormat = Json.format[QuoteRecord]
 
   implicit val companyRecordFormat = Json.format[CompanyRecord]
@@ -50,5 +51,4 @@ object CustomFormats {
   implicit val productCustomerPageFormat = Json.format[ASIQuoteWithProducts]
   implicit val quotePageFormat = Json.format[QuotePage]
 
-  implicit val enquiryFormat = Json.format[Enquiry]
 }

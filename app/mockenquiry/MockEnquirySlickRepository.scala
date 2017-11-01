@@ -35,7 +35,7 @@ trait MockEnquiryComponent {
     def repId = column[Int]("rep_id")
     def repEmail = column[String]("rep_email")
     def source = column[Option[String]]("source")
-    def subject = column[String]("subject")
+    def subject = column[Option[String]]("subject")
     def xsellProductIds = column[List[Long]]("xsell_product_ids")
     def otherRequirements= column[Option[String]]("other_requirements")
     def imported = column[Boolean]("imported")

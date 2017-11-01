@@ -149,7 +149,7 @@ create table enquiry (
   rep_id int not null,
   rep_email VARCHAR (255) not null,
   source VARCHAR (255),
-  subject VARCHAR (255),
+  subject VARCHAR (255) not null,
   xsell_product_ids BIGINT[],
   other_requirements VARCHAR (255),
   imported BOOLEAN,
@@ -173,24 +173,16 @@ create table quote(
   required_date TIMESTAMP NOT NULL,
   notes VARCHAR(2000),
   special_instructions VARCHAR(1000),
-  invoice_address_id BIGINT,
-  delivery_address_id BIGINT,
-  customer_id BIGINT NOT NULL,
+  customer_id BIGINT,
   rep_email VARCHAR(200) NOT NULL,
   rep_id BIGINT,
   enquiry_id BIGINT,
   active BOOLEAN default true,
   constraint pk_quote primary key (id)
 );
-alter table quote add constraint fk_quote_invoice_address foreign key (invoice_address_id) references address (id) on delete restrict on update restrict;
-create index ix_quote_invoice_address_1 on quote (invoice_address_id);
-
-alter table quote add constraint fk_quote_delivery_address foreign key (delivery_address_id) references address (id) on delete restrict on update restrict;
-create index ix_quote_delivery_address_1 on quote (delivery_address_id);
 
 alter table quote add constraint fk_quote_customer foreign key (customer_id) references customer (id) on delete restrict on update restrict;
 create index ix_quote_customer_1 on quote (customer_id);
-
 
 alter table quote add constraint fk_quote_rep foreign key (rep_id) references iuser (id) on delete restrict on update restrict;
 create index ix_quote_rep_1 on quote (rep_id);

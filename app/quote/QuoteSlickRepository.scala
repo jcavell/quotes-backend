@@ -7,6 +7,7 @@ import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import company.CompanySlickRepository
 import customer.{CustomerRecord, CustomerSlickRepository}
+import enquiry.EnquirySlickRepository
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import user.UserSlickRepository
@@ -26,10 +27,8 @@ trait QuotesComponent {
     def specialInstructions = column[Option[String]]("special_instructions")
 
     // Quote relations
-    def customerId = column[Long]("customer_id")
+    def customerId = column[Option[Long]]("customer_id")
     def enquiryId = column[Option[Long]]("enquiry_id")
-    def invoiceAddressId = column[Option[Long]]("invoice_address_id")
-    def deliveryAddressId = column[Option[Long]]("delivery_address_id")
 
     def repEmail = column[String]("rep_email")
     def repId = column[Option[Long]]("rep_id")
@@ -39,12 +38,12 @@ trait QuotesComponent {
     def notes = column[Option[String]]("notes")
     def active = column[Boolean]("active")
 
-    def * = (id.?, title, requiredDate, specialInstructions, enquiryId, customerId, invoiceAddressId, deliveryAddressId, repEmail, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
+    def * = (id.?, title, requiredDate, specialInstructions, enquiryId, customerId, repEmail, repId, createdDate, notes, active) <> (Quote.tupled, Quote.unapply _)
   }
 }
 
 @Singleton()
-class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, quoteMetaSlickRepository: QuoteMetaSlickRepository, customerSlickRepository: CustomerSlickRepository, companySlickRepository: CompanySlickRepository, userSlickRepository: UserSlickRepository, addressSlickRepository: AddressSlickRepository)(implicit executionContext: ExecutionContext)
+class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, quoteMetaSlickRepository: QuoteMetaSlickRepository, customerSlickRepository: CustomerSlickRepository, companySlickRepository: CompanySlickRepository, userSlickRepository: UserSlickRepository, addressSlickRepository: AddressSlickRepository, enquirySlickRepository: EnquirySlickRepository)(implicit executionContext: ExecutionContext)
   extends QuotesComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
@@ -59,22 +58,33 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
   def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
     val query =
     for {
-      ((((((quote, quoteMeta), customer), company), rep), invoiceAddress), deliveryAddress) <-
+      (((((quote, quoteMeta), customer), company), rep), enquiry) <-
       quotes join // t1.t1
-        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) join  // t1.t2
-        customerSlickRepository.customers on (_._1.customerId === _.id) join  // t2
-        companySlickRepository.companies on (_._2.companyId === _.id) joinLeft  // t3
-        userSlickRepository.users on (_._1._1._1.repId === _.id) joinLeft  // t4
-        userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft  // t5
-        addressSlickRepository.addresses on (_._1._1._1._1._1.invoiceAddressId === _.id) joinLeft  // t6
-        addressSlickRepository.addresses on (_._1._1._1._1._1._1.deliveryAddressId === _.id)  // t7
-    } yield (quote, quoteMeta, customer, company, rep, invoiceAddress, deliveryAddress)
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft  // t1.t2
+        customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft  // t2
+        companySlickRepository.companies on (_._2.map( _.companyId) === _.id) joinLeft  // t3
+        enquirySlickRepository.enquiries on (_._1._1._1.enquiryId === _.id) joinLeft // t4
+      userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t5
+      userSlickRepository.users on (_._1._1._1._1._1.repId === _.id)  // t5
+//        addressSlickRepository.addresses on (_._1._1._1._2.map(_.invoiceAddressId.get) === _.id) joinLeft  // t6
+//        addressSlickRepository.addresses on (_._1._1._1._1._2.map(_.deliveryAddressId.get) === _.id)  // t7
+    } yield (quote, quoteMeta, customer, company, rep, enquiry)
 
     val queryWithFilter = if(maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
     db.run(queryWithFilter.
       to[List].result.
-      map(l => l.map (t =>
-        QuoteRecord(t._1._1, t._1._2, CustomerRecord(t._2, t._3, AddressCreator.getOrDefaultAddress(t._6, "Invoice address", t._3.name), AddressCreator.getOrDefaultAddress(t._7, "Delivery address", t._3.name)), None, None, t._4, t._5))))
+      map ( l =>
+        l.map { t =>
+          val customerRecord = t._2 match {
+            case Some(customer) => Some(CustomerRecord(customer, t._3.get))
+            case None => None
+          }
+          // CustomerRecord(t._2, t._3, AddressCreator.getOrDefaultAddress(t._6, "Invoice address", t._3.name), AddressCreator.getOrDefaultAddress(t._7, "Delivery address", t._3.name)))
+
+          QuoteRecord(t._1._1, t._1._2, t._4, customerRecord, None, None, t._5, t._6)
+        }
+      )
+    )
   }
 
   def get(quoteId: Long):Future[Option[Quote]] = db.run(quotes.filter(_.id === quoteId).result.headOption)

@@ -8,9 +8,7 @@ case class Quote(id: Option[Long] = None,
                  specialInstructions: Option[String] = None,
 
                  enquiryId: Option[Long] = None,
-                 customerId: Long,
-                 invoiceAddressId: Option[Long] = None,
-                 deliveryAddressId: Option[Long] = None,
+                 customerId: Option[Long],
 
                  repEmail: String,
                  repId: Option[Long] = None, // Rep as now

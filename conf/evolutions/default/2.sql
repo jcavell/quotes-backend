@@ -37,9 +37,9 @@ insert into address(id, name, company, fao, line1, line2, townCity, county, post
 insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (8, 'Mr Super Supplier 2 Address', 'Supplier 2 Inc', 'Mr Super 2', '1001 Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (9, 'Tom Invoice Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (9, 'B Foweler Invoice Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (10, 'Tom Delivery Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (10, 'B Fowler Delivery Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
 insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (11, 'Supplier 2 address for PO', 'Supplier 2', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
@@ -60,7 +60,7 @@ insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mo
 
 insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id,rep_id, company_id, active) values (2,'Billy Bob', 'billybob', 'bill@gmail.com','999999999', '999999999', 'President', true, null, 3, 4, 2, 2, true);
 
-insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby Fowler', 'bobbyfowler', 'cleaner@gmail.com','+44 888888 777', '44888888777', 'Cleaner', false, '@cleaner', null, null, 2, 3, true);
+insert into customer (id, name, canonical_name, email,mobile_phone, canonical_mobile_phone, position, is_main_contact, twitter, invoice_address_id, delivery_address_id, rep_id, company_id, active) values (3,'Bobby Fowler', 'bobbyfowler', 'cleaner@gmail.com','+44 888888 777', '44888888777', 'Cleaner', false, '@cleaner', 9, 10, 2, 3, true);
 
 
 insert into product(product_id, name) VALUES (10854, 'Promotional 5oz Natural Cotton Shopper');
@@ -68,29 +68,26 @@ insert into product(product_id, name) VALUES (21387, 'Bottle opener');
 insert into product(product_id, name) VALUES (134, 'Lego');
 
 
-insert into quote(id, title, required_date, invoice_address_id, delivery_address_id, rep_email, customer_id) values (1, 'Quote for Bobby', '2017-10-22 23:01:11', 9, 10, 'repemail@gmail.com', 3);
-
-
+insert into quote(id, title, required_date, rep_email, customer_id) values (1, 'Quote for Bobby', '2017-10-22 23:01:11', 'repemail@gmail.com', 3);
 insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (1, 1, 'NEW', 'QUOTE', 'REP', 1);
-
-
 insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (1, '21387', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 1, 2);
-
 insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (2, '134', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 1, 1);
-
 insert into quote_xsell_item(id, product_id, quote_id) values (1, 134, 1);
 
 
-
 insert into quote(id, title, required_date, rep_email, customer_id) values (2, 'Barbones quote', '2017-10-22 23:01:11', 'repemail@gmail.com', 2);
-
-
 insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (2, 2, 'NEW', 'QUOTE', 'REP', 2);
-
-
 insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (3, '21387', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 2, 2);
-
 insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (4, '134', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 2, 1);
+
+
+insert into enquiry(id, enquiry_id, subject, enquiry_timestamp, product_id, sku, product_name, quantity, customer_name, customer_email, customer_telephone, company, required_date, rep_id, rep_email, xsell_product_ids, imported) values(1, 123, 'QUOTE', '2017-10-22 23:01:11', 134, 'PROD 134', 'Lego 134', 120, 'Mr No Body', 'nobody@gmail.com', '12123123', 'No Bodies Ltd', '2017-10-22 23:01:11', 1, 'rep@gmail.com', '{}', true);
+insert into quote(id, title, required_date, rep_email, enquiry_id) values (3, 'No customer quote', '2017-10-22 23:01:11', 'repemail@gmail.com', 1);
+insert into quote_meta(id, quote_id, status, stage, assigned_group, assigned_user_id) values (3, 3, 'NEW', 'QUOTE', 'REP', 2);
+insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (5, '21387', 500, 'Lovely bottle opener', 12.23, 0.15, 12.60, 0.20, 3, 2);
+insert into quote_line_item(id, product_id, quantity, description, cost, markup, sell, vat, quote_id, supplier_id) values (6, '134', 300, 'Lego', 2.23, 0.25, 2.60, 0.20, 3, 1);
+
+
 
 insert into quote_xsell_item(id, product_id, quote_id) values (2, 134, 2);
 

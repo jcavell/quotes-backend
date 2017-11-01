@@ -55,20 +55,53 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   def getQuoteRecord(quoteId: Long) = getQuoteRecords(Some(quoteId)) map (_.headOption)
 
+  //  def getQuoteRecord(quoteId: Long) = {
+//    val query =
+//      for {
+//        (((((quote, quoteMeta), customer), company), rep), enquiry) <-
+//        quotes join // t1.t1
+//          quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) join  // t1.t2
+//          customerSlickRepository.customers on (_._1.customerId === _.id) join  // t2
+//          companySlickRepository.companies on (_._ ._.companyId === _.id) joinLeft  // t3
+//          addressSlickRepository.addresses on (_._1._1._1._2.map(_.invoiceAddressId.get) === _.id) joinLeft  // t6
+//          addressSlickRepository.addresses on (_._1._1._1._1._2.map(_.deliveryAddressId.get) === _.id)  // t7
+//          enquirySlickRepository.enquiries on (_._1._1._1.enquiryId === _.id) joinLeft // t4
+//          userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t5
+//          userSlickRepository.users on (_._1._1._1._1._1.repId === _.id)  // t5
+//      } yield (quote, quoteMeta, customer, company, rep, enquiry)
+//
+//    val queryWithFilter = if(maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
+//    db.run(queryWithFilter.
+//      to[List].result.
+//      map ( l =>
+//        l.map { t =>
+//          val customerRecord = t._2 match {
+//            case Some(customer) => Some(CustomerRecord(customer, t._3.get))
+//            case None => None
+//          }
+//          // CustomerRecord(t._2, t._3, AddressCreator.getOrDefaultAddress(t._6, "Invoice address", t._3.name), AddressCreator.getOrDefaultAddress(t._7, "Delivery address", t._3.name)))
+//
+//          QuoteRecord(t._1._1, t._1._2, t._4, customerRecord, None, None, t._5, t._6)
+//        }
+//      )
+//    )
+//
+//  }
+
   def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
     val query =
     for {
-      (((((quote, quoteMeta), customer), company), rep), enquiry) <-
+      (((((((quote, quoteMeta), customer), company), rep), enquiry), invoiceAddress), deliveryAddress) <-
       quotes join // t1.t1
-        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft  // t1.t2
-        customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft  // t2
-        companySlickRepository.companies on (_._2.map( _.companyId) === _.id) joinLeft  // t3
+        quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft // t1.t2
+        customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft // t2
+        companySlickRepository.companies on (_._2.map(_.companyId) === _.id) joinLeft // t3
         enquirySlickRepository.enquiries on (_._1._1._1.enquiryId === _.id) joinLeft // t4
-      userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t5
-      userSlickRepository.users on (_._1._1._1._1._1.repId === _.id)  // t5
-//        addressSlickRepository.addresses on (_._1._1._1._2.map(_.invoiceAddressId.get) === _.id) joinLeft  // t6
-//        addressSlickRepository.addresses on (_._1._1._1._1._2.map(_.deliveryAddressId.get) === _.id)  // t7
-    } yield (quote, quoteMeta, customer, company, rep, enquiry)
+        userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t5
+        userSlickRepository.users on (_._1._1._1._1._1.repId === _.id) joinLeft // t6
+        addressSlickRepository.addresses on (_._1._1._1._1._2.flatMap(_.invoiceAddressId) === _.id) joinLeft // t7
+        addressSlickRepository.addresses on (_._1._1._1._1._1._2.flatMap(_.deliveryAddressId) === _.id) // t8
+    } yield (quote, quoteMeta, customer, company, rep, enquiry, invoiceAddress, deliveryAddress)
 
     val queryWithFilter = if(maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
     db.run(queryWithFilter.
@@ -76,11 +109,15 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
       map ( l =>
         l.map { t =>
           val customerRecord = t._2 match {
-            case Some(customer) => Some(CustomerRecord(customer, t._3.get))
+            case Some(customer) =>
+              Some(CustomerRecord(
+                customer,
+                t._3,
+                AddressCreator.getOrDefaultAddress(t._7, "Invoice address"),
+                AddressCreator.getOrDefaultAddress(t._8, "Delivery address")
+              ))
             case None => None
           }
-          // CustomerRecord(t._2, t._3, AddressCreator.getOrDefaultAddress(t._6, "Invoice address", t._3.name), AddressCreator.getOrDefaultAddress(t._7, "Delivery address", t._3.name)))
-
           QuoteRecord(t._1._1, t._1._2, t._4, customerRecord, None, None, t._5, t._6)
         }
       )

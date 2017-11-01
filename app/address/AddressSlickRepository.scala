@@ -17,7 +17,6 @@ trait AddressComponent {
   class Addresses(tag: Tag) extends Table[Address](tag, "address") {
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def company = column[String]("company")
     def fao = column[Option[String]]("fao")
     def line1 = column[Option[String]]("line1")
     def line2 = column[Option[String]]("line2")
@@ -27,7 +26,7 @@ trait AddressComponent {
     def postcode = column[Option[String]]("postcode")
     def country = column[String]("country")
     def active = column[Boolean]("active")
-    def * = (id, name, company, fao, line1, line2, line3, townCity, county, postcode, country, active) <> (Address.tupled, Address.unapply _)
+    def * = (id, name, fao, line1, line2, line3, townCity, county, postcode, country, active) <> (Address.tupled, Address.unapply _)
   }
 
 }

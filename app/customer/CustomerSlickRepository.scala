@@ -95,7 +95,7 @@ class CustomerSlickRepository @Inject()(protected val dbConfigProvider: Database
         else (t._1.name.asc, t._1.id.desc)
     ).
       drop(((search.page -1) * search.rpp)).take(search.rpp).
-      result.map(l => l.map(t => CustomerRecord(t._1, t._2, t._3, t._4))))
+      result.map(l => l.map(t => CustomerRecord(t._1, Some(t._2), t._3, t._4))))
  }
 
 

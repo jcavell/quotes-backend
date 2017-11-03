@@ -6,6 +6,6 @@ import user.User
 
 case class CustomerRecord(
                            customer: Customer,
-                           company: Option[Company],
+                           company: Company,
                            invoiceAddress: Option[Address] = None,
                            deliveryAddress: Option[Address] = None)

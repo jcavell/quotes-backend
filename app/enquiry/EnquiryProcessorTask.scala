@@ -3,7 +3,7 @@ package enquiry
 import javax.inject.Inject
 
 import akka.actor.ActorSystem
-import company.{Company, CompanySlickRepository}
+import company.{Company, CompanyCanonicaliser, CompanySlickRepository}
 import customer.{Customer, CustomerSlickRepository}
 import formats.CustomFormats._
 import mockenquiry.MockEnquirySlickRepository
@@ -34,34 +34,32 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   }
 
 
-  def findOrAddCustomer(enquiry: Enquiry, company: Company):Future[Customer] = customerRepository.findByCompanyAndEmail(company.id.get, enquiry.customerEmail).flatMap { customerOption =>
-    customerOption match {
-      case Some(p) => Future(p)
-      case _ => customerRepository.insert(Customer(name = enquiry.customerName, email = enquiry.customerEmail, mobilePhone = Some(enquiry.customerTelephone), companyId = company.id.get, source = enquiry.source))
+  def findCustomer(enquiry: Enquiry, company: Option[Company]):Future[Option[Customer]] = {
+    company match{
+      case Some(co) => customerRepository.findByCompanyAndEmail(co.id.get, enquiry.customerEmail)
+      case None => Future(None)
     }
+//    customerRepository.findByCompanyAndEmail(company.id.get, enquiry.customerEmail).flatMap { customerOption =>
+//      customerOption match {
+//        case Some(p) => Future(p)
+//        case _ => customerRepository.insert(Customer(name = enquiry.customerName, email = enquiry.customerEmail, mobilePhone = Some(enquiry.customerTelephone), companyId = company.id.get, source = enquiry.source))
+//      }
+//    }
   }
 
-  def findOrAddCompany(enquiry: Enquiry): Future[Company] = {
-
+  def findCompany(enquiry: Enquiry): Future[Option[Company]] = {
     val givenCompany = enquiry.company.toLowerCase
     val companyName = if(givenCompany.isEmpty || givenCompany == "none" || givenCompany == "na" || givenCompany == "n/a") enquiry.customerEmail else enquiry.company
-
-    companyRepository.findByName(companyName).flatMap { companyOption =>
-      companyOption match {
-        case Some(c) => Future(c)
-        case None => companyRepository.insert(Company(name = companyName))
-      }
-    }
+    companyRepository.findByCanonicalName(CompanyCanonicaliser.canonicaliseName(companyName))
   }
 
-
-  def insertQuote(enquiry: Enquiry): Future[Quote] = {
+  def generateQuote(enquiry: Enquiry, customer: Option[Customer]) = {
     val title = s"${enquiry.subject}: ${enquiry.productName}"
-    val quote = Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, repEmail = enquiry.repEmail, createdDate = DateTime.now, customerId = None)
-
-     val result = quoteSlickRepository.insert(quote)
-     result
+    Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, repEmail = enquiry.repEmail, createdDate = DateTime.now, customerId = customer.flatMap(_.id))
   }
+
+  def insertQuote(enquiry: Enquiry, customer: Option[Customer]): Future[Quote] =
+    quoteSlickRepository.insert(generateQuote(enquiry, customer))
 
   def insertQuoteMeta(quote: Quote): Future[QuoteMeta] = {
     val quoteMeta = QuoteMeta(status = QuoteStatuses.NEW, stage = QuoteStages.ENQUIRY, quoteId = quote.id.get)
@@ -93,9 +91,9 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
 
     val f = for {
       insertedEnquiry <- enquiryRepository.insert(enquiry)
-      // company <- findOrAddCompany(enquiry)
-      // customer <- findOrAddCustomer(enquiry, company)
-      quote <- insertQuote(enquiry)
+      company <- findCompany(enquiry)
+      customer <- findCustomer(enquiry, company)
+      quote <- insertQuote(enquiry, customer)
       quoteMeta <- insertQuoteMeta(quote)
       quoteLineItem <- insertQuoteLineItem(enquiry, quote)
       quoteXsells <- insertQuoteXsells(enquiry.xsellProductIds, quote)

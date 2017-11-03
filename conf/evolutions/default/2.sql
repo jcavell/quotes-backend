@@ -18,35 +18,33 @@ insert into supplier(id, name) values (2, 'Supplier 2');
 
 
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (1, 'Tom Invoice Address', 'Apple', 'Tom', '7 Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (1, 'Tom Invoice Address', 'Tom', '7 Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (2, 'Tom Delivery Address', 'Apple', 'Tom', '7 Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (2, 'Tom Delivery Address', 'Tom', '7 Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (3, 'Bill Invoice Address', 'Core', 'Bill', '11a Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (3, 'Bill Invoice Address', 'Bill', '11a Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (4, 'Tom Invoice Address', 'Core', 'Bill', '11a Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (4, 'Tom Invoice Address', 'Bill', '11a Dunton Close', 'Surbs', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (5, 'Tom Invoice Address', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (5, 'Tom Invoice Address', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (6, 'Tom Invoice Address', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (6, 'Tom Invoice Address', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (7, 'Mr Super Supplier 1 Address', 'Mr Super 2', '1001 Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (7, 'Mr Super Supplier 1 Address', 'Supplier 1 Inc', 'Mr Super 2', '1001 Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
-
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (8, 'Mr Super Supplier 2 Address', 'Supplier 2 Inc', 'Mr Super 2', '1001 Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (8, 'Mr Super Supplier 2 Address', 'Mr Super 2', '1001 Dunton Close', 'Surbiton', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (9, 'B Foweler Invoice Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (9, 'B Foweler Invoice Address for quote', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (10, 'B Fowler Delivery Address for quote', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (10, 'B Fowler Delivery Address for quote', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (11, 'Supplier 2 address for PO', 'Supplier 2', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (11, 'Supplier 2 address for PO', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (12, 'Tom Delivery Address for PO', 'Bin', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (12, 'Tom Delivery Address for PO', 'Bobby', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
-insert into address(id, name, company, fao, line1, line2, townCity, county, postcode, country, active) values (13, 'Supplier 1 address for PO', 'Supplier 1', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
+insert into address(id, name, fao, line1, line2, townCity, county, postcode, country, active) values (13, 'Supplier 1 address for PO', 'Mr Supper', '100 Dunton Close', 'Surbey', 'London', 'Surrey', 'KT6 6QT', 'United Kingdom', true);
 
 
 

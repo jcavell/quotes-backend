@@ -8,7 +8,7 @@ case class QuoteRecord(
                         quote:Quote,
                         quoteMeta: QuoteMeta,
                         enquiry: Option[Enquiry],
-                        customerRecord: Option[CustomerRecord],
+                        customerRecord: CustomerRecord,
                         lineItems: Option[Seq[QuoteLineItem]] = None,
                         xsellItems: Option[Seq[QuoteXsellItem]] = None,
                         rep: Option[User] = None,

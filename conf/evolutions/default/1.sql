@@ -24,7 +24,6 @@ create sequence address_seq start with 1000;
 create table address(
   id bigint not null default nextval('address_seq'),
   name varchar(255) not null,
-  company VARCHAR(255) not null,
   fao VARCHAR(255),
   line1 VARCHAR(255) not null,
   line2 VARCHAR(255),

@@ -57,6 +57,7 @@ class CompanySlickRepository @Inject()(protected val dbConfigProvider: DatabaseC
       result
   }
 
+  def findByCanonicalName(canonicalName: String):Future[Option[Company]] = db.run(companies.filter(_.canonicalName === canonicalName).result.headOption)
   def findByName(name: String):Future[Option[Company]] = db.run(companies.filter(_.name === name).result.headOption)
 
   def update(id: Long, co: Company): Future[Company] = {

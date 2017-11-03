@@ -51,7 +51,7 @@ trait QuotesComponent {
 }
 
 @Singleton()
-class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, quoteMetaSlickRepository: QuoteMetaSlickRepository, customerSlickRepository: CustomerSlickRepository, companySlickRepository: CompanySlickRepository, userSlickRepository: UserSlickRepository, addressSlickRepository: AddressSlickRepository, enquirySlickRepository: EnquirySlickRepository)(implicit executionContext: ExecutionContext)
+class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, protected val quoteMetaSlickRepository: QuoteMetaSlickRepository, protected val customerSlickRepository: CustomerSlickRepository, protected val companySlickRepository: CompanySlickRepository, protected val userSlickRepository: UserSlickRepository, protected val addressSlickRepository: AddressSlickRepository, protected val enquirySlickRepository: EnquirySlickRepository)(implicit executionContext: ExecutionContext)
   extends QuotesComponent
     with HasDatabaseConfigProvider[JdbcProfile] {
 
@@ -63,7 +63,7 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   def getQuoteRecord(quoteId: Long) = getQuoteRecords(Some(quoteId)) map (_.headOption)
 
-  def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
+  def getQuoteQuery(maybeQuoteId: Option[Long] = None) = {
     val query =
       for {
         (((((((quote, quoteMeta), customer), company), rep), enquiry), invoiceAddress), deliveryAddress) <-
@@ -79,7 +79,17 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
       } yield (quote, quoteMeta, customer, company, rep, enquiry, invoiceAddress, deliveryAddress)
 
     val queryWithFilter = if (maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
-    db.run(queryWithFilter.
+    queryWithFilter
+  }
+
+  def getCount(maybeQuoteId: Option[Long] = None) = {
+    val query = getQuoteQuery(maybeQuoteId)
+    db.run(query.result.map(l => l.length))
+  }
+
+  def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
+    val query = getQuoteQuery(maybeQuoteId)
+    db.run(query.
       to[List].result.
       map(l =>
         l.map { t =>

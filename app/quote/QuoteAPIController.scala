@@ -2,6 +2,7 @@ package quote
 
 import javax.inject._
 
+import db.Search
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
@@ -15,6 +16,14 @@ class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteL
   def getQuotes() = Action.async { implicit request =>
     quoteRepository.getQuoteRecords().map { page =>
       val json = Json.toJson(page)
+      Ok(json)
+    }
+  }
+
+  def getCount() = Action.async { implicit request =>
+    val search = Search.fromRequestMap(request.queryString)
+    quoteRepository.getCount().map { customers =>
+      val json = Json.toJson(customers)
       Ok(json)
     }
   }

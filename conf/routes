@@ -28,6 +28,7 @@ PUT           /addresses/:id                     address.AddressAPIController.up
 POST          /addresses                            address.AddressAPIController.insertAddress()
 
 GET           /quotes                            quote.QuoteAPIController.getQuotes()
+GET           /quote-count                          quote.QuoteAPIController.getCount()
 GET           /quotes/:id                        quote.QuoteAPIController.getQuote(id:Long)
 POST          /quotes                            quote.QuoteAPIController.insertQuote()
 PUT           /quotes/:id                        quote.QuoteAPIController.updateQuote(id:Long)

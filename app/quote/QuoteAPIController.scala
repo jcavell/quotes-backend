@@ -2,7 +2,7 @@ package quote
 
 import javax.inject._
 
-import db.Search
+import db.{Search, Sort}
 import play.api.libs.json.Writes.dateWrites
 import play.api.libs.json._
 import play.api.mvc._
@@ -14,7 +14,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteLineItemRepository: QuoteLineItemSlickRepository, quoteXsellItemRepository: QuoteXsellItemSlickRepository, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getQuotes() = Action.async { implicit request =>
-    quoteRepository.getQuoteRecords().map { page =>
+    val search = Search.fromRequestMap(request.queryString)
+    val sort = Sort.fromRequestMap(request.queryString)
+    quoteRepository.getQuoteRecords(search).map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }
@@ -22,14 +24,13 @@ class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteL
 
   def getCount() = Action.async { implicit request =>
     val search = Search.fromRequestMap(request.queryString)
-    quoteRepository.getCount().map { customers =>
+    quoteRepository.getCount(search).map { customers =>
       val json = Json.toJson(customers)
       Ok(json)
     }
   }
 
   def getQuote(quoteId: Long) = Action.async { implicit request =>
-
     val quoteAndLineItems = for{
       quoteRecord <- quoteRepository.getQuoteRecord(quoteId)
       quoteLineItems <- quoteLineItemRepository.findByQuoteId(quoteId)

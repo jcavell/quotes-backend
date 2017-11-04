@@ -2,15 +2,16 @@ package quote
 
 import javax.inject.{Inject, Singleton}
 
-import address.{AddressCreator, AddressSlickRepository}
+import address.{Address, AddressCreator, AddressSlickRepository}
 import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import company.{Company, CompanySlickRepository}
-import customer.{Customer, CustomerRecord, CustomerSlickRepository}
-import enquiry.EnquirySlickRepository
+import customer.{Customer, CustomerCanonicaliser, CustomerRecord, CustomerSlickRepository}
+import db.Search
+import enquiry.{Enquiry, EnquirySlickRepository}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
-import user.UserSlickRepository
+import user.{User, UserSlickRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -61,9 +62,12 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
   def all: Future[List[Quote]] = db.run(quotes.to[List].result)
 
-  def getQuoteRecord(quoteId: Long) = getQuoteRecords(Some(quoteId)) map (_.headOption)
+   def getQuoteRecord(quoteId: Long) = {
+     val queryWithFilter = getQuoteQuery().filter(_._1._1.id === quoteId)
+     runQueryAndMapResults(queryWithFilter) map (_.headOption)
+   }
 
-  def getQuoteQuery(maybeQuoteId: Option[Long] = None) = {
+  def getQuoteQuery() = {
     val query =
       for {
         (((((((quote, quoteMeta), customer), company), rep), enquiry), invoiceAddress), deliveryAddress) <-
@@ -77,18 +81,40 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
           addressSlickRepository.addresses on (_._1._1._1._1._2.flatMap(_.invoiceAddressId) === _.id) joinLeft // t7
           addressSlickRepository.addresses on (_._1._1._1._1._1._2.flatMap(_.deliveryAddressId) === _.id) // t8
       } yield (quote, quoteMeta, customer, company, rep, enquiry, invoiceAddress, deliveryAddress)
-
-    val queryWithFilter = if (maybeQuoteId.isDefined) query.filter(_._1._1.id === maybeQuoteId.get) else query
-    queryWithFilter
+    query
   }
 
-  def getCount(maybeQuoteId: Option[Long] = None) = {
-    val query = getQuoteQuery(maybeQuoteId)
+  def getQuoteQueryWithSearch(search: Search) = {
+    val query = getQuoteQuery()
+    val queryWithSearch =
+      if (search.containsSearchTerm) {
+        query.filter(t =>
+          List(
+         //   search.getSearchValueAsLong("id").map(id => t._1._1.id === id),
+    //        search.getSearchValueAsLong("customerId").map(customerId => t._1._1.customerId === customerId),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._2.map(_.canonicalName) like s"%${multi.toLowerCase}%"),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._2.map(_.email) like s"%${multi.toLowerCase}%")
+          ).collect(
+            { case Some(criteria) => criteria }).
+            reduceLeft(_ || _)
+        )
+      }
+      else query
+
+    queryWithSearch
+  }
+
+  def getCount(search: Search) = {
+    val query = getQuoteQueryWithSearch(search)
     db.run(query.result.map(l => l.length))
   }
 
-  def getQuoteRecords(maybeQuoteId: Option[Long] = None) = {
-    val query = getQuoteQuery(maybeQuoteId)
+
+
+  def getQuoteRecords(search: Search) = runQueryAndMapResults(getQuoteQueryWithSearch(search))
+
+
+  def runQueryAndMapResults(query:Query[((QuoteSlickRepository.this.Quotes, QuoteSlickRepository.this.quoteMetaSlickRepository.QuoteMetas), Rep[Option[QuoteSlickRepository.this.customerSlickRepository.Customers]], Rep[Option[QuoteSlickRepository.this.companySlickRepository.Companies]], Rep[Option[QuoteSlickRepository.this.enquirySlickRepository.Enquiries]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]]), ((Quote, QuoteMeta), Option[Customer], Option[Company], Option[Enquiry], Option[User], Option[User], Option[Address], Option[Address]), scala.Seq]) = {
     db.run(query.
       to[List].result.
       map(l =>

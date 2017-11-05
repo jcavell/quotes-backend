@@ -63,24 +63,24 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
   def all: Future[List[Quote]] = db.run(quotes.to[List].result)
 
    def getQuoteRecord(quoteId: Long) = {
-     val queryWithFilter = getQuoteQuery().filter(_._1._1.id === quoteId)
+     val queryWithFilter = getQuoteQuery().filter(_._1.id === quoteId)
      runQueryAndMapResults(queryWithFilter) map (_.headOption)
    }
 
   def getQuoteQuery() = {
     val query =
       for {
-        (((((((quote, quoteMeta), customer), company), rep), enquiry), invoiceAddress), deliveryAddress) <-
-        quotes join // t1.t1
-          quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft // t1.t2
-          customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft // t2
-          companySlickRepository.companies on (_._2.map(_.companyId) === _.id) joinLeft // t3
-          enquirySlickRepository.enquiries on (_._1._1._1.enquiryId === _.id) joinLeft // t4
-          userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t5
-          userSlickRepository.users on (_._1._1._1._1._1.repId === _.id) joinLeft // t6
-          addressSlickRepository.addresses on (_._1._1._1._1._2.flatMap(_.invoiceAddressId) === _.id) joinLeft // t7
-          addressSlickRepository.addresses on (_._1._1._1._1._1._2.flatMap(_.deliveryAddressId) === _.id) // t8
-      } yield (quote, quoteMeta, customer, company, rep, enquiry, invoiceAddress, deliveryAddress)
+        ((((((((quote, quoteMeta), customer), company), assignedUser), rep), enquiry), invoiceAddress), deliveryAddress) <-
+        quotes join // t1
+          quoteMetaSlickRepository.quoteMetas on (_.id === _.quoteId) joinLeft // t2
+          customerSlickRepository.customers on (_._1.customerId === _.id) joinLeft // t3
+          companySlickRepository.companies on (_._2.map(_.companyId) === _.id) joinLeft // t4
+          enquirySlickRepository.enquiries on (_._1._1._1.enquiryId === _.id) joinLeft // t5
+          userSlickRepository.users on (_._1._1._1._2.assignedUserId === _.id) joinLeft // t6
+          userSlickRepository.users on (_._1._1._1._1._1.repId === _.id) joinLeft // t7
+          addressSlickRepository.addresses on (_._1._1._1._1._2.flatMap(_.invoiceAddressId) === _.id) joinLeft // t8
+          addressSlickRepository.addresses on (_._1._1._1._1._1._2.flatMap(_.deliveryAddressId) === _.id) // t9
+      } yield (quote, quoteMeta, customer, company, assignedUser, rep, enquiry, invoiceAddress, deliveryAddress)
     query
   }
 
@@ -92,8 +92,8 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
           List(
          //   search.getSearchValueAsLong("id").map(id => t._1._1.id === id),
     //        search.getSearchValueAsLong("customerId").map(customerId => t._1._1.customerId === customerId),
-            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._2.map(_.canonicalName) like s"%${multi.toLowerCase}%"),
-            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._2.map(_.email) like s"%${multi.toLowerCase}%")
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._3.map(_.canonicalName) like s"%${multi.toLowerCase}%"),
+            search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._3.map(_.email) like s"%${multi.toLowerCase}%")
           ).collect(
             { case Some(criteria) => criteria }).
             reduceLeft(_ || _)
@@ -114,23 +114,21 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
   def getQuoteRecords(search: Search) = runQueryAndMapResults(getQuoteQueryWithSearch(search))
 
 
-  def runQueryAndMapResults(query:Query[((QuoteSlickRepository.this.Quotes, QuoteSlickRepository.this.quoteMetaSlickRepository.QuoteMetas), Rep[Option[QuoteSlickRepository.this.customerSlickRepository.Customers]], Rep[Option[QuoteSlickRepository.this.companySlickRepository.Companies]], Rep[Option[QuoteSlickRepository.this.enquirySlickRepository.Enquiries]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]]), ((Quote, QuoteMeta), Option[Customer], Option[Company], Option[Enquiry], Option[User], Option[User], Option[Address], Option[Address]), scala.Seq]) = {
+  def runQueryAndMapResults(query:Query[(QuoteSlickRepository.this.Quotes, QuoteSlickRepository.this.quoteMetaSlickRepository.QuoteMetas, Rep[Option[QuoteSlickRepository.this.customerSlickRepository.Customers]], Rep[Option[QuoteSlickRepository.this.companySlickRepository.Companies]], Rep[Option[QuoteSlickRepository.this.enquirySlickRepository.Enquiries]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]]), (Quote, QuoteMeta, Option[Customer], Option[Company], Option[Enquiry], Option[User], Option[User], Option[Address], Option[Address]), scala.Seq]) = {
     db.run(query.
       to[List].result.
       map(l =>
         l.map { t =>
-          val customerRecord = t._2 match { // match on customer
-            case Some(customer) => {
-              CustomerRecord(customer, t._3.get, AddressCreator.getOrDefaultAddress(t._7, "Invoice address"), AddressCreator.getOrDefaultAddress(t._8, "Delivery address"))
-            }
-            case None => { // no customer, attempt to create new Customer from Enquiry (with empty Company)
-              t._4 match { // match on Enquiry
+          val customerRecord = t._3 match { // match on customer
+            case Some(customer) =>
+              CustomerRecord(customer, t._4.get, AddressCreator.getOrDefaultAddress(t._8, "Invoice address"), AddressCreator.getOrDefaultAddress(t._9, "Delivery address"))
+            case None =>  // no customer, attempt to create new Customer from Enquiry (with empty Company)
+              t._5 match { // match on Enquiry
                 case Some(enquiry) => CustomerRecord(Customer(name = enquiry.customerName, email = enquiry.customerEmail, mobilePhone = Some(enquiry.customerTelephone), companyId = 0, source = enquiry.source), Company(name = enquiry.company))
                 case None => CustomerRecord(Customer(name = "", email = "", companyId = 0), Company(name = "")) // no enquiry found, initialise empty customer
               }
-            }
           }
-          QuoteRecord(t._1._1, t._1._2, t._4, customerRecord, None, None, t._5, t._6)
+          QuoteRecord(t._1, t._2, t._5, customerRecord, None, None, t._6, t._7)
         }
       )
     )

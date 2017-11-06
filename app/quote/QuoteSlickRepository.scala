@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 import com.github.tototoshi.slick.PostgresJodaSupport._
 import company.{Company, CompanySlickRepository}
 import customer.{Customer, CustomerCanonicaliser, CustomerRecord, CustomerSlickRepository}
-import db.Search
+import db.{Search, Sort}
 import enquiry.{Enquiry, EnquirySlickRepository}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
@@ -64,7 +64,7 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
    def getQuoteRecord(quoteId: Long) = {
      val queryWithFilter = getQuoteQuery().filter(_._1.id === quoteId)
-     runQueryAndMapResults(queryWithFilter) map (_.headOption)
+     runQueryAndMapResults(queryWithFilter, Search(), Sort()) map (_.headOption)
    }
 
   def getQuoteQuery() = {
@@ -90,8 +90,7 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
       if (search.containsSearchTerm) {
         query.filter(t =>
           List(
-         //   search.getSearchValueAsLong("id").map(id => t._1._1.id === id),
-    //        search.getSearchValueAsLong("customerId").map(customerId => t._1._1.customerId === customerId),
+            search.getSearchValueAsLong("customerId").map(customerId => t._1.customerId === customerId),
             search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseName).map(multi => t._3.map(_.canonicalName) like s"%${multi.toLowerCase}%"),
             search.getSearchValue("multi", CustomerCanonicaliser.canonicaliseEmail).map(multi => t._3.map(_.email) like s"%${multi.toLowerCase}%")
           ).collect(
@@ -111,11 +110,19 @@ class QuoteSlickRepository @Inject()(protected val dbConfigProvider: DatabaseCon
 
 
 
-  def getQuoteRecords(search: Search) = runQueryAndMapResults(getQuoteQueryWithSearch(search))
+  def getQuoteRecords(search: Search, sort: Sort) = runQueryAndMapResults(getQuoteQueryWithSearch(search), search, sort)
 
 
-  def runQueryAndMapResults(query:Query[(QuoteSlickRepository.this.Quotes, QuoteSlickRepository.this.quoteMetaSlickRepository.QuoteMetas, Rep[Option[QuoteSlickRepository.this.customerSlickRepository.Customers]], Rep[Option[QuoteSlickRepository.this.companySlickRepository.Companies]], Rep[Option[QuoteSlickRepository.this.enquirySlickRepository.Enquiries]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]]), (Quote, QuoteMeta, Option[Customer], Option[Company], Option[Enquiry], Option[User], Option[User], Option[Address], Option[Address]), scala.Seq]) = {
+  def runQueryAndMapResults(query:Query[(QuoteSlickRepository.this.Quotes, QuoteSlickRepository.this.quoteMetaSlickRepository.QuoteMetas, Rep[Option[QuoteSlickRepository.this.customerSlickRepository.Customers]], Rep[Option[QuoteSlickRepository.this.companySlickRepository.Companies]], Rep[Option[QuoteSlickRepository.this.enquirySlickRepository.Enquiries]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.userSlickRepository.Users]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]], Rep[Option[QuoteSlickRepository.this.addressSlickRepository.Addresses]]), (Quote, QuoteMeta, Option[Customer], Option[Company], Option[Enquiry], Option[User], Option[User], Option[Address], Option[Address]), scala.Seq], search: Search, sort: Sort) = {
     db.run(query.
+      sortBy(t =>
+        t._1.id.desc
+   //     if (sort.hasOrderDesc("customerName")) ((t._3.fold(t._1.title)(x => x.canonicalName)).desc, t._1.id.desc)
+//        else if (sort.hasOrderAsc("customerEmail")) (t._3.map(_.email).asc, t._1.id.desc)
+  //      else (t._1.id.desc)
+      )
+      .
+      drop(((search.page -1) * search.rpp)).take(search.rpp).
       to[List].result.
       map(l =>
         l.map { t =>

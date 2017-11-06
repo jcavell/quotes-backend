@@ -16,7 +16,7 @@ class QuoteAPIController @Inject()(quoteRepository: QuoteSlickRepository, quoteL
   def getQuotes() = Action.async { implicit request =>
     val search = Search.fromRequestMap(request.queryString)
     val sort = Sort.fromRequestMap(request.queryString)
-    quoteRepository.getQuoteRecords(search).map { page =>
+    quoteRepository.getQuoteRecords(search, sort).map { page =>
       val json = Json.toJson(page)
       Ok(json)
     }

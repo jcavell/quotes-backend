@@ -12,9 +12,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class GazProductAPIController @Inject()(gazProductGetter: GazProductGetter, cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   def getProduct(productId: Long) = Action.async { implicit request =>
-    gazProductGetter.get(productId)map { p =>
-      val json = Json.toJson(p)
-      Ok(json)
+    gazProductGetter.get(productId)map {
+      _.fold(
+        NotFound(s"Product ID $productId not found"))(p =>
+        Ok(Json.toJson(p)))
     }
   }
 

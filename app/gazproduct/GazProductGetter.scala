@@ -21,7 +21,7 @@ class GazProductGetter @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
   // private val baseURL = "https://www.everythingbranded.co.uk/siteadmin/api/product"
   private val baseURL = "http://localhost:3001/products"
 
-  def get(productId: Long): Future[GazProduct] = {
+  def get(productId: Long): Future[Option[GazProduct]] = {
 
     ws.url(s"$baseURL/$productId").
       addHttpHeaders(headers).
@@ -29,18 +29,19 @@ class GazProductGetter @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
       val bodyJson = Json.parse(response.body)
 
-      val productid = (bodyJson \ "productid").get.as[Long]
-      val brandid = (bodyJson \ "brandid").get.as[Long]
-      val supplierid = (bodyJson \ "supplierid").get.as[Long]
-      val productcode = (bodyJson \ "productcode").get.as[String]
-      val productname = (bodyJson \ "productname").get.as[String]
-      val description1 = (bodyJson \ "description1").get.as[String]
-
-      val prices = (bodyJson \ "prices").get.as[List[GazPrice]]
-      val images = (bodyJson \ "images").get.as[List[GazImage]]
-
-      val product = GazProduct(productid, brandid, supplierid, productcode, productname, description1, images, prices)
-      product
+     (bodyJson \ "productid").toOption match {
+        case Some(productId) =>
+          val productid = (bodyJson \ "productid").get.as[Long]
+          val brandid = (bodyJson \ "brandid").get.as[Long]
+          val supplierid = (bodyJson \ "supplierid").get.as[Long]
+          val productcode = (bodyJson \ "productcode").get.as[String]
+          val productname = (bodyJson \ "productname").get.as[String]
+          val description1 = (bodyJson \ "description1").get.as[String]
+          val prices = (bodyJson \ "prices").get.as[List[GazPrice]]
+          val images = (bodyJson \ "images").get.as[List[GazImage]]
+          Some(GazProduct(productid, brandid, supplierid, productcode, productname, description1, images, prices))
+        case None => None
+      }
     }
   }
 }

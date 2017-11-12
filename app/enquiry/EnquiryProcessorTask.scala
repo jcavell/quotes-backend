@@ -54,8 +54,8 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
   }
 
   def generateQuote(enquiry: Enquiry, customer: Option[Customer]) = {
-    val title = s"${enquiry.subject}: ${enquiry.productName}"
-    Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, repEmail = enquiry.repEmail, createdDate = DateTime.now, customerId = customer.flatMap(_.id))
+    val title = s"${enquiry.subject.getOrElse("")}: ${enquiry.productName}"
+    Quote(title = title, requiredDate = enquiry.requiredDate, specialInstructions = enquiry.otherRequirements, repEmail = enquiry.repEmail, createdDate = DateTime.now, enquiryId = enquiry.id, customerId = customer.flatMap(_.id))
   }
 
   def insertQuote(enquiry: Enquiry, customer: Option[Customer]): Future[Quote] =
@@ -91,16 +91,16 @@ class EnquiryProcessorTask @Inject()(actorSystem: ActorSystem, ws: WSClient, com
 
     val f = for {
       insertedEnquiry <- enquiryRepository.insert(enquiry)
-      company <- findCompany(enquiry)
-      customer <- findCustomer(enquiry, company)
-      quote <- insertQuote(enquiry, customer)
+      company <- findCompany(insertedEnquiry)
+      customer <- findCustomer(insertedEnquiry, company)
+      quote <- insertQuote(insertedEnquiry, customer)
       quoteMeta <- insertQuoteMeta(quote)
-      quoteLineItem <- insertQuoteLineItem(enquiry, quote)
-      quoteXsells <- insertQuoteXsells(enquiry.xsellProductIds, quote)
+      quoteLineItem <- insertQuoteLineItem(insertedEnquiry, quote)
+      quoteXsells <- insertQuoteXsells(insertedEnquiry.xsellProductIds, quote)
       // asi <- asiProductGetter.get(qr.productId)
       // product <- asiProductRepository.insert(asi)
       // quoteProduct <- asiProductRepository.insertQuoteProduct(quote.id.get, product.internalId.get)
-      f <- enquiryWSClient.flagImported(enquiry.enquiryId)
+      f <- enquiryWSClient.flagImported(insertedEnquiry.enquiryId)
     } yield (f)
 
     // TODO remove the await and have proper transaction and error handling
